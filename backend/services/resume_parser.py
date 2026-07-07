@@ -41,9 +41,18 @@ def validate_file(file_data:bytes, filename:str)->Tuple[bool, str, Optional[str]
         return False, 'uploade file is empty...please check the file you have uploaded and try again'
     
     try:
-        mime_type=magic.from_buffer(file_data, mime=True)
+        mime_type = magic.from_buffer(file_data, mime=True)
     except Exception as e:
-        return False, f"error deteminin the file type : {e}", None
+        from pathlib import Path
+        ext = Path(filename).suffix.lower()
+        if ext == '.pdf':
+            mime_type = 'application/pdf'
+        elif ext == '.docx':
+            mime_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        elif ext in ['.doc', '.msword']:
+            mime_type = 'application/msword'
+        else:
+            return False, f"error determining the file type: {e}", None
     
     if mime_type not in SUPPORTED_MIME_TYPES:
         supported=', '.join(SUPPORTED_MIME_TYPES.keys()).upper()
