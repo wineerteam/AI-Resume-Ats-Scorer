@@ -37,6 +37,11 @@ OAUTH_REDIRECT_URL = (
 
 
 def _missing_config() -> str | None:
+    # If MOCK_MODE is requested, or if we have no Supabase keys configured,
+    # we treat it as Mock Mode and do not report a missing configuration error.
+    is_mock = (os.getenv('MOCK_MODE', 'false').lower() == 'true') or (not SUPABASE_URL or not SUPABASE_ANON_KEY)
+    if is_mock:
+        return None
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         return 'Supabase is not configured — set SUPABASE_URL and SUPABASE_ANON_KEY in .env or .streamlit/secrets.toml'
     return None
@@ -60,8 +65,16 @@ def _session_dict(session, user) -> Dict[str, Any]:
 
 
 def sign_in_with_password(email: str, password: str) -> Dict[str, Any]:
+    is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
     err = _missing_config()
     if err:
+        if is_mock:
+            return {
+                'access_token': 'mock-access-token-12345',
+                'refresh_token': 'mock-refresh-token-12345',
+                'user_id': 'mock-user-123',
+                'email': email or 'guest@example.com'
+            }
         return {'error': err}
     try:
         resp = get_client().auth.sign_in_with_password(
@@ -76,8 +89,16 @@ def sign_in_with_password(email: str, password: str) -> Dict[str, Any]:
 
 
 def sign_up_with_password(email: str, password: str) -> Dict[str, Any]:
+    is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
     err = _missing_config()
     if err:
+        if is_mock:
+            return {
+                'access_token': 'mock-access-token-12345',
+                'refresh_token': 'mock-refresh-token-12345',
+                'user_id': 'mock-user-123',
+                'email': email or 'guest@example.com'
+            }
         return {'error': err}
     try:
         resp = get_client().auth.sign_up({'email': email, 'password': password})
@@ -92,8 +113,11 @@ def sign_up_with_password(email: str, password: str) -> Dict[str, Any]:
 
 
 def google_oauth_url() -> Dict[str, Any]:
+    is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
     err = _missing_config()
     if err:
+        if is_mock:
+            return {'error': 'Google Sign-in disabled in local Mock Mode. Please use Email/Password sign-in.'}
         return {'error': err}
     try:
         resp = get_client().auth.sign_in_with_oauth({
@@ -129,7 +153,10 @@ def exchange_code_for_session(auth_code: str) -> Dict[str, Any]:
 
 
 def sign_out() -> None:
+    is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
     if _missing_config():
+        return
+    if is_mock:
         return
     try:
         get_client().auth.sign_out()
