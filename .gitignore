@@ -18,6 +18,11 @@ env/
 .vscode/
 .idea/
 
+# Jupyter Notebooks (Experimental)
+jupyter notebooks/
+jupyter_notebooks/
+*.ipynb
+
 # Datasets
 *.csv
 
