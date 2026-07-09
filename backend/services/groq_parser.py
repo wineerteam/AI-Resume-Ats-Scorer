@@ -15,14 +15,14 @@ _client=None
 def _get_client() -> Groq | None:
     global _client
     if _client is None:
+        is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
         api_key = os.getenv('GROQ_API_KEY')
+
         if not api_key:
-            return None
-        try:
-            _client = Groq(api_key=api_key)
-        except Exception as exc:
-            logger.warning(f"Failed to initialize Groq client: {exc}")
-            return None
+            if is_mock:
+                return None
+            raise ValueError("GROQ_API_KEY environment variable not set")
+        _client = Groq(api_key=api_key)
     return _client
 
 RESUME_SYSTEM_PROMPT = (
@@ -113,8 +113,7 @@ def _try_parse_json(text: str) -> dict | None:
     
 def parse_resume(raw_text: str) -> Dict:
     is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
-    client = _get_client()
-    if is_mock or client is None:
+    if is_mock:
         common_skills = ["Python", "Java", "JavaScript", "FastAPI", "React", "Docker", "Kubernetes", "Git", "SQL", "HTML", "CSS", "AWS"]
         detected_skills = [s for s in common_skills if s.lower() in raw_text.lower()]
         if not detected_skills:
@@ -147,6 +146,7 @@ def parse_resume(raw_text: str) -> Dict:
             ]
         })
 
+    client = _get_client()
     prompt = RESUME_USER_PROMPT.format(raw_text=raw_text)
     raw_response = _call_groq(client, RESUME_SYSTEM_PROMPT, prompt)
     result = _try_parse_json(raw_response)
@@ -197,8 +197,7 @@ Job Description Text:
 
 def parse_job_description(raw_text: str) -> Dict:
     is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
-    client = _get_client()
-    if is_mock or client is None:
+    if is_mock:
         common_skills = ["Python", "Java", "JavaScript", "FastAPI", "React", "Docker", "Kubernetes", "Git", "SQL", "HTML", "CSS", "AWS"]
         detected_skills = [s for s in common_skills if s.lower() in raw_text.lower()]
         if not detected_skills:
@@ -214,6 +213,7 @@ def parse_job_description(raw_text: str) -> Dict:
             "keywords": detected_skills + ["REST API", "Scalability", "Agile"]
         })
 
+    client = _get_client()
     prompt = JD_USER_PROMPT.format(raw_text=raw_text)
 
     raw_response = _call_groq(client, JD_SYSTEM_PROMPT, prompt)
