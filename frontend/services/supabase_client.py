@@ -29,11 +29,26 @@ def _secret(key: str, section: str = 'supabase') -> str:
 SUPABASE_URL = _secret('SUPABASE_URL')
 SUPABASE_ANON_KEY = _secret('SUPABASE_ANON_KEY')
 
-OAUTH_REDIRECT_URL = (
-    os.getenv('AUTH_REDIRECT_URL')
-    or _secret('redirect_uri', 'google_oauth')
-    or 'http://localhost:8501'
-)
+def get_redirect_url() -> str:
+    # 1. Check environment variable / secrets configuration first
+    env_url = os.getenv('AUTH_REDIRECT_URL') or _secret('redirect_uri', 'google_oauth')
+    if env_url:
+        return env_url
+    
+    # 2. Try to dynamically resolve using current browser URL from st.context
+    try:
+        if hasattr(st, 'context') and st.context.url:
+            from urllib.parse import urlparse
+            parsed = urlparse(st.context.url)
+            # Reconstruct the base URL (scheme + host + port + path) without query params
+            base_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+            return base_url.rstrip('/')
+    except Exception as exc:
+        logger.warning(f'Failed to resolve redirect URL from st.context: {exc}')
+        
+    # 3. Default fallback
+    return 'http://localhost:8501'
+
 
 
 def _missing_config() -> str | None:
@@ -98,7 +113,7 @@ def google_oauth_url() -> Dict[str, Any]:
     try:
         resp = get_client().auth.sign_in_with_oauth({
             'provider': 'google',
-            'options': {'redirect_to': OAUTH_REDIRECT_URL},
+            'options': {'redirect_to': get_redirect_url()},
         })
         return {'url': resp.url}
     except Exception as exc:
@@ -118,7 +133,7 @@ def exchange_code_for_session(auth_code: str) -> Dict[str, Any]:
         resp = client.auth.exchange_code_for_session({
             'auth_code': auth_code,
             'code_verifier': code_verifier,
-            'redirect_to': OAUTH_REDIRECT_URL,
+            'redirect_to': get_redirect_url(),
         })
         if not resp.session or not resp.user:
             return {'error': 'OAuth exchange returned no session'}
