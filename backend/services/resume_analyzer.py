@@ -1,5 +1,9 @@
 import spacy
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    class SentenceTransformer:
+        pass
 from typing import Dict, List, Optional
 from backend.models.schemas import IssueDetail
 from backend.services.groq_parser import parse_resume, parse_job_description

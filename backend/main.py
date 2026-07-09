@@ -30,9 +30,33 @@ async def lifespan(app:FastAPI):
         logger.info(f'Loaded {SPACY_MODEL_SECONDARY} (fallback)')
 
     logger.info(f'Loading SentenceTransformer: {SENTENCE_TRANSFORMER_MODEL}')
-    from sentence_transformers import SentenceTransformer
-    app.state.embedder = SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
-    logger.info(f'Loaded {SENTENCE_TRANSFORMER_MODEL}')
+    try:
+        from sentence_transformers import SentenceTransformer
+        app.state.embedder = SentenceTransformer(SENTENCE_TRANSFORMER_MODEL)
+        logger.info(f'Loaded {SENTENCE_TRANSFORMER_MODEL}')
+    except Exception as e:
+        logger.warning(f"Could not load SentenceTransformer ({e}). Falling back to spaCy-based similarity.")
+        class SpacyEmbedder:
+            def __init__(self, nlp):
+                self.nlp = nlp
+            def encode(self, sentences, convert_to_tensor=False, **kwargs):
+                import numpy as np
+                is_single = isinstance(sentences, str)
+                if is_single:
+                    sentences = [sentences]
+                
+                vectors = []
+                for text in sentences:
+                    doc = self.nlp(text) if text else None
+                    if doc and doc.has_vector and doc.vector_norm > 0:
+                        vectors.append(doc.vector)
+                    else:
+                        vectors.append(np.zeros((300,)))
+                
+                return vectors[0] if is_single else np.array(vectors)
+        
+        app.state.embedder = SpacyEmbedder(app.state.nlp)
+        logger.info("Loaded spaCy-based fallback embedder.")
 
     logger.info('All models loaded. API is ready to serve requests.')
 

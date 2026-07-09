@@ -1,7 +1,11 @@
 import re
 import spacy
 import numpy as np
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:
+    class SentenceTransformer:
+        pass
 from typing import Dict, List, Optional, Tuple
 
 from backend.utils.file_utils import log_warning

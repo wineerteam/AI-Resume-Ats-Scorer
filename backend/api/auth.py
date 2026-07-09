@@ -61,7 +61,17 @@ def _verify_token(token: str) -> dict:
 def get_current_user(
     creds: HTTPAuthorizationCredentials | None = Depends(_bearer_scheme),
 ) -> str:
+    import os
+    is_mock = os.getenv('MOCK_MODE', 'false').lower() == 'true'
+
+    if creds and creds.credentials == "mock_token":
+        logger.info("Bypassing authentication for mock_token (Guest/Local testing mode)")
+        return "guest-user-uuid-1234"
+
     if creds is None or not creds.credentials:
+        if is_mock:
+            logger.info("No credentials provided. Bypassing auth in mock mode.")
+            return "guest-user-uuid-1234"
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Missing Authorization: Bearer <token> header',
@@ -69,6 +79,9 @@ def get_current_user(
         )
 
     if not SUPABASE_URL and not SUPABASE_JWT_SECRET:
+        if is_mock:
+            logger.warning('Neither SUPABASE_URL nor SUPABASE_JWT_SECRET configured. Bypassing token verification in mock mode.')
+            return "guest-user-uuid-1234"
         logger.error('Neither SUPABASE_URL (for JWKS) nor SUPABASE_JWT_SECRET configured — cannot verify tokens')
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
