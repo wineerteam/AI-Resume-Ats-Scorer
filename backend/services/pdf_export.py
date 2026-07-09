@@ -4,7 +4,9 @@ import logging
 try:
     from weasyprint import HTML, CSS
     WEASYPRINT_INSTALLED = True
-except ImportError:
+except (ImportError, OSError) as exc:
+    import logging
+    logging.getLogger('ats_resume_scorer').warning(f"WeasyPrint import failed (PDF export will be disabled): {exc}")
     WEASYPRINT_INSTALLED = False
 
 logger = logging.getLogger('ats_resume_scorer')
