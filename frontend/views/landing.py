@@ -99,9 +99,8 @@ def render():
             """)
     st.markdown("---")
 
-    st.markdown(
-        """
-    <div style="
+    st.html("""
+        <div style="
         text-align: center;
         padding: 20px;
         margin-top: 20px;
@@ -110,44 +109,30 @@ def render():
         color: white;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     ">
-        <h4 style="margin-bottom: 5px;">
-            🚀 Developed by Sunil Kumar Yadav
-        </h4>
 
-        <p style="color: #cbd5e1; margin: 5px 0;">
-            AI & Full Stack Developer
-        </p>
+    <h4>🚀 Developed by Sunil Kumar Yadav</h4>
 
-        <p style="margin-top: 12px;">
+    <p style="color:#cbd5e1;">
+        AI & Full Stack Developer
+    </p>
 
-            <a href="https://github.com/wineerteam"
-               target="_blank"
-               style="
-                    color: #ffffff;
-                    text-decoration: none;
-                    margin-right: 20px;
-                    font-size: 15px;
-               ">
-                🔗 GitHub
-            </a>
+    <p>
+        <a href="https://github.com/wineerteam"
+           target="_blank"
+           style="color:white; text-decoration:none; margin-right:20px;">
+            🔗 GitHub
+        </a>
 
-            <a href="https://www.linkedin.com/in/sunil-kumar-yadav-abb468303/"
-               target="_blank"
-               style="
-                    color: #ffffff;
-                    text-decoration: none;
-                    font-size: 15px;
-               ">
-                💼 LinkedIn
-            </a>
+        <a href="https://www.linkedin.com/in/sunil-kumar-yadav-abb468303/"
+           target="_blank"
+           style="color:white; text-decoration:none;">
+            💼 LinkedIn
+        </a>
+    </p>
 
-        </p>
-
-        <p style="font-size: 13px; color: #94a3b8;">
-            © 2026 All Rights Reserved
-        </p>
+    <p style="font-size:13px; color:#94a3b8;">
+        © 2026 All Rights Reserved
+    </p>
 
     </div>
-    """,
-        unsafe_allow_html=True
-        )
+        """)
