@@ -7,19 +7,23 @@ def render():
     st.markdown("""
     <style>
         .main-header {
-            text-align: center;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #9333EA 100%);
-            color: white;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(79, 70, 229, 0.3);
-        }
-        .main-header h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
+    text-align: center;
+    padding: 3rem 2rem;
+
+    background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #1e3a8a 35%,
+        #2563eb 70%,
+        #06b6d4 100%
+    );
+
+    color: white;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+
+    box-shadow: 0 15px 40px rgba(37, 99, 235, 0.35);
+}
     </style>
     """, unsafe_allow_html=True)
     
