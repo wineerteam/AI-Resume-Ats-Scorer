@@ -95,5 +95,16 @@ def render():
     with col3:
         st.markdown("""
         #### 3️⃣ Get Actionable Feedback
-        Receive detailed recommendations to improve your resume
-        """)
+            Receive detailed recommendations to improve your resume
+            """)
+    st.markdown("---")
+
+    st.markdown(
+        """
+            <div style="text-align: center; padding: 10px; color: gray;">
+                <p>Developed by <b>Sunil Kumar Yadav</b></p>
+            <p>© 2026 All Rights Reserved</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
