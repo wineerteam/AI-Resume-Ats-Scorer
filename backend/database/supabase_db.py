@@ -44,6 +44,8 @@ async def save_analysis(user_id: str, filename: str, analysis_result: Dict) -> O
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(url, headers=headers, json=doc)
+            print("SUPABASE STATUS:", response.status_code)
+            print("SUPABASE RESPONSE:", response.text)
             response.raise_for_status()
             data = response.json()
             if data and len(data) > 0:
