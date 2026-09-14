@@ -1,10 +1,10 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import streamlit as st
 
 
 # ============================================================
-# CONFIGURATION
+# CONFIG
 # ============================================================
 
 SEVERITY_RANK = {
@@ -14,34 +14,31 @@ SEVERITY_RANK = {
     "low": 3,
 }
 
+
 SEVERITY_META = {
     "critical": {
         "label": "CRITICAL",
         "color": "#b91c1c",
         "background": "#fee2e2",
-        "border": "#fca5a5",
-        "impact": "Very High Impact",
+        "border": "#fecaca",
     },
     "high": {
         "label": "HIGH",
         "color": "#c2410c",
         "background": "#ffedd5",
-        "border": "#fdba74",
-        "impact": "High Impact",
+        "border": "#fed7aa",
     },
     "medium": {
         "label": "MEDIUM",
         "color": "#a16207",
         "background": "#fef3c7",
-        "border": "#fcd34d",
-        "impact": "Medium Impact",
+        "border": "#fde68a",
     },
     "low": {
         "label": "LOW",
         "color": "#0369a1",
         "background": "#e0f2fe",
-        "border": "#7dd3fc",
-        "impact": "Low Impact",
+        "border": "#bae6fd",
     },
 }
 
@@ -51,8 +48,6 @@ SEVERITY_META = {
 # ============================================================
 
 def _clean_text(value: Any) -> str:
-    """Safely clean text values."""
-
     if value is None:
         return ""
 
@@ -60,124 +55,39 @@ def _clean_text(value: Any) -> str:
 
 
 def _normalize_severity(value: Any) -> str:
-    """Normalize backend severity values."""
-
     level = _clean_text(value).lower()
 
-    if level in SEVERITY_RANK:
-        return level
+    if level in ("critical", "urgent"):
+        return "critical"
 
-    if level == "minor":
-        return "low"
+    if level in ("high", "important"):
+        return "high"
 
-    return "medium"
+    if level in ("medium", "moderate"):
+        return "medium"
 
-
-def _detect_category(
-    title: str,
-    action: str,
-) -> str:
-    """
-    Detect the ATS area related to an action item.
-
-    This is only a UI categorization layer.
-    """
-
-    text = f"{title} {action}".lower()
-
-    category_keywords = {
-        "Keywords & Skills": [
-            "keyword",
-            "skill",
-            "technology",
-            "technical",
-            "tool",
-            "stack",
-            "match",
-            "jd",
-            "job description",
-        ],
-        "Formatting": [
-            "format",
-            "font",
-            "spacing",
-            "layout",
-            "margin",
-            "heading",
-            "section",
-            "bullet",
-            "template",
-        ],
-        "Content Quality": [
-            "content",
-            "achievement",
-            "metric",
-            "quantif",
-            "impact",
-            "experience",
-            "bullet point",
-            "description",
-            "action verb",
-        ],
-        "ATS Compatibility": [
-            "ats",
-            "parse",
-            "parsing",
-            "compatib",
-            "readable",
-            "parser",
-            "file",
-            "pdf",
-        ],
-        "Skill Validation": [
-            "validation",
-            "proof",
-            "project",
-            "certification",
-            "evidence",
-            "demonstrat",
-        ],
-    }
-
-    for category, keywords in category_keywords.items():
-        if any(keyword in text for keyword in keywords):
-            return category
-
-    return "General"
+    return "low"
 
 
 def _get_priority_score(level: str) -> int:
-    """Return numerical priority score."""
-
-    values = {
+    return {
         "critical": 100,
         "high": 80,
         "medium": 60,
         "low": 30,
-    }
+    }.get(level, 20)
 
-    return values.get(level, 30)
-
-
-# ============================================================
-# COLLECT ITEMS
-# ============================================================
 
 def _collect_action_items(
     analysis: Dict[str, Any],
 ) -> List[Dict[str, Any]]:
-    """
-    Collect, clean, categorize and prioritize action items.
 
-    Returns dictionaries instead of raw tuples so the UI
-    can display richer information.
-    """
-
-    items: List[Dict[str, Any]] = []
+    items = []
     seen = set()
 
     detailed_feedback = (
-        analysis.get("detailed_feedback") or []
+        analysis.get("detailed_feedback")
+        or []
     )
 
     for issue in detailed_feedback:
@@ -190,13 +100,16 @@ def _collect_action_items(
         )
 
         title = _clean_text(
-            issue.get("issue_title")
+            issue.get(
+                "issue_title",
+                "Resume Improvement",
+            )
         )
 
-        if not title:
-            title = "Resume Improvement"
-
-        actions = issue.get("action_items") or []
+        actions = (
+            issue.get("action_items")
+            or []
+        )
 
         for action in actions:
 
@@ -206,9 +119,9 @@ def _collect_action_items(
                 continue
 
             unique_key = (
-                severity,
-                title.lower(),
-                action_text.lower(),
+                f"{severity}|"
+                f"{title.lower()}|"
+                f"{action_text.lower()}"
             )
 
             if unique_key in seen:
@@ -221,10 +134,6 @@ def _collect_action_items(
                     "severity": severity,
                     "title": title,
                     "action": action_text,
-                    "category": _detect_category(
-                        title,
-                        action_text,
-                    ),
                     "priority": _get_priority_score(
                         severity
                     ),
@@ -232,27 +141,24 @@ def _collect_action_items(
             )
 
     # --------------------------------------------------------
-    # Fallback suggestions
+    # FALLBACK TO GENERAL SUGGESTIONS
     # --------------------------------------------------------
 
     if not items:
 
-        for suggestion in (
-            analysis.get("suggestions") or []
-        ):
+        suggestions = (
+            analysis.get("suggestions")
+            or []
+        )
 
-            suggestion_text = _clean_text(
-                suggestion
-            )
+        for suggestion in suggestions:
 
-            if not suggestion_text:
+            text = _clean_text(suggestion)
+
+            if not text:
                 continue
 
-            unique_key = (
-                "medium",
-                "General",
-                suggestion_text.lower(),
-            )
+            unique_key = text.lower()
 
             if unique_key in seen:
                 continue
@@ -263,23 +169,15 @@ def _collect_action_items(
                 {
                     "severity": "medium",
                     "title": "General Recommendation",
-                    "action": suggestion_text,
-                    "category": _detect_category(
-                        "General",
-                        suggestion_text,
-                    ),
+                    "action": text,
                     "priority": 60,
                 }
             )
 
-    # Highest priority first
     items.sort(
         key=lambda item: (
-            SEVERITY_RANK.get(
-                item["severity"],
-                99,
-            ),
             -item["priority"],
+            item["title"].lower(),
         )
     )
 
@@ -287,45 +185,7 @@ def _collect_action_items(
 
 
 # ============================================================
-# SUMMARY
-# ============================================================
-
-def _get_summary(
-    items: List[Dict[str, Any]],
-) -> Dict[str, int]:
-
-    summary = {
-        "critical": 0,
-        "high": 0,
-        "medium": 0,
-        "low": 0,
-    }
-
-    for item in items:
-
-        level = item["severity"]
-
-        if level in summary:
-            summary[level] += 1
-
-    return summary
-
-
-# ============================================================
-# TOP RECOMMENDATIONS
-# ============================================================
-
-def _get_top_recommendations(
-    items: List[Dict[str, Any]],
-    limit: int = 3,
-) -> List[Dict[str, Any]]:
-    """Return highest-priority recommendations."""
-
-    return items[:limit]
-
-
-# ============================================================
-# CSS
+# STYLES
 # ============================================================
 
 def _apply_styles() -> None:
@@ -334,302 +194,351 @@ def _apply_styles() -> None:
         """
         <style>
 
-        /* ==================================================
-           MAIN CONTAINER
-        ================================================== */
-
-        .improvement-wrapper {
-            margin-top: 22px;
-            margin-bottom: 28px;
-        }
+        /* =====================================================
+           HEADER
+        ===================================================== */
 
         .improvement-title {
-            font-size: 25px;
-            font-weight: 900;
             color: #0f172a;
-            margin-bottom: 3px;
+            font-size: 27px;
+            font-weight: 950;
+            letter-spacing: -0.03em;
+            margin-top: 24px;
+            margin-bottom: 4px;
         }
 
         .improvement-subtitle {
             color: #64748b;
-            font-size: 13px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 12px;
             margin-bottom: 20px;
         }
 
-
-        /* ==================================================
-           SUMMARY CARDS
-        ================================================== */
-
-        .improvement-summary {
-            display: grid;
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 22px;
-        }
-
         .summary-card {
-            padding: 16px;
-            border-radius: 17px;
+            position: relative;
+            overflow: hidden;
+
+            padding: 18px;
+
+            border-radius: 19px;
+
             background:
                 linear-gradient(
                     145deg,
-                    rgba(255,255,255,0.98),
-                    rgba(248,250,252,0.96)
+                    #ffffff,
+                    #f8fafc
                 );
-            border:
-                1px solid rgba(15,23,42,0.09);
+
+            border: 1px solid #e2e8f0;
+
             box-shadow:
-                0 7px 20px rgba(15,23,42,0.06);
+                0 8px 24px
+                rgba(15, 23, 42, 0.055);
+
             transition:
-                transform .23s ease,
-                box-shadow .23s ease;
+                transform .22s ease,
+                box-shadow .22s ease,
+                border-color .22s ease;
         }
 
         .summary-card:hover {
             transform:
-                translateY(-4px)
-                scale(1.015);
+                translateY(-5px)
+                scale(1.01);
+
             box-shadow:
-                0 14px 30px rgba(15,23,42,0.11);
+                0 17px 34px
+                rgba(15, 23, 42, .10);
+
+            border-color: #93c5fd;
+        }
+
+        .summary-card::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 4px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #06b6d4,
+                    #3b82f6
+                );
         }
 
         .summary-label {
-            font-size: 10px;
-            font-weight: 850;
-            text-transform: uppercase;
-            letter-spacing: .08em;
             color: #64748b;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            letter-spacing: .10em;
         }
 
         .summary-value {
-            font-size: 25px;
-            line-height: 1.1;
-            font-weight: 900;
             color: #0f172a;
-            margin-top: 5px;
+
+            font-size: 27px;
+            font-weight: 950;
+
+            margin-top: 4px;
         }
 
+        .summary-description {
+            color: #94a3b8;
 
-        /* ==================================================
-           TOP RECOMMENDATIONS
-        ================================================== */
+            font-size: 9px;
 
-        .top-section {
-            padding: 20px;
-            margin-bottom: 24px;
-            border-radius: 20px;
-            background:
-                linear-gradient(
-                    135deg,
-                    #f8fafc,
-                    #eef6ff
-                );
-            border:
-                1px solid rgba(14,165,233,.16);
-            box-shadow:
-                0 9px 26px rgba(15,23,42,.07);
-        }
-
-        .top-heading {
-            font-size: 17px;
-            font-weight: 850;
-            color: #0f172a;
-            margin-bottom: 15px;
-        }
-
-        .top-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 13px;
-            background: rgba(255,255,255,.80);
-            border:
-                1px solid rgba(15,23,42,.07);
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
-        }
-
-        .top-item:hover {
-            transform: translateX(4px);
-            box-shadow:
-                0 7px 18px rgba(15,23,42,.08);
-        }
-
-        .top-number {
-            min-width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 9px;
-            background: #0f172a;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: 900;
-        }
-
-        .top-content {
-            flex: 1;
-        }
-
-        .top-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .top-action {
-            font-size: 12px;
-            color: #64748b;
             margin-top: 2px;
         }
 
 
-        /* ==================================================
-           SECTION HEADER
-        ================================================== */
+        /* =====================================================
+           PRIORITY PANEL
+           ===================================================== */
 
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 22px 0 12px 0;
+        .priority-panel {
+            position: relative;
+            overflow: hidden;
+
+            padding: 20px;
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #07152f,
+                    #102a56
+                );
+
+            box-shadow:
+                0 15px 34px
+                rgba(15, 23, 42, .13);
+
+            margin-bottom: 20px;
         }
 
-        .section-heading {
+        .priority-panel::after {
+            content: "";
+
+            position: absolute;
+
+            width: 170px;
+            height: 170px;
+
+            border-radius: 50%;
+
+            border: 1px solid
+                rgba(34, 211, 238, .10);
+
+            right: -70px;
+            top: -90px;
+        }
+
+        .priority-label {
+            position: relative;
+            z-index: 2;
+
+            color: #67e8f9;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            text-transform: uppercase;
+
+            letter-spacing: .11em;
+        }
+
+        .priority-title {
+            position: relative;
+            z-index: 2;
+
+            color: white;
+
             font-size: 18px;
-            font-weight: 850;
-            color: #0f172a;
+            font-weight: 900;
+
+            margin-top: 4px;
         }
 
-        .section-count {
-            font-size: 11px;
-            font-weight: 800;
-            color: #64748b;
-            background: #f1f5f9;
-            padding: 6px 10px;
-            border-radius: 999px;
+        .priority-text {
+            position: relative;
+            z-index: 2;
+
+            color: #cbd5e1;
+
+            font-size: 10px;
+
+            line-height: 1.6;
+
+            margin-top: 3px;
         }
 
 
-        /* ==================================================
-           ACTION CARD
-        ================================================== */
+        /* =====================================================
+           ACTION CARDS
+           ===================================================== */
+
+        .action-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 14px;
+        }
 
         .action-card {
             position: relative;
-            padding: 19px;
-            margin: 11px 0;
-            border-radius: 19px;
-            background:
-                linear-gradient(
-                    145deg,
-                    rgba(255,255,255,.99),
-                    rgba(248,250,252,.96)
-                );
-            border:
-                1px solid rgba(15,23,42,.09);
-            box-shadow:
-                0 7px 21px rgba(15,23,42,.065);
-            transition:
-                transform .25s ease,
-                box-shadow .25s ease,
-                border-color .25s ease;
             overflow: hidden;
-        }
 
-        .action-card::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #06b6d4;
+            padding: 18px;
+
+            border-radius: 20px;
+
+            background: white;
+
+            border: 1px solid #e2e8f0;
+
+            box-shadow:
+                0 7px 22px
+                rgba(15, 23, 42, .055);
+
+            transition:
+                transform .22s ease,
+                box-shadow .22s ease,
+                border-color .22s ease;
         }
 
         .action-card:hover {
             transform:
-                translateY(-5px)
-                scale(1.008);
+                translateY(-6px)
+                scale(1.01);
+
             box-shadow:
-                0 16px 34px rgba(15,23,42,.12);
-            border-color:
-                rgba(14,165,233,.25);
+                0 18px 38px
+                rgba(15, 23, 42, .10);
+
+            border-color: #93c5fd;
+        }
+
+        .action-number {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 30px;
+            height: 30px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e0f2fe,
+                    #dbeafe
+                );
+
+            color: #0369a1;
+
+            font-size: 9px;
+            font-weight: 950;
+
+            margin-bottom: 11px;
         }
 
         .action-top {
             display: flex;
+
             justify-content: space-between;
             align-items: flex-start;
-            gap: 12px;
+
+            gap: 10px;
         }
 
-        .action-left {
-            flex: 1;
-        }
-
-        .action-title {
+        .action-source {
             color: #0f172a;
-            font-size: 15px;
-            font-weight: 850;
-        }
 
-        .action-category {
-            display: inline-block;
-            margin-top: 7px;
-            padding: 4px 9px;
-            border-radius: 999px;
-            background: #eff6ff;
-            color: #0369a1;
-            font-size: 10px;
-            font-weight: 800;
+            font-size: 13px;
+            font-weight: 900;
+
+            line-height: 1.4;
         }
 
         .severity-badge {
-            padding: 6px 10px;
+            padding: 5px 8px;
+
             border-radius: 999px;
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: .06em;
+
+            font-size: 7px;
+            font-weight: 950;
+
             white-space: nowrap;
         }
 
-        .impact-text {
-            margin-top: 13px;
+        .action-text {
             color: #475569;
-            font-size: 11px;
-            font-weight: 750;
+
+            font-size: 10px;
+
+            line-height: 1.7;
+
+            margin-top: 10px;
         }
 
-        .action-description {
-            margin-top: 6px;
-            color: #334155;
-            font-size: 13px;
-            line-height: 1.65;
+        .priority-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            color: #94a3b8;
+
+            font-size: 8px;
+            font-weight: 800;
+
+            margin-top: 13px;
         }
 
+        .priority-track {
+            height: 5px;
 
-        /* ==================================================
-           PROGRESS
-        ================================================== */
-
-        .progress-wrapper {
-            margin-top: 8px;
-            height: 7px;
             border-radius: 999px;
+
             background: #e2e8f0;
+
             overflow: hidden;
+
+            margin-top: 5px;
         }
 
-        .progress-bar {
+        .priority-fill {
             height: 100%;
+
             border-radius: 999px;
+
             background:
                 linear-gradient(
                     90deg,
@@ -639,35 +548,55 @@ def _apply_styles() -> None:
         }
 
 
-        /* ==================================================
-           RESPONSIVE
-        ================================================== */
+        /* =====================================================
+           EMPTY STATE
+           ===================================================== */
 
-        @media (max-width: 850px) {
+        .action-empty {
+            padding: 35px 22px;
 
-            .improvement-summary {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
+            text-align: center;
 
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0fdf4,
+                    #ecfeff
+                );
+
+            border: 1px solid #a7f3d0;
         }
 
-        @media (max-width: 550px) {
+        .action-empty-title {
+            color: #166534;
 
-            .improvement-summary {
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .action-empty-text {
+            color: #64748b;
+
+            font-size: 10px;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 800px) {
+
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .action-top {
-                flex-direction: column;
-            }
-
-            .severity-badge {
-                align-self: flex-start;
-            }
-
-            .action-card {
-                padding: 15px;
+            .action-grid {
+                grid-template-columns: 1fr;
             }
 
         }
@@ -679,218 +608,260 @@ def _apply_styles() -> None:
 
 
 # ============================================================
-# DISPLAY
+# MAIN COMPONENT
 # ============================================================
 
 def display_action_items(
     analysis: Dict[str, Any],
 ) -> None:
-    """
-    Display the ATS Improvement Center.
-
-    Existing function signature preserved.
-    """
-
-    items = _collect_action_items(analysis)
-
-    if not items:
-        return
 
     _apply_styles()
 
-    summary = _get_summary(items)
+    items = _collect_action_items(
+        analysis
+    )
 
     # ========================================================
     # HEADER
     # ========================================================
 
-    st.markdown(
+    st.html(
         """
-        <div class="improvement-wrapper">
-
-            <div class="improvement-title">
-                ATS Improvement Center
-            </div>
-
-            <div class="improvement-subtitle">
-                Prioritized recommendations to improve your
-                resume's ATS performance.
-            </div>
-
+        <div class="improvement-title">
+            ATS Improvement Center
         </div>
-        """,
-        unsafe_allow_html=True,
+
+        <div class="improvement-subtitle">
+            Prioritized recommendations to improve your
+            resume's ATS performance.
+        </div>
+        """
     )
 
     # ========================================================
-    # SUMMARY
+    # EMPTY STATE
     # ========================================================
 
-    st.markdown(
-        f"""
-        <div class="improvement-summary">
+    if not items:
 
-            <div class="summary-card">
-                <div class="summary-label">
-                    Total Actions
-                </div>
-                <div class="summary-value">
-                    {len(items)}
-                </div>
-            </div>
+        st.html(
+            """
+            <div class="action-empty">
 
-            <div class="summary-card">
-                <div class="summary-label">
-                    Critical
-                </div>
-                <div
-                    class="summary-value"
-                    style="color:#b91c1c;"
-                >
-                    {summary["critical"]}
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-label">
-                    High Priority
-                </div>
-                <div
-                    class="summary-value"
-                    style="color:#c2410c;"
-                >
-                    {summary["high"]}
-                </div>
-            </div>
-
-            <div class="summary-card">
-                <div class="summary-label">
-                    Medium
-                </div>
-                <div
-                    class="summary-value"
-                    style="color:#a16207;"
-                >
-                    {summary["medium"]}
-                </div>
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ========================================================
-    # TOP 3
-    # ========================================================
-
-    top_items = _get_top_recommendations(items)
-
-    if top_items:
-
-        top_html = """
-        <div class="top-section">
-
-            <div class="top-heading">
-                Top Recommendations
-            </div>
-        """
-
-        for index, item in enumerate(
-            top_items,
-            start=1,
-        ):
-
-            top_html += f"""
-            <div class="top-item">
-
-                <div class="top-number">
-                    {index}
+                <div class="action-empty-title">
+                    No Improvement Actions Found
                 </div>
 
-                <div class="top-content">
-
-                    <div class="top-title">
-                        {item["title"]}
-                    </div>
-
-                    <div class="top-action">
-                        {item["action"]}
-                    </div>
-
+                <div class="action-empty-text">
+                    Your analysis did not return any specific
+                    action items.
                 </div>
 
             </div>
             """
-
-        top_html += "</div>"
-
-        st.markdown(
-            top_html,
-            unsafe_allow_html=True,
         )
 
+        return
+
     # ========================================================
-    # ALL ACTIONS
+    # COUNTS
     # ========================================================
 
-    st.markdown(
-        f"""
-        <div class="section-header">
+    total = len(items)
 
-            <div class="section-heading">
-                All Recommendations
-            </div>
+    critical_count = sum(
+        1
+        for item in items
+        if item["severity"] == "critical"
+    )
 
-            <div class="section-count">
-                {len(items)} actions
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
+    high_count = sum(
+        1
+        for item in items
+        if item["severity"] == "high"
     )
 
     # ========================================================
-    # CARDS
+    # SUMMARY CARDS
     # ========================================================
+
+    st.html(
+        f"""
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Total Actions
+                </div>
+
+                <div class="summary-value">
+                    {total}
+                </div>
+
+                <div class="summary-description">
+                    Recommended improvements
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    High Priority
+                </div>
+
+                <div class="summary-value">
+                    {critical_count + high_count}
+                </div>
+
+                <div class="summary-description">
+                    Should be reviewed first
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Coverage
+                </div>
+
+                <div class="summary-value">
+                    {min(total, 10) * 10}%
+                </div>
+
+                <div class="summary-description">
+                    Action plan generated
+                </div>
+
+            </div>
+
+        </div>
+        """
+    )
+
+    # ========================================================
+    # PRIORITY MESSAGE
+    # ========================================================
+
+    if critical_count:
+
+        priority_title = (
+            "Start With Critical Issues"
+        )
+
+        priority_text = (
+            f"{critical_count} critical "
+            f"recommendation"
+            f"{'s' if critical_count != 1 else ''} "
+            "should be addressed before lower-priority "
+            "improvements."
+        )
+
+    elif high_count:
+
+        priority_title = (
+            "Focus On High-Priority Improvements"
+        )
+
+        priority_text = (
+            f"{high_count} high-priority "
+            f"recommendation"
+            f"{'s' if high_count != 1 else ''} "
+            "are the best place to start."
+        )
+
+    else:
+
+        priority_title = (
+            "Work Through The Action Plan"
+        )
+
+        priority_text = (
+            "No critical issues were identified. "
+            "Work through the recommendations from "
+            "highest to lowest priority."
+        )
+
+    st.html(
+        f"""
+        <div class="priority-panel">
+
+            <div class="priority-label">
+                Recommended Order
+            </div>
+
+            <div class="priority-title">
+                {priority_title}
+            </div>
+
+            <div class="priority-text">
+                {priority_text}
+            </div>
+
+        </div>
+        """
+    )
+
+    # ========================================================
+    # ACTION SECTION
+    # ========================================================
+
+    st.html(
+        """
+        <div class="improvement-title"
+             style="font-size:21px; margin-top:5px;">
+            Recommended Actions
+        </div>
+
+        <div class="improvement-subtitle">
+            Follow these actions in priority order.
+        </div>
+        """
+    )
+
+    # ========================================================
+    # ACTION CARDS
+    # ========================================================
+
+    cards_html = """
+    <div class="action-grid">
+    """
 
     for index, item in enumerate(
         items,
         start=1,
     ):
 
-        level = item["severity"]
+        severity = item["severity"]
 
         meta = SEVERITY_META.get(
-            level,
-            SEVERITY_META["medium"],
+            severity,
+            SEVERITY_META["low"],
         )
 
-        # Priority percentage is only a visual indicator.
         priority = item["priority"]
 
-        # Make sure the progress width remains valid.
-        progress_width = max(
-            20,
-            min(100, priority),
+        # Visual priority only.
+        priority_width = min(
+            100,
+            max(25, priority),
         )
 
-        card_html = f"""
+        cards_html += f"""
         <div class="action-card">
+
+            <div class="action-number">
+                {index:02d}
+            </div>
 
             <div class="action-top">
 
-                <div class="action-left">
-
-                    <div class="action-title">
-                        {index}. {item["title"]}
-                    </div>
-
-                    <div class="action-category">
-                        {item["category"]}
-                    </div>
-
+                <div class="action-source">
+                    {item["title"]}
                 </div>
 
                 <div
@@ -898,7 +869,8 @@ def display_action_items(
                     style="
                         color:{meta["color"]};
                         background:{meta["background"]};
-                        border:1px solid {meta["border"]};
+                        border:1px solid
+                            {meta["border"]};
                     "
                 >
                     {meta["label"]}
@@ -906,25 +878,38 @@ def display_action_items(
 
             </div>
 
-            <div class="impact-text">
-                {meta["impact"]}
-            </div>
-
-            <div class="action-description">
+            <div class="action-text">
                 {item["action"]}
             </div>
 
-            <div class="progress-wrapper">
+            <div class="priority-row">
+
+                <span>
+                    Priority
+                </span>
+
+                <span>
+                    {priority}/100
+                </span>
+
+            </div>
+
+            <div class="priority-track">
+
                 <div
-                    class="progress-bar"
-                    style="width:{progress_width}%"
+                    class="priority-fill"
+                    style="
+                        width:{priority_width}%;
+                    "
                 ></div>
+
             </div>
 
         </div>
         """
 
-        st.markdown(
-            card_html,
-            unsafe_allow_html=True,
-        )
+    cards_html += """
+    </div>
+    """
+
+    st.html(cards_html)
