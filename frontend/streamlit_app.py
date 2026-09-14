@@ -3,19 +3,21 @@ import sys
 from pathlib import Path
 
 
-# ------------------------------------------------------------
-# REPO ROOT
-# ------------------------------------------------------------
+# ============================================================
+# REPO PATH
+# ============================================================
 
+# Put the repo root on sys.path so frontend imports work
+# regardless of the directory Streamlit was launched from.
 sys.path.insert(
     0,
     str(Path(__file__).parent.parent)
 )
 
 
-# ------------------------------------------------------------
+# ============================================================
 # PAGE CONFIG
-# ------------------------------------------------------------
+# ============================================================
 
 st.set_page_config(
     page_title="ATS Resume Scorer",
@@ -24,9 +26,9 @@ st.set_page_config(
 )
 
 
-# ------------------------------------------------------------
-# YOUR AUTH SESSION STATE
-# ------------------------------------------------------------
+# ============================================================
+# AUTH SESSION STATE
+# ============================================================
 
 for key, default in [
     ("access_token", None),
@@ -40,16 +42,43 @@ for key, default in [
         st.session_state[key] = default
 
 
-# ------------------------------------------------------------
-# YOUR GOOGLE OAUTH CODE
-# ------------------------------------------------------------
+# ============================================================
+# GOOGLE OAUTH CALLBACK
+# ============================================================
 
-# ... your existing OAuth code ...
+if (
+    not st.session_state.access_token
+    and "code" in st.query_params
+):
+
+    from frontend.services import supabase_client
+
+    result = supabase_client.exchange_code_for_session(
+        st.query_params["code"]
+    )
+
+    # Clear OAuth code after processing
+    st.query_params.clear()
+
+    if "error" in result:
+
+        st.session_state.auth_error = (
+            f"Google sign-in failed: {result['error']}"
+        )
+
+    else:
+
+        st.session_state.access_token = result["access_token"]
+        st.session_state.refresh_token = result["refresh_token"]
+        st.session_state.user_id = result["user_id"]
+        st.session_state.user_email = result["email"]
+
+        st.rerun()
 
 
-# ------------------------------------------------------------
+# ============================================================
 # LOAD CUSTOM CSS
-# ------------------------------------------------------------
+# ============================================================
 
 def load_css():
 
@@ -61,12 +90,7 @@ def load_css():
             / "styles.css"
         )
 
-        with open(
-            css_path,
-            "r",
-            encoding="utf-8"
-        ) as f:
-
+        with open(css_path, "r", encoding="utf-8") as f:
             return f"<style>{f.read()}</style>"
 
     except FileNotFoundError:
@@ -81,310 +105,342 @@ st.markdown(
 
 
 # ============================================================
-# PREMIUM NAVIGATION CSS
+# VIEW STATE
 # ============================================================
 
-st.markdown(
-    """
-    <style>
+if "current_view" not in st.session_state:
+    st.session_state.current_view = "landing"
 
-    [data-testid="stSidebar"] {
-        background:
-            linear-gradient(
-                180deg,
-                #07152f 0%,
-                #091d3d 50%,
-                #07152f 100%
-            );
 
-        border-right:
-            1px solid
-            rgba(37,99,235,.25);
+# ============================================================
+# SIDEBAR
+# ============================================================
 
-        box-shadow:
-            10px 0 40px
-            rgba(3,15,35,.18);
-    }
+with st.sidebar:
 
+    st.markdown("## Navigation")
 
-    [data-testid="stSidebar"] .stButton {
-        margin-bottom: 10px;
-    }
+    if st.button(
+        "Home",
+        use_container_width=True
+    ):
+        st.session_state.current_view = "landing"
+        st.rerun()
 
 
-    [data-testid="stSidebar"] .stButton > button {
+    if st.button(
+        "ATS Scorer",
+        use_container_width=True
+    ):
+        st.session_state.current_view = "scorer"
+        st.rerun()
 
-        min-height: 50px;
 
-        border-radius: 15px;
+    if st.button(
+        "History",
+        use_container_width=True
+    ):
+        st.session_state.current_view = "history"
+        st.rerun()
 
-        border:
-            1px solid
-            rgba(148,163,184,.15);
 
-        background:
-            linear-gradient(
-                135deg,
-                rgba(255,255,255,.07),
-                rgba(255,255,255,.025)
-            );
+    if st.button(
+        "Resources",
+        use_container_width=True
+    ):
+        st.session_state.current_view = "resources"
+        st.rerun()
 
-        color: #cbd5e1;
 
-        font-size: 12px;
+    st.markdown("---")
 
-        font-weight: 850;
+    st.markdown("### Account")
 
-        text-align: left;
 
-        padding: 0 16px;
+    # --------------------------------------------------------
+    # SUPABASE CLIENT
+    # --------------------------------------------------------
 
-        box-shadow:
-            0 7px 0
-            rgba(3,12,30,.35),
+    from frontend.services import supabase_client
 
-            0 10px 25px
-            rgba(0,0,0,.12);
 
-        transition:
-            all .22s cubic-bezier(.2,.8,.2,1);
+    # ========================================================
+    # SIGNED IN
+    # ========================================================
 
-        position: relative;
+    if st.session_state.access_token:
 
-        overflow: hidden;
-    }
+        st.caption(
+            f"Signed in as **{st.session_state.user_email}**"
+        )
 
 
-    /* LEFT MULTICOLOR BAR */
+        if st.button(
+            "Sign out",
+            use_container_width=True
+        ):
 
-    [data-testid="stSidebar"] .stButton > button::before {
+            supabase_client.sign_out()
 
-        content: "";
+            for key in (
+                "access_token",
+                "refresh_token",
+                "user_id",
+                "user_email",
+            ):
 
-        position: absolute;
+                st.session_state[key] = None
 
-        left: 0;
-        top: 0;
+            st.rerun()
 
-        width: 4px;
-        height: 100%;
 
-        border-radius:
-            15px 0 0 15px;
+    # ========================================================
+    # SIGNED OUT
+    # ========================================================
 
-        background:
-            linear-gradient(
-                180deg,
-                #06b6d4,
-                #2563eb,
-                #ec4899,
-                #f97316,
-                #facc15
-            );
+    else:
 
-        transition:
-            width .22s ease;
-    }
+        if st.session_state.auth_error:
 
+            st.error(
+                st.session_state.auth_error
+            )
 
-    /* SHINE */
+            st.session_state.auth_error = None
 
-    [data-testid="stSidebar"] .stButton > button::after {
 
-        content: "";
+        if st.session_state.auth_info:
 
-        position: absolute;
+            st.info(
+                st.session_state.auth_info
+            )
 
-        width: 90px;
-        height: 160%;
+            st.session_state.auth_info = None
 
-        left: -120px;
-        top: -30%;
 
-        transform:
-            rotate(20deg);
+        tab_in, tab_up = st.tabs(
+            [
+                "Sign in",
+                "Sign up"
+            ]
+        )
 
-        background:
-            linear-gradient(
-                90deg,
-                transparent,
-                rgba(255,255,255,.20),
-                transparent
-            );
 
-        transition:
-            left .45s ease;
-    }
+        # ----------------------------------------------------
+        # SIGN IN
+        # ----------------------------------------------------
 
+        with tab_in:
 
-    /* HOVER */
+            with st.form(
+                "signin_form",
+                clear_on_submit=False
+            ):
 
-    [data-testid="stSidebar"] .stButton > button:hover {
+                email = st.text_input(
+                    "Email",
+                    key="signin_email"
+                )
 
-        transform:
-            translateX(7px)
-            translateY(-4px)
-            scale(1.035);
+                password = st.text_input(
+                    "Password",
+                    type="password",
+                    key="signin_pw"
+                )
 
-        color: #ffffff;
+                submitted = st.form_submit_button(
+                    "Sign in",
+                    use_container_width=True
+                )
 
-        background:
-            linear-gradient(
-                135deg,
-                rgba(6,182,212,.18),
-                rgba(37,99,235,.20),
-                rgba(236,72,153,.14)
-            );
 
-        border-color:
-            rgba(96,165,250,.48);
+            if submitted:
 
-        box-shadow:
+                result = (
+                    supabase_client
+                    .sign_in_with_password(
+                        email,
+                        password
+                    )
+                )
 
-            0 8px 0
-            rgba(3,12,30,.42),
 
-            0 16px 30px
-            rgba(37,99,235,.18),
+                if "error" in result:
 
-            0 0 25px
-            rgba(6,182,212,.10);
-    }
+                    st.session_state.auth_error = (
+                        result["error"]
+                    )
 
+                else:
 
-    [data-testid="stSidebar"] .stButton > button:hover::before {
+                    st.session_state.access_token = (
+                        result["access_token"]
+                    )
 
-        width: 7px;
-    }
+                    st.session_state.refresh_token = (
+                        result["refresh_token"]
+                    )
 
+                    st.session_state.user_id = (
+                        result["user_id"]
+                    )
 
-    [data-testid="stSidebar"] .stButton > button:hover::after {
+                    st.session_state.user_email = (
+                        result["email"]
+                    )
 
-        left: 130%;
-    }
 
+                st.rerun()
 
-    /* CLICK */
 
-    [data-testid="stSidebar"] .stButton > button:active {
+        # ----------------------------------------------------
+        # SIGN UP
+        # ----------------------------------------------------
 
-        transform:
-            translateX(5px)
-            translateY(3px)
-            scale(.985);
+        with tab_up:
 
-        box-shadow:
-            0 2px 0
-            rgba(3,12,30,.5),
+            with st.form(
+                "signup_form",
+                clear_on_submit=False
+            ):
 
-            0 5px 12px
-            rgba(0,0,0,.2);
-    }
+                email_up = st.text_input(
+                    "Email",
+                    key="signup_email"
+                )
 
+                password_up = st.text_input(
+                    "Password (min 6 chars)",
+                    type="password",
+                    key="signup_pw"
+                )
 
-    /* BRAND */
+                submitted_up = (
+                    st.form_submit_button(
+                        "Create account",
+                        use_container_width=True
+                    )
+                )
 
-    .nav-brand {
-        padding:
-            8px 10px 20px 10px;
 
-        margin-bottom: 8px;
-    }
+            if submitted_up:
 
+                result = (
+                    supabase_client
+                    .sign_up_with_password(
+                        email_up,
+                        password_up
+                    )
+                )
 
-    .nav-brand-title {
 
-        font-size: 23px;
+                if "error" in result:
 
-        font-weight: 950;
+                    st.session_state.auth_error = (
+                        result["error"]
+                    )
 
-        color: #ffffff;
 
-        letter-spacing: -1px;
-    }
+                elif result.get(
+                    "pending_confirmation"
+                ):
 
+                    st.session_state.auth_info = (
+                        f"Check your inbox — confirmation "
+                        f"email sent to {result['email']}."
+                    )
 
-    .nav-brand-title span {
 
-        background:
-            linear-gradient(
-                90deg,
-                #06b6d4,
-                #2563eb,
-                #ec4899,
-                #facc15
-            );
+                else:
 
-        -webkit-background-clip: text;
+                    st.session_state.access_token = (
+                        result["access_token"]
+                    )
 
-        -webkit-text-fill-color: transparent;
+                    st.session_state.refresh_token = (
+                        result["refresh_token"]
+                    )
 
-        background-clip: text;
-    }
+                    st.session_state.user_id = (
+                        result["user_id"]
+                    )
 
+                    st.session_state.user_email = (
+                        result["email"]
+                    )
 
-    .nav-brand-subtitle {
 
-        color: #94a3b8;
+                st.rerun()
 
-        font-size: 8px;
 
-        font-weight: 800;
+        # ----------------------------------------------------
+        # GOOGLE LOGIN
+        # ----------------------------------------------------
 
-        letter-spacing: 1.5px;
+        st.markdown(
+            """
+            <div style="
+                text-align:center;
+                margin:10px 0;
+                color:#94a3b8;
+                font-size:12px;
+            ">
+                or
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-        margin-top: 6px;
 
-        text-transform: uppercase;
-    }
+        oauth = (
+            supabase_client
+            .google_oauth_url()
+        )
 
 
-    .nav-section-label {
+        if "error" in oauth:
 
-        color: #64748b;
+            st.caption(
+                f"Google sign-in unavailable: "
+                f"{oauth['error']}"
+            )
 
-        font-size: 8px;
+        else:
 
-        font-weight: 900;
+            st.link_button(
+                "Continue with Google",
+                url=oauth["url"],
+                use_container_width=True
+            )
 
-        letter-spacing: 2px;
 
-        text-transform: uppercase;
+# ============================================================
+# MAIN CONTENT
+# ============================================================
 
-        margin:
-            5px 0 10px 8px;
-    }
+if st.session_state.current_view == "landing":
 
+    from frontend.views import landing
 
-    .nav-divider {
+    landing.render()
 
-        height: 1px;
 
-        margin:
-            18px 5px;
+elif st.session_state.current_view == "scorer":
 
-        background:
-            linear-gradient(
-                90deg,
-                transparent,
-                rgba(148,163,184,.28),
-                transparent
-            );
-    }
+    from frontend.views import scorer
 
+    scorer.render()
 
-    .account-title {
 
-        color: #ffffff;
+elif st.session_state.current_view == "history":
 
-        font-size: 13px;
+    from frontend.views import history
 
-        font-weight: 900;
+    history.render()
 
-        margin-bottom: 10px;
-    }
 
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+elif st.session_state.current_view == "resources":
+
+    from frontend.views import resources
+
+    resources.render()
