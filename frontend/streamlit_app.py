@@ -7,9 +7,6 @@ from pathlib import Path
 # REPO PATH
 # ============================================================
 
-# Put the repo root on sys.path so frontend imports work
-# regardless of the directory Streamlit was launched from.
-
 sys.path.insert(
     0,
     str(Path(__file__).parent.parent)
@@ -60,7 +57,6 @@ if (
         st.query_params["code"]
     )
 
-    # Clear OAuth code after processing
     st.query_params.clear()
 
     if "error" in result:
@@ -113,68 +109,78 @@ st.markdown(
 
 
 # ============================================================
-# PREMIUM NAVIGATION STYLE
+# PREMIUM SIDEBAR / NAVIGATION STYLE
 # ============================================================
 
 st.markdown(
     """
 <style>
 
-/* =========================================================
-   SIDEBAR BASE
-   ========================================================= */
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
 
 [data-testid="stSidebar"] {
 
     background:
         linear-gradient(
             180deg,
-            #07152f 0%,
-            #0a1f42 45%,
-            #07152f 100%
+            #f7f4ee 0%,
+            #f3f0e9 50%,
+            #eeeae2 100%
         ) !important;
 
     border-right:
         1px solid
-        rgba(37, 99, 235, 0.30);
+        rgba(120, 100, 80, 0.16) !important;
 
     box-shadow:
-        10px 0 35px
-        rgba(2, 12, 30, 0.25);
+        8px 0 30px
+        rgba(60, 45, 30, 0.08) !important;
 }
 
 
-/* =========================================================
+/* ============================================================
    SIDEBAR CONTENT
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] > div:first-child {
 
-    padding-top: 1.2rem;
+    padding-top: 0.55rem !important;
+
+    padding-left: 0.65rem !important;
+
+    padding-right: 0.65rem !important;
 }
 
 
-/* =========================================================
-   NAVIGATION HEADING
-   ========================================================= */
+/* ============================================================
+   NAVIGATION TITLE
+   ============================================================ */
 
 [data-testid="stSidebar"] h2 {
 
-    font-size: 21px !important;
+    margin-top: 5px !important;
 
-    font-weight: 900 !important;
+    margin-bottom: 18px !important;
 
-    letter-spacing: -0.5px;
+    padding-left: 4px !important;
 
-    margin-bottom: 20px !important;
+    font-size: 24px !important;
+
+    line-height: 1.1 !important;
+
+    font-weight: 950 !important;
+
+    letter-spacing: -0.8px !important;
 
     background:
         linear-gradient(
             90deg,
-            #06b6d4 0%,
-            #2563eb 35%,
-            #ec4899 70%,
-            #facc15 100%
+            #eab308 0%,
+            #f59e0b 25%,
+            #ec4899 62%,
+            #ef4444 100%
         );
 
     -webkit-background-clip: text;
@@ -185,74 +191,81 @@ st.markdown(
 }
 
 
-/* =========================================================
+/* ============================================================
    NAVIGATION BUTTON WRAPPER
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton {
 
-    margin-bottom: 11px;
+    margin-bottom: 11px !important;
 
-    position: relative;
+    position: relative !important;
+
+    z-index: 2 !important;
 }
 
 
-/* =========================================================
-   MAIN NAV BUTTON
-   ========================================================= */
+/* ============================================================
+   MAIN NAVIGATION BUTTON
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button {
 
-    position: relative;
+    position: relative !important;
 
-    min-height: 52px;
+    width: 100% !important;
 
-    border-radius: 15px;
+    min-height: 54px !important;
+
+    border-radius: 16px !important;
 
     border:
         1px solid
-        rgba(148, 163, 184, 0.16);
+        rgba(180, 130, 20, 0.28) !important;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,0.075),
-            rgba(255,255,255,0.025)
-        );
+            #fff8c7 0%,
+            #facc15 42%,
+            #f8b90b 100%
+        ) !important;
 
-    color: #cbd5e1;
+    color: #342b16 !important;
 
-    font-size: 13px;
+    font-size: 13px !important;
 
-    font-weight: 850;
+    font-weight: 850 !important;
 
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1px !important;
 
-    text-align: left;
+    text-align: left !important;
 
-    padding-left: 18px;
+    padding-left: 20px !important;
 
-    overflow: hidden;
+    overflow: hidden !important;
 
     box-shadow:
-        0 7px 0
-        rgba(2, 12, 30, 0.42),
+        0 7px 0 #d69e00,
+        0 11px 22px
+        rgba(170, 125, 0, 0.18) !important;
 
-        0 10px 22px
-        rgba(0, 0, 0, 0.12);
+    transform:
+        translateY(0)
+        scale(1) !important;
 
     transition:
-        transform 0.23s cubic-bezier(.2,.8,.2,1),
-        background 0.23s ease,
-        border-color 0.23s ease,
-        box-shadow 0.23s ease,
-        color 0.23s ease;
+        transform 0.24s cubic-bezier(.2,.8,.2,1),
+        box-shadow 0.24s ease,
+        background 0.24s ease,
+        border-color 0.24s ease,
+        color 0.24s ease !important;
 }
 
 
-/* =========================================================
-   MULTICOLOR LEFT EDGE
-   ========================================================= */
+/* ============================================================
+   MULTICOLOR LEFT STRIPE
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button::before {
 
@@ -264,34 +277,36 @@ st.markdown(
 
     top: 0;
 
-    width: 4px;
+    width: 5px;
 
     height: 100%;
 
     border-radius:
-        15px 0 0 15px;
+        16px 0 0 16px;
 
     background:
         linear-gradient(
             180deg,
-            #06b6d4,
-            #2563eb,
-            #ec4899,
-            #f97316,
-            #facc15
+            #facc15 0%,
+            #f59e0b 22%,
+            #ec4899 55%,
+            #ef4444 78%,
+            #dc2626 100%
         );
 
-    opacity: 0.85;
+    box-shadow:
+        2px 0 8px
+        rgba(236, 72, 153, 0.18);
 
     transition:
-        width 0.23s ease,
-        opacity 0.23s ease;
+        width 0.24s ease,
+        box-shadow 0.24s ease;
 }
 
 
-/* =========================================================
-   SHINE EFFECT
-   ========================================================= */
+/* ============================================================
+   MOVING SHINE
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button::after {
 
@@ -299,81 +314,92 @@ st.markdown(
 
     position: absolute;
 
-    top: -35%;
+    top: -50%;
 
-    left: -140px;
+    left: -130px;
 
-    width: 80px;
+    width: 75px;
 
-    height: 170%;
+    height: 200%;
 
-    transform: rotate(20deg);
+    transform:
+        rotate(20deg);
 
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,0.24),
+            rgba(255,255,255,0.70),
             transparent
         );
 
     transition:
-        left 0.55s ease;
+        left 0.58s ease;
 }
 
 
-/* =========================================================
-   HOVER = 3D + ZOOM + LIFT
-   ========================================================= */
+/* ============================================================
+   HOVER
+   ZOOM + 3D LIFT + GLOW
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button:hover {
 
     transform:
         translateX(8px)
-        translateY(-4px)
-        scale(1.035);
+        translateY(-5px)
+        scale(1.045) !important;
 
-    color: #ffffff;
+    color: #241b05 !important;
 
     border-color:
-        rgba(96, 165, 250, 0.55);
+        rgba(236, 72, 153, 0.58) !important;
 
     background:
         linear-gradient(
-            135deg,
-            rgba(6,182,212,0.18),
-            rgba(37,99,235,0.22),
-            rgba(236,72,153,0.16)
-        );
+            110deg,
+            #ffe76b 0%,
+            #facc15 32%,
+            #f59e0b 55%,
+            #f472b6 78%,
+            #ef4444 100%
+        ) !important;
 
     box-shadow:
 
-        0 8px 0
-        rgba(2,12,30,0.48),
+        0 9px 0 #c98f00,
 
-        0 17px 30px
-        rgba(37,99,235,0.20),
+        0 17px 32px
+        rgba(234, 179, 8, 0.25),
 
         0 0 28px
-        rgba(6,182,212,0.13);
+        rgba(236, 72, 153, 0.20),
+
+        0 0 45px
+        rgba(239, 68, 68, 0.10) !important;
 }
 
 
-/* =========================================================
-   HOVER LEFT BAR
-   ========================================================= */
+/* ============================================================
+   HOVER LEFT STRIPE
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button:hover::before {
 
-    width: 7px;
+    width: 8px;
 
-    opacity: 1;
+    box-shadow:
+        0 0 12px
+        rgba(236, 72, 153, 0.55),
+
+        0 0 18px
+        rgba(239, 68, 68, 0.35);
 }
 
 
-/* =========================================================
+/* ============================================================
    HOVER SHINE
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button:hover::after {
 
@@ -381,270 +407,327 @@ st.markdown(
 }
 
 
-/* =========================================================
+/* ============================================================
    CLICK / PRESS EFFECT
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button:active {
 
     transform:
         translateX(6px)
         translateY(4px)
-        scale(0.985);
+        scale(0.985) !important;
 
     box-shadow:
-
-        0 2px 0
-        rgba(2,12,30,0.55),
+        0 2px 0 #b37e00,
 
         0 5px 12px
-        rgba(0,0,0,0.25);
+        rgba(100, 70, 0, 0.18) !important;
 }
 
 
-/* =========================================================
+/* ============================================================
    FOCUS
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] .stButton > button:focus {
 
-    outline: none;
+    outline: none !important;
 
     border-color:
-        rgba(6,182,212,0.55);
+        #ec4899 !important;
 
     box-shadow:
 
-        0 0 0 2px
-        rgba(6,182,212,0.10),
+        0 0 0 3px
+        rgba(236, 72, 153, 0.13),
 
-        0 12px 28px
-        rgba(37,99,235,0.16);
+        0 8px 0 #d69e00,
+
+        0 12px 25px
+        rgba(234, 179, 8, 0.18) !important;
 }
 
 
-/* =========================================================
-   HORIZONTAL DIVIDER
-   ========================================================= */
+/* ============================================================
+   DIVIDER
+   ============================================================ */
 
 [data-testid="stSidebar"] hr {
 
     margin:
-        20px 4px;
+        20px 5px 18px 5px !important;
 
-    border: none;
+    border: none !important;
 
-    height: 1px;
+    height: 2px !important;
 
     background:
         linear-gradient(
             90deg,
             transparent,
-            rgba(148,163,184,0.30),
+            #facc15,
+            #ec4899,
+            #ef4444,
             transparent
-        );
+        ) !important;
+
+    opacity: 0.55;
 }
 
 
-/* =========================================================
+/* ============================================================
    ACCOUNT HEADING
-   ========================================================= */
+   ============================================================ */
 
 [data-testid="stSidebar"] h3 {
 
-    color: #ffffff !important;
+    color: #24201a !important;
 
-    font-size: 14px !important;
+    font-size: 15px !important;
 
-    font-weight: 850 !important;
+    font-weight: 900 !important;
 
-    letter-spacing: 0.3px;
+    letter-spacing: -0.2px !important;
+
+    margin-bottom: 8px !important;
 }
 
 
-/* =========================================================
-   SIDEBAR TEXT
-   ========================================================= */
+/* ============================================================
+   SIDEBAR NORMAL TEXT
+   ============================================================ */
 
 [data-testid="stSidebar"] p {
 
-    color: #cbd5e1;
+    color: #514a40 !important;
 }
 
 
-/* =========================================================
+/* ============================================================
    CAPTION
-   ========================================================= */
+   ============================================================ */
 
-[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+[data-testid="stSidebar"]
+[data-testid="stCaptionContainer"] {
 
-    color: #94a3b8;
+    color: #756d62 !important;
 
-    font-size: 10px;
+    font-size: 10px !important;
 }
 
 
-/* =========================================================
-   INPUT FIELDS
-   ========================================================= */
+/* ============================================================
+   EMAIL LINK
+   ============================================================ */
+
+[data-testid="stSidebar"] a {
+
+    color: #b45309 !important;
+
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   INPUT BOX
+   ============================================================ */
 
 [data-testid="stSidebar"] input {
 
     background:
-        rgba(255,255,255,0.045) !important;
+        rgba(255,255,255,0.80) !important;
 
-    color: #ffffff !important;
+    color: #29231b !important;
 
     border:
         1px solid
-        rgba(148,163,184,0.18) !important;
+        rgba(120, 90, 40, 0.22) !important;
 
-    border-radius: 11px !important;
+    border-radius: 12px !important;
 
     transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+        border-color 0.20s ease,
+        box-shadow 0.20s ease,
+        transform 0.20s ease !important;
 }
 
 
 [data-testid="stSidebar"] input:focus {
 
     border-color:
-        #06b6d4 !important;
+        #ec4899 !important;
 
     box-shadow:
-        0 0 0 1px
-        rgba(6,182,212,0.20) !important;
+        0 0 0 2px
+        rgba(236,72,153,0.12) !important;
+
+    transform:
+        translateY(-1px);
 }
 
 
-/* =========================================================
+/* ============================================================
    SIGN IN / SIGN UP TABS
-   ========================================================= */
+   ============================================================ */
 
-[data-testid="stSidebar"] [data-baseweb="tab-list"] {
+[data-testid="stSidebar"]
+[data-baseweb="tab-list"] {
 
     gap: 3px;
 
-    padding: 3px;
+    padding: 4px;
 
-    border-radius: 11px;
+    border-radius: 12px;
 
     background:
-        rgba(255,255,255,0.035);
+        rgba(255,255,255,0.60);
 }
 
 
-[data-testid="stSidebar"] [data-baseweb="tab"] {
+[data-testid="stSidebar"]
+[data-baseweb="tab"] {
 
-    color: #94a3b8;
+    color: #6b6256 !important;
 
     font-size: 10px;
 
-    font-weight: 800;
-}
-
-
-[data-testid="stSidebar"] [aria-selected="true"] {
-
-    color: #ffffff !important;
-}
-
-
-/* =========================================================
-   FORM BUTTON
-   ========================================================= */
-
-[data-testid="stSidebar"] .stFormSubmitButton > button {
-
-    border-radius: 12px;
-
-    min-height: 43px;
-
     font-weight: 850;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
 }
 
 
-[data-testid="stSidebar"] .stFormSubmitButton > button:hover {
+[data-testid="stSidebar"]
+[aria-selected="true"] {
 
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-        0 10px 22px
-        rgba(37,99,235,0.22);
+    color: #b45309 !important;
 }
 
 
-/* =========================================================
-   GOOGLE BUTTON
-   ========================================================= */
+/* ============================================================
+   FORM BUTTON
+   ============================================================ */
 
-[data-testid="stSidebar"] .stLinkButton > a {
+[data-testid="stSidebar"]
+.stFormSubmitButton > button {
 
-    min-height: 44px;
+    min-height: 44px !important;
 
-    border-radius: 12px;
+    border-radius: 12px !important;
+
+    border:
+        1px solid
+        rgba(234,179,8,0.35) !important;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,0.075),
-            rgba(255,255,255,0.025)
-        );
+            #facc15,
+            #f59e0b,
+            #ec4899
+        ) !important;
+
+    color: #ffffff !important;
+
+    font-weight: 850 !important;
+
+    box-shadow:
+        0 5px 0 #d97706,
+
+        0 9px 18px
+        rgba(234,179,8,0.16) !important;
+
+    transition:
+        transform 0.20s ease,
+        box-shadow 0.20s ease !important;
+}
+
+
+[data-testid="stSidebar"]
+.stFormSubmitButton > button:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.025) !important;
+
+    box-shadow:
+        0 7px 0 #c2410c,
+
+        0 14px 24px
+        rgba(236,72,153,0.20) !important;
+}
+
+
+/* ============================================================
+   GOOGLE BUTTON
+   ============================================================ */
+
+[data-testid="stSidebar"]
+.stLinkButton > a {
+
+    min-height: 45px !important;
+
+    border-radius: 13px !important;
+
+    background:
+        #fffdf7 !important;
 
     border:
         1px solid
-        rgba(148,163,184,0.18);
+        rgba(120,90,40,0.20) !important;
 
-    color: #ffffff;
+    color: #342b16 !important;
 
-    font-size: 11px;
+    font-size: 11px !important;
 
-    font-weight: 850;
+    font-weight: 850 !important;
+
+    box-shadow:
+        0 5px 0
+        rgba(160,120,30,0.15) !important;
 
     transition:
         transform 0.22s ease,
         box-shadow 0.22s ease,
-        border-color 0.22s ease;
+        border-color 0.22s ease !important;
 }
 
 
-[data-testid="stSidebar"] .stLinkButton > a:hover {
+[data-testid="stSidebar"]
+.stLinkButton > a:hover {
 
     transform:
         translateY(-3px)
-        scale(1.02);
+        scale(1.025) !important;
 
     border-color:
-        rgba(236,72,153,0.42);
+        #ec4899 !important;
 
     box-shadow:
-        0 12px 25px
-        rgba(37,99,235,0.16);
+        0 8px 0
+        rgba(190,120,20,0.18),
+
+        0 15px 25px
+        rgba(236,72,153,0.12) !important;
 }
 
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+/* ============================================================
+   MOBILE
+   ============================================================ */
 
 @media (max-width: 768px) {
 
-    [data-testid="stSidebar"] .stButton > button {
+    [data-testid="stSidebar"]
+    .stButton > button {
 
-        min-height: 47px;
+        min-height: 48px !important;
 
-        font-size: 11px;
+        font-size: 12px !important;
     }
 
     [data-testid="stSidebar"] h2 {
 
-        font-size: 19px !important;
+        font-size: 21px !important;
     }
 }
 
@@ -664,13 +747,17 @@ if "current_view" not in st.session_state:
 
 
 # ============================================================
-# SIDEBAR
+# SIDEBAR NAVIGATION
 # ============================================================
 
 with st.sidebar:
 
     st.markdown("## Navigation")
 
+
+    # ========================================================
+    # HOME
+    # ========================================================
 
     if st.button(
         "Home",
@@ -682,6 +769,10 @@ with st.sidebar:
         st.rerun()
 
 
+    # ========================================================
+    # ATS SCORER
+    # ========================================================
+
     if st.button(
         "ATS Scorer",
         use_container_width=True
@@ -691,6 +782,10 @@ with st.sidebar:
 
         st.rerun()
 
+
+    # ========================================================
+    # HISTORY
+    # ========================================================
 
     if st.button(
         "History",
@@ -702,6 +797,10 @@ with st.sidebar:
         st.rerun()
 
 
+    # ========================================================
+    # RESOURCES
+    # ========================================================
+
     if st.button(
         "Resources",
         use_container_width=True
@@ -712,15 +811,19 @@ with st.sidebar:
         st.rerun()
 
 
+    # ========================================================
+    # DIVIDER
+    # ========================================================
+
     st.markdown("---")
 
 
+    # ========================================================
+    # ACCOUNT
+    # ========================================================
+
     st.markdown("### Account")
 
-
-    # --------------------------------------------------------
-    # SUPABASE CLIENT
-    # --------------------------------------------------------
 
     from frontend.services import supabase_client
 
@@ -748,7 +851,7 @@ with st.sidebar:
                 "access_token",
                 "refresh_token",
                 "user_id",
-                "user_email",
+                "user_email"
             ):
 
                 st.session_state[key] = None
@@ -763,6 +866,10 @@ with st.sidebar:
 
     else:
 
+        # ----------------------------------------------------
+        # AUTH ERROR
+        # ----------------------------------------------------
+
         if st.session_state.auth_error:
 
             st.error(
@@ -771,6 +878,10 @@ with st.sidebar:
 
             st.session_state.auth_error = None
 
+
+        # ----------------------------------------------------
+        # AUTH INFO
+        # ----------------------------------------------------
 
         if st.session_state.auth_info:
 
@@ -781,6 +892,10 @@ with st.sidebar:
             st.session_state.auth_info = None
 
 
+        # ----------------------------------------------------
+        # AUTH TABS
+        # ----------------------------------------------------
+
         tab_in, tab_up = st.tabs(
             [
                 "Sign in",
@@ -789,9 +904,9 @@ with st.sidebar:
         )
 
 
-        # ----------------------------------------------------
+        # ====================================================
         # SIGN IN
-        # ----------------------------------------------------
+        # ====================================================
 
         with tab_in:
 
@@ -856,9 +971,9 @@ with st.sidebar:
                 st.rerun()
 
 
-        # ----------------------------------------------------
+        # ====================================================
         # SIGN UP
-        # ----------------------------------------------------
+        # ====================================================
 
         with tab_up:
 
@@ -937,19 +1052,21 @@ with st.sidebar:
                 st.rerun()
 
 
-        # ----------------------------------------------------
-        # GOOGLE LOGIN
-        # ----------------------------------------------------
+        # ====================================================
+        # GOOGLE OAUTH
+        # ====================================================
 
         st.markdown(
             """
             <div style="
                 text-align:center;
                 margin:10px 0;
-                color:#94a3b8;
-                font-size:12px;
+                color:#8a8175;
+                font-size:11px;
+                font-weight:700;
+                letter-spacing:1px;
             ">
-                or
+                OR
             </div>
             """,
             unsafe_allow_html=True
