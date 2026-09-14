@@ -30,7 +30,7 @@ def render():
     # Hero Section
     st.markdown("""
     <div class="main-header">
-        <h1>🎯 ATS Resume Scorer</h1>
+        <h1> ATS Resume Scorer</h1>
         <h3>Optimize Your Resume for Applicant Tracking Systems</h3>
         <p>Get instant feedback on your resume's ATS compatibility with AI-powered analysis</p>
     </div>
@@ -39,20 +39,20 @@ def render():
     # Call-to-Action Button
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button("🚀 Start Analyzing Your Resume", use_container_width=True, type="primary"):
+        if st.button(" Start Analyzing Your Resume", use_container_width=True, type="primary"):
             st.session_state.current_view = 'scorer'
             st.rerun()
     
     st.markdown("---")
     
     # Features Overview
-    st.markdown("## ✨ Key Features")
+    st.markdown("##  Key Features")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
-        ### 📊 Comprehensive Scoring
+        ###  Comprehensive Scoring
         Get detailed scores across 5 key dimensions:
         - Formatting (20%)
         - Keywords & Skills (25%)
@@ -63,7 +63,7 @@ def render():
     
     with col2:
         st.markdown("""
-        ### 🔍 Skill Validation
+        ###  Skill Validation
         Verify that your claimed skills are demonstrated in your projects and experience using AI-powered semantic analysis.
         
         **No more empty claims!**
@@ -71,7 +71,7 @@ def render():
     
     with col3:
         st.markdown("""
-        ### 🔒 Privacy First
+        ###  Privacy First
         All analysis runs locally with no external API calls. Your resume data never leaves your system.
         
         **100% Private & Secure**
@@ -80,7 +80,7 @@ def render():
     st.markdown("---")
     
     # How It Works
-    st.markdown("## 🚀 How It Works")
+    st.markdown("##  How It Works")
     
     col1, col2, col3 = st.columns(3)
     
@@ -114,7 +114,7 @@ def render():
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     ">
 
-    <h4>🚀 Developed by Sunil Kumar Yadav</h4>
+    <h4> Developed by Sunil Kumar Yadav</h4>
 
     <p style="color:#cbd5e1;">
         AI & Full Stack Developer
