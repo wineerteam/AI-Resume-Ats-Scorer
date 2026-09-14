@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Put the repo root on sys.path so frontend imports work
 # regardless of the directory Streamlit was launched from.
+
 sys.path.insert(
     0,
     str(Path(__file__).parent.parent)
@@ -21,6 +22,7 @@ sys.path.insert(
 
 st.set_page_config(
     page_title="ATS Resume Scorer",
+    page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -38,6 +40,7 @@ for key, default in [
     ("auth_error", None),
     ("auth_info", None),
 ]:
+
     if key not in st.session_state:
         st.session_state[key] = default
 
@@ -90,7 +93,12 @@ def load_css():
             / "styles.css"
         )
 
-        with open(css_path, "r", encoding="utf-8") as f:
+        with open(
+            css_path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+
             return f"<style>{f.read()}</style>"
 
     except FileNotFoundError:
@@ -105,10 +113,553 @@ st.markdown(
 
 
 # ============================================================
+# PREMIUM NAVIGATION STYLE
+# ============================================================
+
+st.markdown(
+    """
+<style>
+
+/* =========================================================
+   SIDEBAR BASE
+   ========================================================= */
+
+[data-testid="stSidebar"] {
+
+    background:
+        linear-gradient(
+            180deg,
+            #07152f 0%,
+            #0a1f42 45%,
+            #07152f 100%
+        ) !important;
+
+    border-right:
+        1px solid
+        rgba(37, 99, 235, 0.30);
+
+    box-shadow:
+        10px 0 35px
+        rgba(2, 12, 30, 0.25);
+}
+
+
+/* =========================================================
+   SIDEBAR CONTENT
+   ========================================================= */
+
+[data-testid="stSidebar"] > div:first-child {
+
+    padding-top: 1.2rem;
+}
+
+
+/* =========================================================
+   NAVIGATION HEADING
+   ========================================================= */
+
+[data-testid="stSidebar"] h2 {
+
+    font-size: 21px !important;
+
+    font-weight: 900 !important;
+
+    letter-spacing: -0.5px;
+
+    margin-bottom: 20px !important;
+
+    background:
+        linear-gradient(
+            90deg,
+            #06b6d4 0%,
+            #2563eb 35%,
+            #ec4899 70%,
+            #facc15 100%
+        );
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+}
+
+
+/* =========================================================
+   NAVIGATION BUTTON WRAPPER
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton {
+
+    margin-bottom: 11px;
+
+    position: relative;
+}
+
+
+/* =========================================================
+   MAIN NAV BUTTON
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button {
+
+    position: relative;
+
+    min-height: 52px;
+
+    border-radius: 15px;
+
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.16);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.075),
+            rgba(255,255,255,0.025)
+        );
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+
+    font-weight: 850;
+
+    letter-spacing: 0.2px;
+
+    text-align: left;
+
+    padding-left: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 7px 0
+        rgba(2, 12, 30, 0.42),
+
+        0 10px 22px
+        rgba(0, 0, 0, 0.12);
+
+    transition:
+        transform 0.23s cubic-bezier(.2,.8,.2,1),
+        background 0.23s ease,
+        border-color 0.23s ease,
+        box-shadow 0.23s ease,
+        color 0.23s ease;
+}
+
+
+/* =========================================================
+   MULTICOLOR LEFT EDGE
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    top: 0;
+
+    width: 4px;
+
+    height: 100%;
+
+    border-radius:
+        15px 0 0 15px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #06b6d4,
+            #2563eb,
+            #ec4899,
+            #f97316,
+            #facc15
+        );
+
+    opacity: 0.85;
+
+    transition:
+        width 0.23s ease,
+        opacity 0.23s ease;
+}
+
+
+/* =========================================================
+   SHINE EFFECT
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: -35%;
+
+    left: -140px;
+
+    width: 80px;
+
+    height: 170%;
+
+    transform: rotate(20deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.24),
+            transparent
+        );
+
+    transition:
+        left 0.55s ease;
+}
+
+
+/* =========================================================
+   HOVER = 3D + ZOOM + LIFT
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button:hover {
+
+    transform:
+        translateX(8px)
+        translateY(-4px)
+        scale(1.035);
+
+    color: #ffffff;
+
+    border-color:
+        rgba(96, 165, 250, 0.55);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(6,182,212,0.18),
+            rgba(37,99,235,0.22),
+            rgba(236,72,153,0.16)
+        );
+
+    box-shadow:
+
+        0 8px 0
+        rgba(2,12,30,0.48),
+
+        0 17px 30px
+        rgba(37,99,235,0.20),
+
+        0 0 28px
+        rgba(6,182,212,0.13);
+}
+
+
+/* =========================================================
+   HOVER LEFT BAR
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button:hover::before {
+
+    width: 7px;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   HOVER SHINE
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button:hover::after {
+
+    left: 135%;
+}
+
+
+/* =========================================================
+   CLICK / PRESS EFFECT
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button:active {
+
+    transform:
+        translateX(6px)
+        translateY(4px)
+        scale(0.985);
+
+    box-shadow:
+
+        0 2px 0
+        rgba(2,12,30,0.55),
+
+        0 5px 12px
+        rgba(0,0,0,0.25);
+}
+
+
+/* =========================================================
+   FOCUS
+   ========================================================= */
+
+[data-testid="stSidebar"] .stButton > button:focus {
+
+    outline: none;
+
+    border-color:
+        rgba(6,182,212,0.55);
+
+    box-shadow:
+
+        0 0 0 2px
+        rgba(6,182,212,0.10),
+
+        0 12px 28px
+        rgba(37,99,235,0.16);
+}
+
+
+/* =========================================================
+   HORIZONTAL DIVIDER
+   ========================================================= */
+
+[data-testid="stSidebar"] hr {
+
+    margin:
+        20px 4px;
+
+    border: none;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(148,163,184,0.30),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   ACCOUNT HEADING
+   ========================================================= */
+
+[data-testid="stSidebar"] h3 {
+
+    color: #ffffff !important;
+
+    font-size: 14px !important;
+
+    font-weight: 850 !important;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* =========================================================
+   SIDEBAR TEXT
+   ========================================================= */
+
+[data-testid="stSidebar"] p {
+
+    color: #cbd5e1;
+}
+
+
+/* =========================================================
+   CAPTION
+   ========================================================= */
+
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   INPUT FIELDS
+   ========================================================= */
+
+[data-testid="stSidebar"] input {
+
+    background:
+        rgba(255,255,255,0.045) !important;
+
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(148,163,184,0.18) !important;
+
+    border-radius: 11px !important;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+[data-testid="stSidebar"] input:focus {
+
+    border-color:
+        #06b6d4 !important;
+
+    box-shadow:
+        0 0 0 1px
+        rgba(6,182,212,0.20) !important;
+}
+
+
+/* =========================================================
+   SIGN IN / SIGN UP TABS
+   ========================================================= */
+
+[data-testid="stSidebar"] [data-baseweb="tab-list"] {
+
+    gap: 3px;
+
+    padding: 3px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,0.035);
+}
+
+
+[data-testid="stSidebar"] [data-baseweb="tab"] {
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+[data-testid="stSidebar"] [aria-selected="true"] {
+
+    color: #ffffff !important;
+}
+
+
+/* =========================================================
+   FORM BUTTON
+   ========================================================= */
+
+[data-testid="stSidebar"] .stFormSubmitButton > button {
+
+    border-radius: 12px;
+
+    min-height: 43px;
+
+    font-weight: 850;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+[data-testid="stSidebar"] .stFormSubmitButton > button:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 22px
+        rgba(37,99,235,0.22);
+}
+
+
+/* =========================================================
+   GOOGLE BUTTON
+   ========================================================= */
+
+[data-testid="stSidebar"] .stLinkButton > a {
+
+    min-height: 44px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.075),
+            rgba(255,255,255,0.025)
+        );
+
+    border:
+        1px solid
+        rgba(148,163,184,0.18);
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 850;
+
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+}
+
+
+[data-testid="stSidebar"] .stLinkButton > a:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.02);
+
+    border-color:
+        rgba(236,72,153,0.42);
+
+    box-shadow:
+        0 12px 25px
+        rgba(37,99,235,0.16);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    [data-testid="stSidebar"] .stButton > button {
+
+        min-height: 47px;
+
+        font-size: 11px;
+    }
+
+    [data-testid="stSidebar"] h2 {
+
+        font-size: 19px !important;
+    }
+}
+
+</style>
+""",
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
 # VIEW STATE
 # ============================================================
 
 if "current_view" not in st.session_state:
+
     st.session_state.current_view = "landing"
 
 
@@ -120,11 +671,14 @@ with st.sidebar:
 
     st.markdown("## Navigation")
 
+
     if st.button(
         "Home",
         use_container_width=True
     ):
+
         st.session_state.current_view = "landing"
+
         st.rerun()
 
 
@@ -132,7 +686,9 @@ with st.sidebar:
         "ATS Scorer",
         use_container_width=True
     ):
+
         st.session_state.current_view = "scorer"
+
         st.rerun()
 
 
@@ -140,7 +696,9 @@ with st.sidebar:
         "History",
         use_container_width=True
     ):
+
         st.session_state.current_view = "history"
+
         st.rerun()
 
 
@@ -148,11 +706,14 @@ with st.sidebar:
         "Resources",
         use_container_width=True
     ):
+
         st.session_state.current_view = "resources"
+
         st.rerun()
 
 
     st.markdown("---")
+
 
     st.markdown("### Account")
 
@@ -182,6 +743,7 @@ with st.sidebar:
 
             supabase_client.sign_out()
 
+
             for key in (
                 "access_token",
                 "refresh_token",
@@ -190,6 +752,7 @@ with st.sidebar:
             ):
 
                 st.session_state[key] = None
+
 
             st.rerun()
 
@@ -346,8 +909,9 @@ with st.sidebar:
                 ):
 
                     st.session_state.auth_info = (
-                        f"Check your inbox — confirmation "
-                        f"email sent to {result['email']}."
+                        f"Check your inbox — "
+                        f"confirmation email sent to "
+                        f"{result['email']}."
                     )
 
 
