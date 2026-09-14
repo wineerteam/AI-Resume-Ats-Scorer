@@ -7,11 +7,11 @@ def render():
     # LANDING PAGE CSS
     # =========================================================
 
-    st.html("""
+    st.markdown("""
     <style>
 
     /* =====================================================
-       MAIN PAGE
+       PAGE
        ===================================================== */
 
     .block-container {
@@ -22,7 +22,7 @@ def render():
 
 
     /* =====================================================
-       HERO SECTION
+       HERO
        ===================================================== */
 
     .main-header {
@@ -31,49 +31,53 @@ def render():
 
         text-align: center;
 
-        padding: 4rem 2rem;
+        padding: 4.2rem 2.2rem;
 
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.6rem;
 
-        border-radius: 28px;
+        border-radius: 30px;
 
         background:
             radial-gradient(
-                circle at 90% 10%,
-                rgba(250, 204, 21, 0.22),
-                transparent 28%
+                circle at 92% 8%,
+                rgba(250, 204, 21, 0.24),
+                transparent 25%
             ),
             radial-gradient(
-                circle at 10% 90%,
-                rgba(236, 72, 153, 0.18),
-                transparent 30%
+                circle at 8% 92%,
+                rgba(236, 72, 153, 0.20),
+                transparent 28%
             ),
             linear-gradient(
                 135deg,
                 #0f172a 0%,
-                #1e3a8a 35%,
-                #2563eb 70%,
+                #172554 28%,
+                #1e3a8a 48%,
+                #2563eb 73%,
                 #06b6d4 100%
             );
 
-        color: white;
-
-        border: 1px solid rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.16);
 
         box-shadow:
-            0 22px 55px rgba(15,23,42,0.35);
+            0 25px 60px rgba(15,23,42,0.32),
+            inset 0 1px 0 rgba(255,255,255,0.10);
 
         transition:
-            transform 0.3s ease,
-            box-shadow 0.3s ease;
+            transform 0.35s ease,
+            box-shadow 0.35s ease;
     }
 
 
     .main-header:hover {
-        transform: translateY(-5px);
+        transform:
+            perspective(1200px)
+            translateY(-6px)
+            rotateX(1deg);
 
         box-shadow:
-            0 32px 70px rgba(15,23,42,0.42);
+            0 35px 80px rgba(15,23,42,0.40),
+            inset 0 1px 0 rgba(255,255,255,0.14);
     }
 
 
@@ -82,11 +86,11 @@ def render():
 
         padding: 8px 18px;
 
-        margin-bottom: 18px;
+        margin-bottom: 20px;
 
         border-radius: 50px;
 
-        background: rgba(250,204,21,0.15);
+        background: rgba(250,204,21,0.13);
 
         border: 1px solid rgba(250,204,21,0.45);
 
@@ -97,19 +101,27 @@ def render():
         font-weight: 800;
 
         letter-spacing: 1px;
+
+        box-shadow:
+            0 5px 18px rgba(250,204,21,0.08);
     }
 
 
     .main-header h1 {
         color: #ffffff;
 
-        font-size: 3.4rem;
+        font-size: 3.5rem;
 
-        font-weight: 800;
+        font-weight: 850;
 
-        letter-spacing: -1px;
+        letter-spacing: -1.5px;
 
-        margin: 0 0 12px 0;
+        line-height: 1.1;
+
+        margin: 0 0 15px 0;
+
+        text-shadow:
+            0 4px 18px rgba(0,0,0,0.22);
     }
 
 
@@ -120,12 +132,14 @@ def render():
 
         font-weight: 500;
 
-        margin: 0 0 15px 0;
+        line-height: 1.5;
+
+        margin: 0 0 16px 0;
     }
 
 
     .main-header p {
-        max-width: 720px;
+        max-width: 730px;
 
         margin: auto;
 
@@ -133,12 +147,12 @@ def render():
 
         font-size: 1rem;
 
-        line-height: 1.7;
+        line-height: 1.75;
     }
 
 
     /* =====================================================
-       TEXT HIGHLIGHTS
+       HIGHLIGHTS
        ===================================================== */
 
     .yellow-text {
@@ -157,6 +171,13 @@ def render():
 
     .pink-text {
         color: #f9a8d4;
+
+        font-weight: 800;
+    }
+
+
+    .blue-text {
+        color: #38bdf8;
 
         font-weight: 800;
     }
@@ -185,15 +206,15 @@ def render():
 
 
     /* =====================================================
-       SECTION TITLES
+       SECTION HEADINGS
        ===================================================== */
 
     .section-heading {
         text-align: center;
 
-        margin-top: 3rem;
+        margin-top: 3.2rem;
 
-        margin-bottom: 1.7rem;
+        margin-bottom: 1.8rem;
     }
 
 
@@ -202,9 +223,11 @@ def render():
 
         font-size: 2rem;
 
-        font-weight: 800;
+        font-weight: 850;
 
-        margin: 0 0 7px 0;
+        letter-spacing: -0.5px;
+
+        margin: 0 0 8px 0;
     }
 
 
@@ -220,38 +243,44 @@ def render():
 
 
     .section-line {
-        width: 70px;
+        width: 75px;
 
         height: 4px;
 
-        margin: 11px auto 0;
+        margin: 12px auto 0;
 
-        border-radius: 20px;
+        border-radius: 50px;
 
-        background: linear-gradient(
-            90deg,
-            #2563eb,
-            #06b6d4,
-            #facc15
-        );
+        background:
+            linear-gradient(
+                90deg,
+                #2563eb,
+                #06b6d4,
+                #facc15
+            );
+
+        box-shadow:
+            0 3px 10px rgba(37,99,235,0.18);
     }
 
 
     /* =====================================================
-       STREAMLIT BUTTON
+       CTA
        ===================================================== */
 
     .stButton > button {
-        min-height: 55px;
+        min-height: 56px;
 
-        border-radius: 15px;
+        border-radius: 16px;
 
         font-size: 16px;
 
         font-weight: 750;
 
+        border: 1px solid rgba(255,255,255,0.16);
+
         box-shadow:
-            0 10px 25px rgba(37,99,235,0.22);
+            0 10px 28px rgba(37,99,235,0.22);
 
         transition:
             transform 0.25s ease,
@@ -260,10 +289,12 @@ def render():
 
 
     .stButton > button:hover {
-        transform: translateY(-3px) scale(1.01);
+        transform:
+            translateY(-4px)
+            scale(1.01);
 
         box-shadow:
-            0 18px 40px rgba(37,99,235,0.35);
+            0 18px 42px rgba(37,99,235,0.34);
     }
 
 
@@ -278,40 +309,72 @@ def render():
 
         min-height: 325px;
 
-        padding: 28px;
+        padding: 29px;
 
-        border-radius: 24px;
+        border-radius: 25px;
 
         background:
             linear-gradient(
                 145deg,
-                #ffffff,
-                #f8fafc
+                #ffffff 0%,
+                #f8fafc 100%
             );
 
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 10px 28px rgba(15,23,42,0.07);
+            0 10px 28px rgba(15,23,42,0.07),
+            0 2px 5px rgba(15,23,42,0.03);
 
         transition:
-            transform 0.32s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.32s ease,
-            border-color 0.32s ease;
+            transform 0.35s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.35s ease,
+            border-color 0.35s ease;
+    }
+
+
+    .feature-card::after {
+        content: "";
+
+        position: absolute;
+
+        width: 150px;
+
+        height: 150px;
+
+        right: -80px;
+
+        bottom: -80px;
+
+        border-radius: 50%;
+
+        opacity: 0.10;
+
+        transition:
+            transform 0.35s ease,
+            opacity 0.35s ease;
     }
 
 
     .feature-card:hover {
         transform:
-            perspective(1000px)
-            translateY(-12px)
-            translateZ(25px)
+            perspective(1100px)
+            translateY(-13px)
+            translateZ(28px)
             scale(1.025);
 
         box-shadow:
-            0 30px 65px rgba(15,23,42,0.17);
+            0 32px 65px rgba(15,23,42,0.17),
+            0 10px 25px rgba(37,99,235,0.08);
 
         border-color: #93c5fd;
+    }
+
+
+    .feature-card:hover::after {
+        transform: scale(1.4);
+
+        opacity: 0.16;
     }
 
 
@@ -320,8 +383,18 @@ def render():
     }
 
 
+    .blue-card::after {
+        background: #06b6d4;
+    }
+
+
     .yellow-card {
         border-top: 4px solid #facc15;
+    }
+
+
+    .yellow-card::after {
+        background: #f97316;
     }
 
 
@@ -330,14 +403,19 @@ def render():
     }
 
 
+    .pink-card::after {
+        background: #ef4444;
+    }
+
+
     /* =====================================================
-       FEATURE CARD ICON
+       CARD ICONS
        ===================================================== */
 
     .card-icon {
-        width: 55px;
+        width: 56px;
 
-        height: 55px;
+        height: 56px;
 
         display: flex;
 
@@ -345,9 +423,12 @@ def render():
 
         justify-content: center;
 
-        border-radius: 16px;
+        border-radius: 17px;
 
-        margin-bottom: 18px;
+        margin-bottom: 19px;
+
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.8);
     }
 
 
@@ -387,6 +468,8 @@ def render():
         height: 22px;
 
         border-radius: 7px;
+
+        transform: rotate(45deg);
     }
 
 
@@ -399,7 +482,7 @@ def render():
             );
 
         box-shadow:
-            7px 7px 0 rgba(37,99,235,0.15);
+            7px 7px 0 rgba(37,99,235,0.13);
     }
 
 
@@ -412,7 +495,7 @@ def render():
             );
 
         box-shadow:
-            7px 7px 0 rgba(249,115,22,0.15);
+            7px 7px 0 rgba(249,115,22,0.13);
     }
 
 
@@ -425,12 +508,12 @@ def render():
             );
 
         box-shadow:
-            7px 7px 0 rgba(236,72,153,0.15);
+            7px 7px 0 rgba(236,72,153,0.13);
     }
 
 
     /* =====================================================
-       FEATURE CARD TEXT
+       FEATURE TEXT
        ===================================================== */
 
     .feature-card h3 {
@@ -440,7 +523,9 @@ def render():
 
         font-weight: 800;
 
-        margin: 0 0 10px 0;
+        line-height: 1.3;
+
+        margin: 0 0 11px 0;
     }
 
 
@@ -449,16 +534,16 @@ def render():
 
         font-size: 14px;
 
-        line-height: 1.7;
+        line-height: 1.75;
 
-        margin-bottom: 10px;
+        margin: 0 0 10px 0;
     }
 
 
     .feature-card ul {
         padding-left: 20px;
 
-        margin-top: 12px;
+        margin: 13px 0 0 0;
     }
 
 
@@ -471,8 +556,18 @@ def render():
     }
 
 
-    .feature-card li::marker {
+    .blue-card li::marker {
         color: #2563eb;
+    }
+
+
+    .yellow-card li::marker {
+        color: #f97316;
+    }
+
+
+    .pink-card li::marker {
+        color: #ec4899;
     }
 
 
@@ -481,13 +576,22 @@ def render():
        ===================================================== */
 
     .score-card {
+        position: relative;
+
+        overflow: hidden;
+
         text-align: center;
 
         padding: 24px 8px;
 
         border-radius: 20px;
 
-        background: #ffffff;
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f8fafc
+            );
 
         border: 1px solid #e2e8f0;
 
@@ -495,7 +599,7 @@ def render():
             0 8px 22px rgba(15,23,42,0.06);
 
         transition:
-            transform 0.3s ease,
+            transform 0.3s cubic-bezier(.2,.8,.2,1),
             box-shadow 0.3s ease,
             border-color 0.3s ease;
     }
@@ -504,23 +608,65 @@ def render():
     .score-card:hover {
         transform:
             perspective(900px)
-            translateY(-9px)
-            translateZ(18px)
+            translateY(-10px)
+            translateZ(20px)
             scale(1.05);
 
         box-shadow:
-            0 23px 45px rgba(15,23,42,0.14);
+            0 25px 48px rgba(15,23,42,0.14);
 
         border-color: #93c5fd;
     }
 
 
+    .score-card::before {
+        content: "";
+
+        position: absolute;
+
+        left: 25%;
+
+        right: 25%;
+
+        bottom: 0;
+
+        height: 3px;
+
+        border-radius: 20px;
+    }
+
+
+    .score-blue::before {
+        background: #2563eb;
+    }
+
+
+    .score-yellow::before {
+        background: #facc15;
+    }
+
+
+    .score-orange::before {
+        background: #f97316;
+    }
+
+
+    .score-pink::before {
+        background: #ec4899;
+    }
+
+
+    .score-red::before {
+        background: #ef4444;
+    }
+
+
     .score-number {
-        font-size: 28px;
+        font-size: 29px;
 
         font-weight: 850;
 
-        margin-bottom: 5px;
+        margin-bottom: 6px;
     }
 
 
@@ -561,48 +707,55 @@ def render():
 
 
     /* =====================================================
-       HOW IT WORKS CARDS
+       HOW IT WORKS
        ===================================================== */
 
     .step-card {
-        min-height: 200px;
+        position: relative;
 
-        padding: 27px;
+        min-height: 205px;
+
+        padding: 28px;
 
         border-radius: 23px;
 
-        background: #ffffff;
+        background:
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f8fafc
+            );
 
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 8px 25px rgba(15,23,42,0.06);
+            0 9px 25px rgba(15,23,42,0.06);
 
         transition:
-            transform 0.32s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.32s ease,
-            border-color 0.32s ease;
+            transform 0.35s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.35s ease,
+            border-color 0.35s ease;
     }
 
 
     .step-card:hover {
         transform:
             perspective(1000px)
-            translateY(-11px)
-            translateZ(22px)
+            translateY(-12px)
+            translateZ(24px)
             scale(1.025);
 
         box-shadow:
-            0 28px 58px rgba(15,23,42,0.16);
+            0 30px 58px rgba(15,23,42,0.15);
 
         border-color: #93c5fd;
     }
 
 
     .step-number {
-        width: 45px;
+        width: 46px;
 
-        height: 45px;
+        height: 46px;
 
         display: flex;
 
@@ -612,13 +765,16 @@ def render():
 
         border-radius: 14px;
 
-        color: white;
+        color: #ffffff;
 
         font-size: 14px;
 
-        font-weight: 800;
+        font-weight: 850;
 
-        margin-bottom: 17px;
+        margin-bottom: 18px;
+
+        box-shadow:
+            0 8px 18px rgba(15,23,42,0.14);
     }
 
 
@@ -659,7 +815,9 @@ def render():
 
         font-weight: 800;
 
-        margin: 0 0 8px 0;
+        line-height: 1.35;
+
+        margin: 0 0 9px 0;
     }
 
 
@@ -669,11 +827,13 @@ def render():
         font-size: 14px;
 
         line-height: 1.7;
+
+        margin: 0;
     }
 
 
     /* =====================================================
-       PRIVACY CARD
+       PRIVACY SECTION
        ===================================================== */
 
     .privacy-card {
@@ -681,21 +841,21 @@ def render():
 
         overflow: hidden;
 
-        margin-top: 30px;
+        margin-top: 32px;
 
-        padding: 32px;
+        padding: 34px;
 
-        border-radius: 25px;
+        border-radius: 26px;
 
         background:
             radial-gradient(
-                circle at 90% 20%,
-                rgba(250,204,21,0.20),
-                transparent 28%
+                circle at 92% 15%,
+                rgba(250,204,21,0.22),
+                transparent 27%
             ),
             radial-gradient(
-                circle at 10% 90%,
-                rgba(236,72,153,0.16),
+                circle at 8% 90%,
+                rgba(236,72,153,0.17),
                 transparent 30%
             ),
             linear-gradient(
@@ -707,7 +867,7 @@ def render():
         border: 1px solid rgba(255,255,255,0.10);
 
         box-shadow:
-            0 20px 48px rgba(15,23,42,0.25);
+            0 20px 50px rgba(15,23,42,0.24);
 
         transition:
             transform 0.3s ease,
@@ -718,22 +878,22 @@ def render():
     .privacy-card:hover {
         transform:
             perspective(1000px)
-            translateY(-7px)
-            translateZ(18px);
+            translateY(-8px)
+            translateZ(20px);
 
         box-shadow:
-            0 30px 65px rgba(15,23,42,0.32);
+            0 32px 65px rgba(15,23,42,0.32);
     }
 
 
     .privacy-card h3 {
         color: #ffffff;
 
-        font-size: 21px;
+        font-size: 22px;
 
         font-weight: 800;
 
-        margin: 0 0 10px 0;
+        margin: 0 0 11px 0;
     }
 
 
@@ -742,7 +902,7 @@ def render():
 
         font-size: 14px;
 
-        line-height: 1.75;
+        line-height: 1.8;
 
         margin: 0;
     }
@@ -757,7 +917,7 @@ def render():
 
         padding: 32px;
 
-        margin-top: 38px;
+        margin-top: 40px;
 
         border-radius: 25px;
 
@@ -771,7 +931,7 @@ def render():
         border: 1px solid rgba(255,255,255,0.10);
 
         box-shadow:
-            0 15px 40px rgba(15,23,42,0.22);
+            0 16px 42px rgba(15,23,42,0.20);
     }
 
 
@@ -806,13 +966,14 @@ def render():
 
         text-underline-offset: 4px;
 
-        margin: 0 12px;
+        margin: 0 13px;
 
         font-size: 14px;
 
         font-weight: 650;
 
-        transition: color 0.2s ease;
+        transition:
+            color 0.2s ease;
     }
 
 
@@ -837,7 +998,7 @@ def render():
     @media (max-width: 768px) {
 
         .main-header {
-            padding: 3rem 1.5rem;
+            padding: 3rem 1.4rem;
         }
 
         .main-header h1 {
@@ -858,10 +1019,18 @@ def render():
         .score-card {
             margin-bottom: 15px;
         }
+
+        .privacy-card {
+            padding: 25px;
+        }
+
+        .developer-card {
+            padding: 25px 15px;
+        }
     }
 
     </style>
-    """)
+    """, unsafe_allow_html=True)
 
 
     # =========================================================
@@ -909,8 +1078,7 @@ def render():
 
     with col2:
 
-        # IMPORTANT:
-        # Existing navigation logic is preserved.
+        # ORIGINAL NAVIGATION LOGIC — UNCHANGED
 
         if st.button(
             "Start Analyzing Your Resume",
