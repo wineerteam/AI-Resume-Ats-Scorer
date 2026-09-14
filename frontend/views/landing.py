@@ -4,20 +4,24 @@ import streamlit as st
 def render():
 
     # =========================================================
-    # LANDING PAGE CSS
+    # LANDING PAGE STYLING
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <style>
 
     /* =====================================================
-       PAGE
+       GLOBAL
        ===================================================== */
 
     .block-container {
         max-width: 1200px;
         padding-top: 2rem;
         padding-bottom: 3rem;
+    }
+
+    * {
+        box-sizing: border-box;
     }
 
 
@@ -31,53 +35,93 @@ def render():
 
         text-align: center;
 
-        padding: 4.2rem 2.2rem;
+        padding: 4.5rem 2rem;
 
-        margin-bottom: 1.6rem;
+        margin-bottom: 1.5rem;
 
         border-radius: 30px;
 
         background:
             radial-gradient(
-                circle at 92% 8%,
-                rgba(250, 204, 21, 0.24),
+                circle at 90% 10%,
+                rgba(250,204,21,0.25),
                 transparent 25%
             ),
             radial-gradient(
-                circle at 8% 92%,
-                rgba(236, 72, 153, 0.20),
+                circle at 10% 90%,
+                rgba(236,72,153,0.18),
                 transparent 28%
             ),
             linear-gradient(
                 135deg,
                 #0f172a 0%,
-                #172554 28%,
-                #1e3a8a 48%,
-                #2563eb 73%,
+                #1e3a8a 35%,
+                #2563eb 70%,
                 #06b6d4 100%
             );
 
-        border: 1px solid rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.15);
 
         box-shadow:
-            0 25px 60px rgba(15,23,42,0.32),
-            inset 0 1px 0 rgba(255,255,255,0.10);
+            0 25px 65px rgba(15,23,42,0.35),
+            inset 0 1px 0 rgba(255,255,255,0.12);
+
+        transform-style: preserve-3d;
 
         transition:
-            transform 0.35s ease,
-            box-shadow 0.35s ease;
+            transform 0.18s ease-out,
+            box-shadow 0.25s ease;
     }
 
 
-    .main-header:hover {
-        transform:
-            perspective(1200px)
-            translateY(-6px)
-            rotateX(1deg);
+    .main-header::before {
+        content: "";
 
-        box-shadow:
-            0 35px 80px rgba(15,23,42,0.40),
-            inset 0 1px 0 rgba(255,255,255,0.14);
+        position: absolute;
+
+        width: 250px;
+        height: 250px;
+
+        top: -150px;
+        right: -80px;
+
+        border-radius: 50%;
+
+        background: rgba(250,204,21,0.10);
+
+        filter: blur(15px);
+
+        pointer-events: none;
+    }
+
+
+    .main-header::after {
+        content: "";
+
+        position: absolute;
+
+        width: 220px;
+        height: 220px;
+
+        bottom: -140px;
+        left: -80px;
+
+        border-radius: 50%;
+
+        background: rgba(236,72,153,0.10);
+
+        filter: blur(15px);
+
+        pointer-events: none;
+    }
+
+
+    .hero-content {
+        position: relative;
+
+        z-index: 2;
+
+        transform: translateZ(30px);
     }
 
 
@@ -92,7 +136,7 @@ def render():
 
         background: rgba(250,204,21,0.13);
 
-        border: 1px solid rgba(250,204,21,0.45);
+        border: 1px solid rgba(250,204,21,0.48);
 
         color: #fef3c7;
 
@@ -103,7 +147,7 @@ def render():
         letter-spacing: 1px;
 
         box-shadow:
-            0 5px 18px rgba(250,204,21,0.08);
+            0 6px 20px rgba(250,204,21,0.10);
     }
 
 
@@ -121,7 +165,7 @@ def render():
         margin: 0 0 15px 0;
 
         text-shadow:
-            0 4px 18px rgba(0,0,0,0.22);
+            0 4px 20px rgba(0,0,0,0.22);
     }
 
 
@@ -152,7 +196,7 @@ def render():
 
 
     /* =====================================================
-       HIGHLIGHTS
+       TEXT ACCENTS
        ===================================================== */
 
     .yellow-text {
@@ -206,7 +250,7 @@ def render():
 
 
     /* =====================================================
-       SECTION HEADINGS
+       SECTION HEADING
        ===================================================== */
 
     .section-heading {
@@ -260,12 +304,12 @@ def render():
             );
 
         box-shadow:
-            0 3px 10px rgba(37,99,235,0.18);
+            0 3px 12px rgba(37,99,235,0.20);
     }
 
 
     /* =====================================================
-       CTA
+       CTA BUTTON
        ===================================================== */
 
     .stButton > button {
@@ -276,8 +320,6 @@ def render():
         font-size: 16px;
 
         font-weight: 750;
-
-        border: 1px solid rgba(255,255,255,0.16);
 
         box-shadow:
             0 10px 28px rgba(37,99,235,0.22);
@@ -291,10 +333,10 @@ def render():
     .stButton > button:hover {
         transform:
             translateY(-4px)
-            scale(1.01);
+            scale(1.015);
 
         box-shadow:
-            0 18px 42px rgba(37,99,235,0.34);
+            0 18px 42px rgba(37,99,235,0.35);
     }
 
 
@@ -307,7 +349,7 @@ def render():
 
         overflow: hidden;
 
-        min-height: 325px;
+        min-height: 330px;
 
         padding: 29px;
 
@@ -323,13 +365,28 @@ def render():
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 10px 28px rgba(15,23,42,0.07),
-            0 2px 5px rgba(15,23,42,0.03);
+            0 10px 28px rgba(15,23,42,0.07);
+
+        transform:
+            perspective(1000px)
+            translateZ(0);
+
+        transform-style: preserve-3d;
 
         transition:
-            transform 0.35s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.35s ease,
-            border-color 0.35s ease;
+            transform 0.18s ease-out,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
+    }
+
+
+    .feature-card:hover {
+        box-shadow:
+            0 30px 65px rgba(15,23,42,0.18);
+
+        border-color: #93c5fd;
+
+        z-index: 10;
     }
 
 
@@ -338,13 +395,11 @@ def render():
 
         position: absolute;
 
-        width: 150px;
+        width: 170px;
+        height: 170px;
 
-        height: 150px;
-
-        right: -80px;
-
-        bottom: -80px;
+        right: -90px;
+        bottom: -90px;
 
         border-radius: 50%;
 
@@ -356,25 +411,10 @@ def render():
     }
 
 
-    .feature-card:hover {
-        transform:
-            perspective(1100px)
-            translateY(-13px)
-            translateZ(28px)
-            scale(1.025);
-
-        box-shadow:
-            0 32px 65px rgba(15,23,42,0.17),
-            0 10px 25px rgba(37,99,235,0.08);
-
-        border-color: #93c5fd;
-    }
-
-
     .feature-card:hover::after {
         transform: scale(1.4);
 
-        opacity: 0.16;
+        opacity: 0.17;
     }
 
 
@@ -409,7 +449,7 @@ def render():
 
 
     /* =====================================================
-       CARD ICONS
+       CARD ICON
        ===================================================== */
 
     .card-icon {
@@ -427,8 +467,7 @@ def render():
 
         margin-bottom: 19px;
 
-        box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.8);
+        transform: translateZ(22px);
     }
 
 
@@ -513,8 +552,17 @@ def render():
 
 
     /* =====================================================
-       FEATURE TEXT
+       FEATURE CONTENT
        ===================================================== */
+
+    .feature-content {
+        position: relative;
+
+        z-index: 2;
+
+        transform: translateZ(15px);
+    }
+
 
     .feature-card h3 {
         color: #0f172a;
@@ -598,24 +646,26 @@ def render():
         box-shadow:
             0 8px 22px rgba(15,23,42,0.06);
 
+        transform:
+            perspective(900px)
+            translateZ(0);
+
+        transform-style: preserve-3d;
+
         transition:
-            transform 0.3s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.3s ease,
-            border-color 0.3s ease;
+            transform 0.18s ease-out,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
     }
 
 
     .score-card:hover {
-        transform:
-            perspective(900px)
-            translateY(-10px)
-            translateZ(20px)
-            scale(1.05);
-
         box-shadow:
-            0 25px 48px rgba(15,23,42,0.14);
+            0 25px 48px rgba(15,23,42,0.15);
 
         border-color: #93c5fd;
+
+        z-index: 10;
     }
 
 
@@ -667,6 +717,8 @@ def render():
         font-weight: 850;
 
         margin-bottom: 6px;
+
+        transform: translateZ(15px);
     }
 
 
@@ -678,6 +730,8 @@ def render():
         font-weight: 650;
 
         line-height: 1.4;
+
+        transform: translateZ(10px);
     }
 
 
@@ -731,24 +785,26 @@ def render():
         box-shadow:
             0 9px 25px rgba(15,23,42,0.06);
 
+        transform:
+            perspective(1000px)
+            translateZ(0);
+
+        transform-style: preserve-3d;
+
         transition:
-            transform 0.35s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.35s ease,
-            border-color 0.35s ease;
+            transform 0.18s ease-out,
+            box-shadow 0.25s ease,
+            border-color 0.25s ease;
     }
 
 
     .step-card:hover {
-        transform:
-            perspective(1000px)
-            translateY(-12px)
-            translateZ(24px)
-            scale(1.025);
-
         box-shadow:
-            0 30px 58px rgba(15,23,42,0.15);
+            0 30px 58px rgba(15,23,42,0.16);
 
         border-color: #93c5fd;
+
+        z-index: 10;
     }
 
 
@@ -772,6 +828,8 @@ def render():
         font-weight: 850;
 
         margin-bottom: 18px;
+
+        transform: translateZ(20px);
 
         box-shadow:
             0 8px 18px rgba(15,23,42,0.14);
@@ -818,6 +876,8 @@ def render():
         line-height: 1.35;
 
         margin: 0 0 9px 0;
+
+        transform: translateZ(13px);
     }
 
 
@@ -829,11 +889,13 @@ def render():
         line-height: 1.7;
 
         margin: 0;
+
+        transform: translateZ(8px);
     }
 
 
     /* =====================================================
-       PRIVACY SECTION
+       PRIVACY
        ===================================================== */
 
     .privacy-card {
@@ -869,20 +931,26 @@ def render():
         box-shadow:
             0 20px 50px rgba(15,23,42,0.24);
 
+        transform-style: preserve-3d;
+
         transition:
-            transform 0.3s ease,
-            box-shadow 0.3s ease;
+            transform 0.18s ease-out,
+            box-shadow 0.25s ease;
     }
 
 
     .privacy-card:hover {
-        transform:
-            perspective(1000px)
-            translateY(-8px)
-            translateZ(20px);
-
         box-shadow:
             0 32px 65px rgba(15,23,42,0.32);
+    }
+
+
+    .privacy-content {
+        position: relative;
+
+        z-index: 2;
+
+        transform: translateZ(18px);
     }
 
 
@@ -932,6 +1000,19 @@ def render():
 
         box-shadow:
             0 16px 42px rgba(15,23,42,0.20);
+
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+
+    .developer-card:hover {
+        transform:
+            translateY(-6px);
+
+        box-shadow:
+            0 25px 55px rgba(15,23,42,0.28);
     }
 
 
@@ -1034,51 +1115,148 @@ def render():
 
 
     # =========================================================
-    # HERO SECTION
+    # CURSOR BASED 3D MOTION
+    # =========================================================
+
+    st.html("""
+    <script>
+
+    const cards = document.querySelectorAll(
+        '.feature-card, .score-card, .step-card, .privacy-card'
+    );
+
+    cards.forEach((card) => {
+
+        card.addEventListener('mousemove', (event) => {
+
+            const rect = card.getBoundingClientRect();
+
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX =
+                ((y - centerY) / centerY) * -5;
+
+            const rotateY =
+                ((x - centerX) / centerX) * 5;
+
+            card.style.transform =
+                `perspective(1000px)
+                 rotateX(${rotateX}deg)
+                 rotateY(${rotateY}deg)
+                 translateY(-10px)
+                 translateZ(25px)
+                 scale(1.02)`;
+
+        });
+
+
+        card.addEventListener('mouseleave', () => {
+
+            card.style.transform =
+                'perspective(1000px) translateZ(0)';
+
+        });
+
+    });
+
+
+    const hero = document.querySelector('.main-header');
+
+    if (hero) {
+
+        hero.addEventListener('mousemove', (event) => {
+
+            const rect = hero.getBoundingClientRect();
+
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX =
+                ((y - centerY) / centerY) * -1.5;
+
+            const rotateY =
+                ((x - centerX) / centerX) * 1.5;
+
+            hero.style.transform =
+                `perspective(1200px)
+                 rotateX(${rotateX}deg)
+                 rotateY(${rotateY}deg)
+                 translateY(-4px)`;
+        });
+
+
+        hero.addEventListener('mouseleave', () => {
+
+            hero.style.transform =
+                'perspective(1200px)';
+
+        });
+
+    }
+
+    </script>
+    """)
+
+
+    # =========================================================
+    # HERO
     # =========================================================
 
     st.html("""
     <div class="main-header">
 
-        <div class="hero-badge">
-            AI-POWERED RESUME ANALYSIS
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                AI-POWERED RESUME ANALYSIS
+            </div>
+
+            <h1>
+                ATS Resume Scorer
+            </h1>
+
+            <h3>
+                Optimize Your Resume for
+                <span class="yellow-text">
+                    Applicant Tracking Systems
+                </span>
+            </h3>
+
+            <p>
+                Get instant feedback on your resume's
+                <span class="blue-underline">
+                    ATS compatibility
+                </span>
+                with
+                <span class="yellow-text">
+                    AI-powered analysis
+                </span>.
+            </p>
+
         </div>
-
-        <h1>
-            ATS Resume Scorer
-        </h1>
-
-        <h3>
-            Optimize Your Resume for
-            <span class="yellow-text">
-                Applicant Tracking Systems
-            </span>
-        </h3>
-
-        <p>
-            Get instant feedback on your resume's
-            <span class="blue-underline">
-                ATS compatibility
-            </span>
-            with
-            <span class="yellow-text">
-                AI-powered analysis
-            </span>
-        </p>
 
     </div>
     """)
 
 
     # =========================================================
-    # CALL TO ACTION
+    # CTA
     # =========================================================
 
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
 
-        # ORIGINAL NAVIGATION LOGIC — UNCHANGED
+        # =====================================================
+        # ORIGINAL LOGIC — DO NOT CHANGE
+        # =====================================================
 
         if st.button(
             "Start Analyzing Your Resume",
@@ -1124,29 +1302,33 @@ def render():
         st.html("""
         <div class="feature-card blue-card">
 
-            <div class="card-icon blue-icon">
-                <div class="icon-shape blue-shape"></div>
+            <div class="feature-content">
+
+                <div class="card-icon blue-icon">
+                    <div class="icon-shape blue-shape"></div>
+                </div>
+
+                <h3>
+                    Comprehensive Scoring
+                </h3>
+
+                <p>
+                    Get detailed scores across
+                    <span class="orange-text">
+                        5 key dimensions
+                    </span>
+                    that influence ATS compatibility.
+                </p>
+
+                <ul>
+                    <li>Formatting — <b>20%</b></li>
+                    <li>Keywords &amp; Skills — <b>25%</b></li>
+                    <li>Content Quality — <b>25%</b></li>
+                    <li>Skill Validation — <b>15%</b></li>
+                    <li>ATS Compatibility — <b>15%</b></li>
+                </ul>
+
             </div>
-
-            <h3>
-                Comprehensive Scoring
-            </h3>
-
-            <p>
-                Get detailed scores across
-                <span class="orange-text">
-                    5 key dimensions
-                </span>
-                that influence ATS compatibility.
-            </p>
-
-            <ul>
-                <li>Formatting — <b>20%</b></li>
-                <li>Keywords &amp; Skills — <b>25%</b></li>
-                <li>Content Quality — <b>25%</b></li>
-                <li>Skill Validation — <b>15%</b></li>
-                <li>ATS Compatibility — <b>15%</b></li>
-            </ul>
 
         </div>
         """)
@@ -1157,29 +1339,32 @@ def render():
         st.html("""
         <div class="feature-card yellow-card">
 
-            <div class="card-icon yellow-icon">
-                <div class="icon-shape yellow-shape"></div>
+            <div class="feature-content">
+
+                <div class="card-icon yellow-icon">
+                    <div class="icon-shape yellow-shape"></div>
+                </div>
+
+                <h3>
+                    AI Skill Validation
+                </h3>
+
+                <p>
+                    Verify that your claimed skills are
+                    <span class="orange-text">
+                        actually demonstrated
+                    </span>
+                    through your projects and experience.
+                </p>
+
+                <ul>
+                    <li>Semantic skill analysis</li>
+                    <li>Project &amp; experience validation</li>
+                    <li>Unsupported skill detection</li>
+                    <li>Evidence-based feedback</li>
+                </ul>
+
             </div>
-
-            <h3>
-                Skill Validation
-            </h3>
-
-            <p>
-                Verify that your claimed skills are
-                <span class="orange-text">
-                    actually demonstrated
-                </span>
-                in your projects and experience
-                using AI-powered semantic analysis.
-            </p>
-
-            <ul>
-                <li>Semantic skill analysis</li>
-                <li>Project &amp; experience validation</li>
-                <li>Unsupported skill detection</li>
-                <li>Evidence-based feedback</li>
-            </ul>
 
         </div>
         """)
@@ -1190,28 +1375,32 @@ def render():
         st.html("""
         <div class="feature-card pink-card">
 
-            <div class="card-icon pink-icon">
-                <div class="icon-shape pink-shape"></div>
+            <div class="feature-content">
+
+                <div class="card-icon pink-icon">
+                    <div class="icon-shape pink-shape"></div>
+                </div>
+
+                <h3>
+                    Privacy First
+                </h3>
+
+                <p>
+                    Resume analysis runs locally,
+                    keeping your resume information
+                    <span class="pink-text">
+                        within your environment
+                    </span>.
+                </p>
+
+                <ul>
+                    <li>No external API calls</li>
+                    <li>Local analysis</li>
+                    <li>Resume data stays private</li>
+                    <li>Secure workflow</li>
+                </ul>
+
             </div>
-
-            <h3>
-                Privacy First
-            </h3>
-
-            <p>
-                All analysis runs locally,
-                helping keep your resume information
-                <span class="pink-text">
-                    within your own environment
-                </span>.
-            </p>
-
-            <ul>
-                <li>No external API calls</li>
-                <li>Local analysis</li>
-                <li>Resume data stays private</li>
-                <li>Secure workflow</li>
-            </ul>
 
         </div>
         """)
@@ -1370,8 +1559,8 @@ def render():
             </h3>
 
             <p>
-                Support for PDF, DOC, and DOCX
-                formats.
+                Upload your resume in PDF, DOC,
+                or DOCX format to begin analysis.
             </p>
 
         </div>
@@ -1392,8 +1581,8 @@ def render():
             </h3>
 
             <p>
-                Our local AI models analyze your
-                resume across multiple dimensions.
+                Local AI models analyze your resume
+                across multiple ATS-focused dimensions.
             </p>
 
         </div>
@@ -1429,19 +1618,23 @@ def render():
     st.html("""
     <div class="privacy-card">
 
-        <h3>
-            Your Resume. Your Data. Your Privacy.
-        </h3>
+        <div class="privacy-content">
 
-        <p>
-            All analysis runs locally with no external
-            API calls. Your resume data stays within
-            <span class="yellow-text">
-                your system
-            </span>
-            while you receive intelligent,
-            ATS-focused feedback.
-        </p>
+            <h3>
+                Your Resume. Your Data. Your Privacy.
+            </h3>
+
+            <p>
+                All analysis runs locally with no external
+                API calls. Your resume data stays within
+                <span class="yellow-text">
+                    your system
+                </span>
+                while you receive intelligent,
+                ATS-focused feedback.
+            </p>
+
+        </div>
 
     </div>
     """)
