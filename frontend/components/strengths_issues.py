@@ -4,275 +4,29 @@ import streamlit as st
 
 
 # ============================================================
-# CONFIG
-# ============================================================
-
-SEVERITY_RANK = {
-    "critical": 0,
-    "high": 1,
-    "medium": 2,
-    "low": 3,
-}
-
-SEVERITY_META = {
-    "critical": {
-        "label": "CRITICAL",
-        "color": "#b91c1c",
-        "bg": "#fee2e2",
-        "border": "#fca5a5",
-        "impact": "Very High ATS Impact",
-    },
-    "high": {
-        "label": "HIGH",
-        "color": "#c2410c",
-        "bg": "#ffedd5",
-        "border": "#fdba74",
-        "impact": "High ATS Impact",
-    },
-    "medium": {
-        "label": "MEDIUM",
-        "color": "#a16207",
-        "bg": "#fef3c7",
-        "border": "#fcd34d",
-        "impact": "Medium ATS Impact",
-    },
-    "low": {
-        "label": "LOW",
-        "color": "#0369a1",
-        "bg": "#e0f2fe",
-        "border": "#7dd3fc",
-        "impact": "Low ATS Impact",
-    },
-}
-
-
-# ============================================================
 # HELPERS
 # ============================================================
 
-def _clean_items(value: Any) -> List[str]:
-    """Clean and deduplicate text items."""
-
-    if not value:
+def _clean_items(items: Any) -> List[str]:
+    if not isinstance(items, list):
         return []
 
-    result = []
-    seen = set()
+    cleaned = []
 
-    for item in value:
+    for item in items:
         if item is None:
             continue
 
         text = str(item).strip()
 
-        if not text:
-            continue
+        if text and text not in cleaned:
+            cleaned.append(text)
 
-        key = text.lower()
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-        result.append(text)
-
-    return result
-
-
-def _normalize_severity(value: Any) -> str:
-    """Normalize backend severity."""
-
-    level = str(value or "medium").strip().lower()
-
-    if level in SEVERITY_META:
-        return level
-
-    if level == "minor":
-        return "low"
-
-    return "medium"
-
-
-def _detect_category(
-    title: str,
-    description: str,
-) -> str:
-    """Detect the resume area related to an issue."""
-
-    text = (
-        f"{title} {description}"
-    ).lower()
-
-    categories = {
-        "Keywords & Skills": [
-            "keyword",
-            "skill",
-            "technology",
-            "technical",
-            "tool",
-            "stack",
-            "job description",
-            " jd ",
-            "match",
-        ],
-        "Formatting": [
-            "format",
-            "font",
-            "spacing",
-            "layout",
-            "margin",
-            "heading",
-            "bullet",
-            "section",
-            "template",
-        ],
-        "Content Quality": [
-            "content",
-            "achievement",
-            "metric",
-            "quantif",
-            "impact",
-            "experience",
-            "action verb",
-            "description",
-        ],
-        "ATS Compatibility": [
-            "ats",
-            "parser",
-            "parsing",
-            "compatib",
-            "readable",
-            "file",
-            "pdf",
-        ],
-        "Skill Validation": [
-            "validation",
-            "project",
-            "certification",
-            "evidence",
-            "proof",
-            "demonstrat",
-        ],
-    }
-
-    for category, keywords in categories.items():
-        for keyword in keywords:
-            if keyword in text:
-                return category
-
-    return "General"
-
-
-def _get_impact(severity: str) -> int:
-    """Convert severity to visual impact percentage."""
-
-    return {
-        "critical": 100,
-        "high": 85,
-        "medium": 65,
-        "low": 35,
-    }.get(severity, 50)
+    return cleaned
 
 
 # ============================================================
-# ISSUE COLLECTION
-# ============================================================
-
-def _collect_issues(
-    analysis: Dict[str, Any],
-) -> List[Dict[str, Any]]:
-    """Collect detailed issues from analysis."""
-
-    issues = []
-    seen = set()
-
-    for issue in (
-        analysis.get("detailed_feedback") or []
-    ):
-
-        if not isinstance(issue, dict):
-            continue
-
-        severity = _normalize_severity(
-            issue.get("severity_level")
-        )
-
-        title = str(
-            issue.get("issue_title")
-            or "Resume Improvement"
-        ).strip()
-
-        description = str(
-            issue.get("description")
-            or issue.get("issue_description")
-            or ""
-        ).strip()
-
-        actions = _clean_items(
-            issue.get("action_items") or []
-        )
-
-        key = (
-            title.lower(),
-            description.lower(),
-            severity,
-        )
-
-        if key in seen:
-            continue
-
-        seen.add(key)
-
-        issues.append(
-            {
-                "severity": severity,
-                "title": title,
-                "description": description,
-                "actions": actions,
-                "category": _detect_category(
-                    title,
-                    description,
-                ),
-                "impact": _get_impact(severity),
-            }
-        )
-
-    # --------------------------------------------------------
-    # If detailed feedback does not exist, use summaries
-    # --------------------------------------------------------
-
-    if not issues:
-
-        for item in _clean_items(
-            analysis.get("issues_summary") or []
-        ):
-
-            issues.append(
-                {
-                    "severity": "medium",
-                    "title": item,
-                    "description": "",
-                    "actions": [],
-                    "category": _detect_category(
-                        item,
-                        "",
-                    ),
-                    "impact": 65,
-                }
-            )
-
-    issues.sort(
-        key=lambda x: SEVERITY_RANK.get(
-            x["severity"],
-            99,
-        )
-    )
-
-    return issues
-
-
-# ============================================================
-# CSS
+# STYLES
 # ============================================================
 
 def _apply_styles() -> None:
@@ -281,387 +35,274 @@ def _apply_styles() -> None:
         """
         <style>
 
-        /* ==================================================
-           GENERAL
-        ================================================== */
-
-        .ri-title {
-            font-size: 26px;
-            font-weight: 900;
+        .strengths-title {
             color: #0f172a;
-            margin-top: 20px;
+            font-size: 27px;
+            font-weight: 950;
+            letter-spacing: -0.025em;
+            margin-top: 22px;
+            margin-bottom: 2px;
         }
 
-        .ri-subtitle {
+        .strengths-subtitle {
             color: #64748b;
-            font-size: 13px;
-            margin-top: 3px;
-            margin-bottom: 22px;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 18px;
         }
 
 
-        /* ==================================================
-           STRENGTH CARDS
-        ================================================== */
+        /* =====================================================
+           STRENGTH GRID
+           ===================================================== */
 
         .strength-grid {
             display: grid;
             grid-template-columns:
                 repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin: 13px 0 25px 0;
+            gap: 14px;
         }
 
         .strength-card {
             position: relative;
-            padding: 16px 18px;
-            border-radius: 17px;
-            background:
-                linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #f0fdf4
-                );
-            border: 1px solid #bbf7d0;
-            box-shadow:
-                0 7px 20px rgba(15,23,42,.055);
-            transition:
-                transform .23s ease,
-                box-shadow .23s ease;
-        }
+            overflow: hidden;
 
-        .strength-card::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #22c55e;
-            border-radius: 17px 0 0 17px;
-        }
-
-        .strength-card:hover {
-            transform:
-                translateY(-5px)
-                scale(1.01);
-            box-shadow:
-                0 15px 30px rgba(15,23,42,.10);
-        }
-
-        .strength-num {
-            display: inline-flex;
-            width: 28px;
-            height: 28px;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            background: #dcfce7;
-            color: #166534;
-            font-size: 10px;
-            font-weight: 900;
-            margin-right: 9px;
-        }
-
-        .strength-text {
-            color: #1e293b;
-            font-size: 13px;
-            font-weight: 650;
-            line-height: 1.55;
-        }
-
-
-        /* ==================================================
-           ISSUE OVERVIEW
-        ================================================== */
-
-        .overview-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(4, minmax(0, 1fr));
-            gap: 10px;
-            margin: 14px 0 22px 0;
-        }
-
-        .overview-card {
-            padding: 14px;
-            border-radius: 15px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow:
-                0 5px 15px rgba(15,23,42,.05);
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
-        }
-
-        .overview-card:hover {
-            transform: translateY(-3px);
-            box-shadow:
-                0 11px 23px rgba(15,23,42,.09);
-        }
-
-        .overview-label {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-            font-weight: 850;
-            color: #64748b;
-        }
-
-        .overview-value {
-            font-size: 22px;
-            font-weight: 900;
-            margin-top: 3px;
-        }
-
-
-        /* ==================================================
-           FIX FIRST
-        ================================================== */
-
-        .fix-section {
-            padding: 20px;
-            margin: 18px 0 25px 0;
-            border-radius: 20px;
-            background:
-                linear-gradient(
-                    135deg,
-                    #f8fafc,
-                    #eef6ff
-                );
-            border:
-                1px solid rgba(14,165,233,.14);
-            box-shadow:
-                0 8px 24px rgba(15,23,42,.06);
-        }
-
-        .fix-title {
-            color: #0f172a;
-            font-size: 17px;
-            font-weight: 900;
-            margin-bottom: 13px;
-        }
-
-        .fix-card {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 13px;
-            background: rgba(255,255,255,.82);
-            border: 1px solid rgba(15,23,42,.07);
-            transition: transform .2s ease;
-        }
-
-        .fix-card:hover {
-            transform: translateX(4px);
-        }
-
-        .fix-number {
-            display: flex;
-            min-width: 29px;
-            height: 29px;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            background: #0f172a;
-            color: white;
-            font-size: 10px;
-            font-weight: 900;
-        }
-
-        .fix-content {
-            flex: 1;
-        }
-
-        .fix-heading {
-            color: #0f172a;
-            font-size: 13px;
-            font-weight: 850;
-        }
-
-        .fix-meta {
-            color: #64748b;
-            font-size: 11px;
-            margin-top: 3px;
-        }
-
-
-        /* ==================================================
-           ISSUE CARD
-        ================================================== */
-
-        .issue-card {
-            position: relative;
+            min-height: 105px;
             padding: 18px;
-            margin: 11px 0;
-            border-radius: 18px;
+
+            border-radius: 20px;
+
             background:
                 linear-gradient(
                     145deg,
                     #ffffff,
                     #f8fafc
                 );
-            border: 1px solid #e2e8f0;
+
+            border: 1px solid #dbeafe;
+
             box-shadow:
-                0 7px 21px rgba(15,23,42,.06);
+                0 8px 24px
+                rgba(15, 23, 42, 0.06);
+
             transition:
-                transform .24s ease,
-                box-shadow .24s ease,
-                border-color .24s ease;
-            overflow: hidden;
+                transform 0.23s ease,
+                box-shadow 0.23s ease,
+                border-color 0.23s ease;
         }
 
-        .issue-card:hover {
+        .strength-card:hover {
             transform:
-                translateY(-5px)
-                scale(1.008);
+                translateY(-6px)
+                scale(1.01);
+
             box-shadow:
-                0 16px 34px rgba(15,23,42,.11);
+                0 18px 38px
+                rgba(15, 23, 42, 0.11);
+
             border-color:
-                rgba(14,165,233,.25);
+                #93c5fd;
         }
 
-        .issue-card::before {
+        .strength-card::before {
             content: "";
+
             position: absolute;
+
             left: 0;
             top: 0;
             bottom: 0;
+
             width: 4px;
-            background: #ef4444;
-        }
 
-        .issue-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .issue-title {
-            color: #0f172a;
-            font-size: 15px;
-            font-weight: 850;
-        }
-
-        .category-pill {
-            display: inline-block;
-            margin-top: 7px;
-            padding: 4px 9px;
-            border-radius: 999px;
-            background: #eff6ff;
-            color: #0369a1;
-            font-size: 9px;
-            font-weight: 850;
-        }
-
-        .severity-pill {
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-size: 9px;
-            font-weight: 900;
-            letter-spacing: .06em;
-            white-space: nowrap;
-        }
-
-        .issue-description {
-            margin-top: 12px;
-            color: #475569;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .impact-label {
-            margin-top: 13px;
-            color: #64748b;
-            font-size: 10px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-        }
-
-        .impact-track {
-            height: 6px;
-            margin-top: 5px;
-            border-radius: 999px;
-            background: #e2e8f0;
-            overflow: hidden;
-        }
-
-        .impact-fill {
-            height: 100%;
-            border-radius: 999px;
             background:
                 linear-gradient(
-                    90deg,
+                    180deg,
                     #06b6d4,
                     #3b82f6
                 );
         }
 
+        .strength-number {
+            display: inline-flex;
 
-        /* ==================================================
+            align-items: center;
+            justify-content: center;
+
+            width: 29px;
+            height: 29px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e0f2fe,
+                    #dbeafe
+                );
+
+            color: #0369a1;
+
+            font-size: 10px;
+            font-weight: 950;
+
+            margin-bottom: 10px;
+        }
+
+        .strength-text {
+            color: #1e293b;
+
+            font-size: 12px;
+            font-weight: 750;
+
+            line-height: 1.65;
+
+            padding-right: 5px;
+        }
+
+
+        /* =====================================================
            EMPTY STATE
-        ================================================== */
+           ===================================================== */
 
-        .empty-state {
-            padding: 25px;
-            text-align: center;
-            border-radius: 18px;
+        .strength-empty {
+            position: relative;
+            overflow: hidden;
+
+            padding: 36px 24px;
+
+            border-radius: 22px;
+
             background:
                 linear-gradient(
                     135deg,
                     #f8fafc,
-                    #f0fdf4
+                    #f0fdfa
                 );
-            border: 1px solid #bbf7d0;
-            color: #475569;
+
+            border: 1px solid #a7f3d0;
+
+            box-shadow:
+                0 10px 28px
+                rgba(15, 23, 42, 0.05);
+
+            text-align: center;
+        }
+
+        .strength-empty::before {
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            border: 1px solid
+                rgba(20, 184, 166, 0.10);
+
+            top: -90px;
+            left: -70px;
+        }
+
+        .strength-empty::after {
+            content: "";
+
+            position: absolute;
+
+            width: 160px;
+            height: 160px;
+
+            border-radius: 50%;
+
+            border: 1px solid
+                rgba(59, 130, 246, 0.08);
+
+            right: -70px;
+            bottom: -90px;
         }
 
         .empty-title {
-            color: #166534;
-            font-size: 16px;
-            font-weight: 850;
-            margin-bottom: 5px;
+            position: relative;
+            z-index: 2;
+
+            color: #0f172a;
+
+            font-size: 17px;
+            font-weight: 900;
+
+            margin-bottom: 7px;
         }
 
         .empty-text {
-            font-size: 12px;
+            position: relative;
+            z-index: 2;
+
+            color: #64748b;
+
+            font-size: 11px;
+
+            line-height: 1.7;
+
+            max-width: 560px;
+
+            margin:
+                0 auto;
         }
 
 
-        /* ==================================================
+        /* =====================================================
+           INSIGHT
+           ===================================================== */
+
+        .strength-insight {
+            margin-top: 18px;
+
+            padding: 16px 18px;
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eff6ff,
+                    #ecfeff
+                );
+
+            border: 1px solid #bae6fd;
+        }
+
+        .insight-label {
+            color: #0369a1;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            text-transform: uppercase;
+
+            letter-spacing: .10em;
+
+            margin-bottom: 4px;
+        }
+
+        .insight-text {
+            color: #334155;
+
+            font-size: 11px;
+
+            line-height: 1.65;
+        }
+
+
+        /* =====================================================
            RESPONSIVE
-        ================================================== */
+           ===================================================== */
 
-        @media (max-width: 800px) {
-
-            .overview-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-        }
-
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
 
             .strength-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .overview-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .issue-top {
-                flex-direction: column;
-            }
-
-            .severity-pill {
-                align-self: flex-start;
             }
 
         }
@@ -673,7 +314,7 @@ def _apply_styles() -> None:
 
 
 # ============================================================
-# DISPLAY STRENGTHS
+# STRENGTHS
 # ============================================================
 
 def display_strengths(
@@ -684,24 +325,31 @@ def display_strengths(
 
     strengths = _clean_items(strengths)
 
-    st.markdown(
+    # ========================================================
+    # HEADER
+    # ========================================================
+
+    st.html(
         """
-        <div class="ri-title">
+        <div class="strengths-title">
             Resume Strengths
         </div>
 
-        <div class="ri-subtitle">
+        <div class="strengths-subtitle">
             Strong signals identified in your resume.
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
+
+    # ========================================================
+    # EMPTY STATE
+    # ========================================================
 
     if not strengths:
 
-        st.markdown(
+        st.html(
             """
-            <div class="empty-state">
+            <div class="strength-empty">
 
                 <div class="empty-title">
                     Strengths Not Identified Yet
@@ -713,90 +361,115 @@ def display_strengths(
                 </div>
 
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
         return
 
-    cards = '<div class="strength-grid">'
+    # ========================================================
+    # STRENGTH CARDS
+    # ========================================================
+
+    cards_html = """
+    <div class="strength-grid">
+    """
 
     for index, item in enumerate(
         strengths,
         start=1,
     ):
 
-        cards += f"""
+        cards_html += f"""
         <div class="strength-card">
 
-            <span class="strength-num">
+            <div class="strength-number">
                 {index:02d}
-            </span>
+            </div>
 
-            <span class="strength-text">
+            <div class="strength-text">
                 {item}
-            </span>
+            </div>
 
         </div>
         """
 
-    cards += "</div>"
+    cards_html += """
+    </div>
+    """
 
-    st.markdown(
-        cards,
-        unsafe_allow_html=True,
+    st.html(cards_html)
+
+    # ========================================================
+    # INSIGHT
+    # ========================================================
+
+    count = len(strengths)
+
+    if count >= 5:
+        insight = (
+            "Your resume demonstrates multiple strong signals. "
+            "Keep these strengths while improving weaker areas."
+        )
+
+    elif count >= 3:
+        insight = (
+            "Your resume has several positive signals. "
+            "Strengthening the remaining gaps can make the "
+            "profile more balanced."
+        )
+
+    else:
+        insight = (
+            "A few strengths were identified. Consider adding "
+            "more measurable achievements, technical evidence, "
+            "and relevant project impact where appropriate."
+        )
+
+    st.html(
+        f"""
+        <div class="strength-insight">
+
+            <div class="insight-label">
+                Resume Insight
+            </div>
+
+            <div class="insight-text">
+                {insight}
+            </div>
+
+        </div>
+        """
     )
 
 
 # ============================================================
-# DISPLAY CRITICAL ISSUES
+# CRITICAL ISSUES
 # ============================================================
 
 def display_critical_issues(
     analysis: Dict[str, Any],
 ) -> None:
 
-    _apply_styles()
-
     critical = _clean_items(
-        analysis.get("critical_issues") or []
+        analysis.get("critical_issues")
     )
-
-    issues = _collect_issues(analysis)
 
     summary = _clean_items(
-        analysis.get("issues_summary") or []
+        analysis.get("issues_summary")
     )
 
-    # --------------------------------------------------------
-    # If absolutely no issues exist
-    # --------------------------------------------------------
+    # Remove duplicates from additional issues
+    critical_lower = {
+        item.lower()
+        for item in critical
+    }
 
-    if not critical and not issues and not summary:
-
-        st.success(
-            "No Critical Issues Found!"
-        )
-
-        st.markdown(
-            """
-            <div class="empty-state">
-
-                <div class="empty-title">
-                    Your Resume Looks Healthy
-                </div>
-
-                <div class="empty-text">
-                    No urgent ATS issues were identified.
-                    Focus on refining your resume further.
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        return
+    extra = [
+        item
+        for item in summary
+        if item.lower()
+        not in critical_lower
+    ]
 
     # ========================================================
     # HEADER
@@ -804,376 +477,110 @@ def display_critical_issues(
 
     st.markdown(
         """
-        <div class="ri-title">
-            Resume Insights
-        </div>
-
-        <div class="ri-subtitle">
-            Identify what needs attention and fix the
-            highest-impact problems first.
-        </div>
+        ### Critical Issues
         """,
-        unsafe_allow_html=True,
+    )
+
+    st.caption(
+        "Issues that should be reviewed first for better "
+        "ATS performance."
     )
 
     # ========================================================
-    # ISSUE DISTRIBUTION
+    # NO ISSUES
     # ========================================================
 
-    counts = {
-        "critical": 0,
-        "high": 0,
-        "medium": 0,
-        "low": 0,
-    }
+    if not critical and not extra:
 
-    for issue in issues:
-
-        level = issue["severity"]
-
-        if level in counts:
-            counts[level] += 1
-
-    total = sum(counts.values())
-
-    st.markdown(
-        f"""
-        <div class="overview-grid">
-
-            <div class="overview-card">
-                <div class="overview-label">
-                    Critical
-                </div>
-                <div
-                    class="overview-value"
-                    style="color:#b91c1c;"
-                >
-                    {counts["critical"]}
-                </div>
-            </div>
-
-            <div class="overview-card">
-                <div class="overview-label">
-                    High
-                </div>
-                <div
-                    class="overview-value"
-                    style="color:#c2410c;"
-                >
-                    {counts["high"]}
-                </div>
-            </div>
-
-            <div class="overview-card">
-                <div class="overview-label">
-                    Medium
-                </div>
-                <div
-                    class="overview-value"
-                    style="color:#a16207;"
-                >
-                    {counts["medium"]}
-                </div>
-            </div>
-
-            <div class="overview-card">
-                <div class="overview-label">
-                    Total Issues
-                </div>
-                <div class="overview-value">
-                    {total}
-                </div>
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ========================================================
-    # FIX FIRST
-    # ========================================================
-
-    fix_items = []
-
-    # Critical issues first
-    for item in issues:
-
-        if item["severity"] in (
-            "critical",
-            "high",
-        ):
-            fix_items.append(item)
-
-    # If fewer than 3, fill with medium
-    if len(fix_items) < 3:
-
-        for item in issues:
-
-            if item in fix_items:
-                continue
-
-            fix_items.append(item)
-
-            if len(fix_items) >= 3:
-                break
-
-    fix_items = fix_items[:3]
-
-    if fix_items:
-
-        fix_html = """
-        <div class="fix-section">
-
-            <div class="fix-title">
-                Fix First
-            </div>
-        """
-
-        for index, item in enumerate(
-            fix_items,
-            start=1,
-        ):
-
-            meta = SEVERITY_META[
-                item["severity"]
-            ]
-
-            fix_html += f"""
-            <div class="fix-card">
-
-                <div class="fix-number">
-                    {index:02d}
-                </div>
-
-                <div class="fix-content">
-
-                    <div class="fix-heading">
-                        {item["title"]}
-                    </div>
-
-                    <div class="fix-meta">
-                        {meta["impact"]}
-                        &nbsp;&nbsp;|&nbsp;&nbsp;
-                        {item["category"]}
-                    </div>
-
-                </div>
-
-            </div>
-            """
-
-        fix_html += "</div>"
-
-        st.markdown(
-            fix_html,
-            unsafe_allow_html=True,
+        st.success(
+            "No Critical Issues Found"
         )
 
+        st.caption(
+            "Your resume does not currently contain any "
+            "urgent issues identified by the analysis."
+        )
+
+        return
+
     # ========================================================
-    # CRITICAL ISSUES FROM BACKEND
+    # SUMMARY METRICS
+    # ========================================================
+
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric(
+        "Critical",
+        len(critical),
+    )
+
+    c2.metric(
+        "Additional",
+        len(extra),
+    )
+
+    c3.metric(
+        "Total Flags",
+        len(critical) + len(extra),
+    )
+
+    # ========================================================
+    # CRITICAL ITEMS
     # ========================================================
 
     if critical:
 
-        st.markdown(
-            """
-            <div class="section-header">
-                <div class="section-heading">
-                    Critical Issues
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        st.warning(
+            "Address these issues before focusing on "
+            "lower-priority improvements."
         )
+
+        critical_html = """
+        <div class="strength-grid">
+        """
 
         for index, item in enumerate(
             critical,
             start=1,
         ):
 
-            st.markdown(
-                f"""
-                <div class="issue-card">
+            critical_html += f"""
+            <div class="strength-card">
 
-                    <div class="issue-top">
-
-                        <div>
-                            <div class="issue-title">
-                                {index:02d}. {item}
-                            </div>
-
-                            <span class="category-pill">
-                                HIGH PRIORITY
-                            </span>
-                        </div>
-
-                        <span
-                            class="severity-pill"
-                            style="
-                                color:#b91c1c;
-                                background:#fee2e2;
-                                border:1px solid #fca5a5;
-                            "
-                        >
-                            CRITICAL
-                        </span>
-
-                    </div>
-
-                    <div class="impact-label">
-                        ATS Impact
-                    </div>
-
-                    <div class="impact-track">
-                        <div
-                            class="impact-fill"
-                            style="width:100%;"
-                        ></div>
-                    </div>
-
+                <div
+                    class="strength-number"
+                    style="
+                        background:#fee2e2;
+                        color:#b91c1c;
+                    "
+                >
+                    {index:02d}
                 </div>
-                """,
-                unsafe_allow_html=True,
-            )
 
-    # ========================================================
-    # DETAILED ISSUES
-    # ========================================================
-
-    if issues:
-
-        st.markdown(
-            """
-            <div class="section-header">
-                <div class="section-heading">
-                    Detailed Analysis
+                <div class="strength-text">
+                    {item}
                 </div>
+
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            """
 
-        for index, issue in enumerate(
-            issues,
-            start=1,
+        critical_html += "</div>"
+
+        st.html(critical_html)
+
+    # ========================================================
+    # ADDITIONAL ISSUES
+    # ========================================================
+
+    if extra:
+
+        with st.expander(
+            f"Additional flagged items ({len(extra)})",
+            expanded=False,
         ):
 
-            meta = SEVERITY_META[
-                issue["severity"]
-            ]
+            for item in extra:
 
-            description_html = ""
-
-            if issue["description"]:
-
-                description_html = f"""
-                <div class="issue-description">
-                    {issue["description"]}
-                </div>
-                """
-
-            st.markdown(
-                f"""
-                <div class="issue-card">
-
-                    <div class="issue-top">
-
-                        <div>
-
-                            <div class="issue-title">
-                                {index:02d}. {issue["title"]}
-                            </div>
-
-                            <span class="category-pill">
-                                {issue["category"]}
-                            </span>
-
-                        </div>
-
-                        <span
-                            class="severity-pill"
-                            style="
-                                color:{meta["color"]};
-                                background:{meta["bg"]};
-                                border:1px solid {meta["border"]};
-                            "
-                        >
-                            {meta["label"]}
-                        </span>
-
-                    </div>
-
-                    {description_html}
-
-                    <div class="impact-label">
-                        {meta["impact"]}
-                    </div>
-
-                    <div class="impact-track">
-                        <div
-                            class="impact-fill"
-                            style="width:{issue["impact"]}%"
-                        ></div>
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            # ------------------------------------------------
-            # Recommended actions
-            # ------------------------------------------------
-
-            if issue["actions"]:
-
-                with st.expander(
-                    "Recommended Actions",
-                    expanded=False,
-                ):
-
-                    for action in issue["actions"]:
-
-                        st.markdown(
-                            f"- {action}"
-                        )
-
-    # ========================================================
-    # FALLBACK SUMMARY
-    # ========================================================
-
-    if not issues and summary:
-
-        st.markdown(
-            """
-            <div class="section-header">
-                <div class="section-heading">
-                    Flagged Items
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        for index, item in enumerate(
-            summary,
-            start=1,
-        ):
-
-            st.markdown(
-                f"""
-                <div class="issue-card">
-
-                    <div class="issue-title">
-                        {index:02d}. {item}
-                    </div>
-
-                    <span class="category-pill">
-                        REVIEW
-                    </span>
-
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+                st.markdown(
+                    f"- {item}"
+                )
