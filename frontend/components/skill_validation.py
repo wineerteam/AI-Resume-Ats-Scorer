@@ -4,42 +4,6 @@ import streamlit as st
 
 
 # ============================================================
-# CONFIG
-# ============================================================
-
-VALIDATION_LEVELS = {
-    "excellent": {
-        "min": 85,
-        "label": "Excellent",
-        "color": "#166534",
-        "bg": "#dcfce7",
-        "border": "#86efac",
-    },
-    "strong": {
-        "min": 70,
-        "label": "Strong",
-        "color": "#0369a1",
-        "bg": "#e0f2fe",
-        "border": "#7dd3fc",
-    },
-    "moderate": {
-        "min": 50,
-        "label": "Moderate",
-        "color": "#a16207",
-        "bg": "#fef3c7",
-        "border": "#fcd34d",
-    },
-    "weak": {
-        "min": 0,
-        "label": "Needs Improvement",
-        "color": "#b91c1c",
-        "bg": "#fee2e2",
-        "border": "#fca5a5",
-    },
-}
-
-
-# ============================================================
 # HELPERS
 # ============================================================
 
@@ -72,63 +36,66 @@ def _clean_projects(value: Any) -> List[str]:
     return projects
 
 
-def _get_validation_level(pct: float) -> Dict[str, str]:
-    if pct >= 85:
-        return VALIDATION_LEVELS["excellent"]
-
-    if pct >= 70:
-        return VALIDATION_LEVELS["strong"]
-
-    if pct >= 50:
-        return VALIDATION_LEVELS["moderate"]
-
-    return VALIDATION_LEVELS["weak"]
-
-
 def _normalize_similarity(value: Any) -> float:
-    if not isinstance(value, (int, float)):
-        return 0.0
+    """
+    Backend may return similarity as:
+        0.82
+    or:
+        82
+    """
 
-    value = float(value)
+    similarity = _safe_number(value, 0.0)
 
-    if value <= 1:
-        value *= 100
+    if similarity <= 1:
+        similarity *= 100
 
-    return max(0.0, min(100.0, value))
-
-
-def _get_evidence_level(similarity: Any) -> str:
-    value = _normalize_similarity(similarity)
-
-    if value >= 85:
-        return "Strong Evidence"
-
-    if value >= 65:
-        return "Good Evidence"
-
-    if value > 0:
-        return "Limited Evidence"
-
-    return "Resume Evidence"
+    return max(
+        0.0,
+        min(100.0, similarity),
+    )
 
 
-def _get_evidence_color(similarity: Any) -> str:
-    value = _normalize_similarity(similarity)
+def _get_evidence_level(
+    projects: List[str],
+    similarity: float,
+) -> str:
 
-    if value >= 85:
-        return "#166534"
+    if len(projects) >= 2 or similarity >= 80:
+        return "STRONG EVIDENCE"
 
-    if value >= 65:
-        return "#0369a1"
+    if len(projects) >= 1 or similarity >= 60:
+        return "MODERATE EVIDENCE"
 
-    if value > 0:
-        return "#a16207"
+    return "LIMITED EVIDENCE"
 
-    return "#64748b"
+
+def _get_evidence_meta(
+    level: str,
+) -> Dict[str, str]:
+
+    if level == "STRONG EVIDENCE":
+        return {
+            "color": "#166534",
+            "background": "#dcfce7",
+            "border": "#86efac",
+        }
+
+    if level == "MODERATE EVIDENCE":
+        return {
+            "color": "#0369a1",
+            "background": "#e0f2fe",
+            "border": "#7dd3fc",
+        }
+
+    return {
+        "color": "#b45309",
+        "background": "#fef3c7",
+        "border": "#fcd34d",
+    }
 
 
 # ============================================================
-# CSS
+# STYLES
 # ============================================================
 
 def _apply_styles() -> None:
@@ -137,522 +104,698 @@ def _apply_styles() -> None:
         """
         <style>
 
-        /* ==================================================
+        /* =====================================================
            HEADER
-        ================================================== */
+        ===================================================== */
 
-        .skill-v5-title {
-            font-size: 28px;
-            font-weight: 900;
+        .skill-title {
             color: #0f172a;
-            letter-spacing: -0.02em;
-            margin-top: 18px;
+            font-size: 28px;
+            font-weight: 950;
+            letter-spacing: -0.03em;
+            margin-top: 22px;
+            margin-bottom: 3px;
         }
 
-        .skill-v5-subtitle {
+        .skill-subtitle {
             color: #64748b;
-            font-size: 13px;
+            font-size: 12px;
             line-height: 1.6;
-            margin-top: 4px;
-            margin-bottom: 20px;
-        }
-
-
-        /* ==================================================
-           TOP DASHBOARD
-        ================================================== */
-
-        .skill-dashboard {
-            display: grid;
-            grid-template-columns: 0.95fr 1.5fr;
-            gap: 15px;
             margin-bottom: 18px;
         }
 
 
-        /* ==================================================
-           SCORE RING
-        ================================================== */
+        /* =====================================================
+           TOP DASHBOARD
+        ===================================================== */
+
+        .skill-dashboard {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           SCORE PANEL
+        ===================================================== */
 
         .score-panel {
+            position: relative;
+            overflow: hidden;
+
             min-height: 230px;
+
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            border-radius: 22px;
+            justify-content: center;
+
+            border-radius: 23px;
+
             background:
                 linear-gradient(
                     145deg,
-                    #0f172a,
-                    #172554
+                    #07152f,
+                    #102a56,
+                    #075985
                 );
+
             box-shadow:
-                0 14px 35px rgba(15,23,42,.18);
-            position: relative;
-            overflow: hidden;
+                0 18px 40px
+                rgba(15,23,42,.16);
         }
 
         .score-panel::before {
             content: "";
+
             position: absolute;
+
             width: 180px;
             height: 180px;
+
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.08);
-            top: -70px;
-            right: -50px;
+
+            border: 1px solid
+                rgba(255,255,255,.08);
+
+            top: -95px;
+            right: -75px;
         }
 
         .score-panel::after {
             content: "";
+
             position: absolute;
-            width: 130px;
-            height: 130px;
+
+            width: 140px;
+            height: 140px;
+
             border-radius: 50%;
-            border: 1px solid rgba(34,211,238,.12);
-            bottom: -65px;
-            left: -35px;
+
+            border: 1px solid
+                rgba(34,211,238,.08);
+
+            bottom: -80px;
+            left: -70px;
         }
 
+
+        /* =====================================================
+           SCORE RING
+        ===================================================== */
+
         .score-ring {
-            width: 130px;
-            height: 130px;
+            position: relative;
+
+            width: 142px;
+            height: 142px;
+
             border-radius: 50%;
+
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
+
             background:
                 conic-gradient(
                     #22d3ee var(--pct),
                     rgba(255,255,255,.10) 0
                 );
+
             box-shadow:
-                0 0 35px rgba(34,211,238,.16);
+                0 0 35px
+                rgba(34,211,238,.16);
         }
 
         .score-ring::before {
             content: "";
+
             position: absolute;
-            width: 103px;
-            height: 103px;
+
+            width: 112px;
+            height: 112px;
+
             border-radius: 50%;
-            background: #0f172a;
+
+            background: #0a1a36;
         }
 
         .score-number {
             position: relative;
             z-index: 2;
+
             color: white;
-            font-size: 30px;
+
+            font-size: 35px;
             font-weight: 950;
+
+            line-height: 1;
         }
 
         .score-percent {
             position: absolute;
-            margin-top: 48px;
-            color: #94a3b8;
-            font-size: 9px;
+
             z-index: 3;
-        }
 
-        .score-status {
-            margin-top: 11px;
-            color: #67e8f9;
-            font-size: 13px;
-            font-weight: 850;
-            position: relative;
-            z-index: 2;
-        }
-
-        .score-caption {
             color: #94a3b8;
-            font-size: 10px;
-            margin-top: 3px;
-            position: relative;
-            z-index: 2;
+
+            font-size: 8px;
+            font-weight: 850;
+
+            margin-top: 52px;
+
+            letter-spacing: .08em;
         }
 
 
-        /* ==================================================
-           SUMMARY PANEL
-        ================================================== */
+        .score-label {
+            position: relative;
+            z-index: 2;
 
-        .summary-panel {
-            padding: 18px;
-            border-radius: 22px;
+            color: #67e8f9;
+
+            font-size: 8px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+            letter-spacing: .11em;
+
+            margin-top: 12px;
+        }
+
+
+        /* =====================================================
+           VALIDATION SUMMARY
+        ===================================================== */
+
+        .validation-summary {
+            padding: 21px;
+
+            border-radius: 23px;
+
             background:
                 linear-gradient(
                     145deg,
                     #ffffff,
                     #f8fafc
                 );
+
             border: 1px solid #e2e8f0;
+
             box-shadow:
-                0 10px 28px rgba(15,23,42,.07);
+                0 10px 28px
+                rgba(15,23,42,.06);
+        }
+
+        .summary-eyebrow {
+            color: #0369a1;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            text-transform: uppercase;
+            letter-spacing: .11em;
         }
 
         .summary-heading {
-            font-size: 16px;
-            font-weight: 900;
             color: #0f172a;
-            margin-bottom: 12px;
+
+            font-size: 20px;
+            font-weight: 950;
+
+            margin-top: 5px;
         }
 
-        .summary-grid {
+        .summary-text {
+            color: #64748b;
+
+            font-size: 11px;
+
+            line-height: 1.65;
+
+            margin-top: 5px;
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stat-grid {
             display: grid;
+
             grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+                repeat(3, minmax(0, 1fr));
+
             gap: 10px;
+
+            margin-top: 17px;
         }
 
-        .summary-item {
+        .stat-card {
             padding: 13px;
+
             border-radius: 15px;
+
             background: #f8fafc;
+
             border: 1px solid #e2e8f0;
-            transition:
-                transform .2s ease,
-                box-shadow .2s ease;
         }
 
-        .summary-item:hover {
-            transform: translateY(-4px);
-            box-shadow:
-                0 9px 20px rgba(15,23,42,.08);
-        }
-
-        .summary-label {
-            color: #64748b;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: .07em;
-            font-weight: 850;
-        }
-
-        .summary-value {
+        .stat-value {
             color: #0f172a;
-            font-size: 23px;
-            font-weight: 900;
-            margin-top: 3px;
+
+            font-size: 22px;
+            font-weight: 950;
         }
 
-        .summary-small {
+        .stat-label {
             color: #64748b;
-            font-size: 9px;
+
+            font-size: 8px;
+            font-weight: 800;
+
             margin-top: 2px;
         }
 
 
-        /* ==================================================
+        /* =====================================================
+           VALIDATION BAR
+        ===================================================== */
+
+        .validation-bar-label {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-top: 16px;
+
+            color: #334155;
+
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+        .validation-track {
+            height: 9px;
+
+            border-radius: 999px;
+
+            background: #e2e8f0;
+
+            overflow: hidden;
+
+            margin-top: 6px;
+        }
+
+        .validation-fill {
+            height: 100%;
+
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #06b6d4,
+                    #3b82f6
+                );
+        }
+
+
+        /* =====================================================
            INSIGHT
-        ================================================== */
+        ===================================================== */
 
         .validation-insight {
-            padding: 15px 17px;
-            border-radius: 17px;
-            margin: 15px 0 23px 0;
+            margin-top: 15px;
+
+            padding: 12px 14px;
+
+            border-radius: 14px;
+
             background:
                 linear-gradient(
                     135deg,
                     #eff6ff,
                     #ecfeff
                 );
+
             border: 1px solid #bae6fd;
-            box-shadow:
-                0 6px 18px rgba(15,23,42,.05);
         }
 
-        .insight-title {
-            color: #075985;
-            font-size: 13px;
-            font-weight: 900;
+        .validation-insight-title {
+            color: #0369a1;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            text-transform: uppercase;
+
+            letter-spacing: .09em;
         }
 
-        .insight-text {
+        .validation-insight-text {
             color: #475569;
-            font-size: 11px;
-            line-height: 1.65;
-            margin-top: 4px;
-        }
 
+            font-size: 10px;
 
-        /* ==================================================
-           SECTION
-        ================================================== */
+            line-height: 1.55;
 
-        .skill-section-title {
-            font-size: 18px;
-            color: #0f172a;
-            font-weight: 900;
-            margin-top: 20px;
-        }
-
-        .skill-section-subtitle {
-            color: #64748b;
-            font-size: 11px;
             margin-top: 3px;
-            margin-bottom: 12px;
         }
 
 
-        /* ==================================================
-           VALIDATED SKILL GRID
-        ================================================== */
+        /* =====================================================
+           SECTION
+        ===================================================== */
 
-        .validated-grid-v5 {
+        .section-title {
+            color: #0f172a;
+
+            font-size: 21px;
+            font-weight: 950;
+
+            margin-top: 27px;
+            margin-bottom: 3px;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+
+            font-size: 11px;
+
+            margin-bottom: 13px;
+        }
+
+
+        /* =====================================================
+           SKILL CARDS
+        ===================================================== */
+
+        .skill-grid {
             display: grid;
+
             grid-template-columns:
                 repeat(2, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
+
+            gap: 13px;
         }
 
-        .validated-skill {
+        .skill-card {
             position: relative;
-            padding: 17px;
-            border-radius: 18px;
-            background:
-                linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #f0fdf4
-                );
-            border: 1px solid #bbf7d0;
-            box-shadow:
-                0 7px 20px rgba(15,23,42,.055);
-            transition:
-                transform .23s ease,
-                box-shadow .23s ease;
             overflow: hidden;
+
+            padding: 17px;
+
+            border-radius: 19px;
+
+            background: white;
+
+            border: 1px solid #e2e8f0;
+
+            box-shadow:
+                0 7px 21px
+                rgba(15,23,42,.055);
+
+            transition:
+                transform .22s ease,
+                box-shadow .22s ease,
+                border-color .22s ease;
         }
 
-        .validated-skill::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: #22c55e;
-        }
-
-        .validated-skill:hover {
+        .skill-card:hover {
             transform:
                 translateY(-5px)
                 scale(1.01);
+
             box-shadow:
-                0 16px 32px rgba(15,23,42,.11);
+                0 17px 34px
+                rgba(15,23,42,.10);
+
+            border-color: #93c5fd;
         }
 
-        .validated-top {
+        .skill-card::before {
+            content: "";
+
+            position: absolute;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            width: 4px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #06b6d4,
+                    #3b82f6
+                );
+        }
+
+        .skill-top {
             display: flex;
+
             justify-content: space-between;
+
             align-items: flex-start;
+
             gap: 10px;
         }
 
-        .validated-name {
-            font-size: 15px;
-            font-weight: 900;
+        .skill-name {
             color: #0f172a;
+
+            font-size: 14px;
+            font-weight: 900;
         }
 
         .evidence-badge {
             padding: 5px 8px;
+
             border-radius: 999px;
-            font-size: 8px;
-            font-weight: 900;
+
+            font-size: 7px;
+            font-weight: 950;
+
             white-space: nowrap;
         }
 
-        .similarity-text {
-            color: #475569;
-            font-size: 10px;
-            margin-top: 8px;
-            font-weight: 750;
+
+        /* =====================================================
+           SIMILARITY
+        ===================================================== */
+
+        .similarity-row {
+            display: flex;
+
+            align-items: baseline;
+
+            gap: 5px;
+
+            margin-top: 13px;
+        }
+
+        .similarity-number {
+            color: #0369a1;
+
+            font-size: 24px;
+            font-weight: 950;
+        }
+
+        .similarity-label {
+            color: #94a3b8;
+
+            font-size: 9px;
+            font-weight: 800;
         }
 
         .mini-track {
             height: 6px;
-            background: #dcfce7;
+
             border-radius: 999px;
-            margin-top: 6px;
+
+            background: #e2e8f0;
+
             overflow: hidden;
+
+            margin-top: 6px;
         }
 
         .mini-fill {
             height: 100%;
+
             border-radius: 999px;
+
             background:
                 linear-gradient(
                     90deg,
-                    #22c55e,
+                    #14b8a6,
                     #06b6d4
                 );
         }
 
-        .evidence-row {
-            margin-top: 10px;
-            color: #64748b;
-            font-size: 10px;
-            line-height: 1.5;
-        }
+
+        /* =====================================================
+           PROJECT EVIDENCE
+        ===================================================== */
 
         .evidence-label {
-            color: #475569;
-            font-weight: 800;
+            color: #64748b;
+
+            font-size: 8px;
+            font-weight: 850;
+
+            text-transform: uppercase;
+
+            letter-spacing: .07em;
+
+            margin-top: 12px;
+        }
+
+        .project-list {
+            color: #334155;
+
+            font-size: 10px;
+
+            line-height: 1.6;
+
+            margin-top: 3px;
         }
 
 
-        /* ==================================================
+        /* =====================================================
            UNVALIDATED
-        ================================================== */
+        ===================================================== */
 
-        .unvalidated-grid-v5 {
-            display: grid;
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
+        .unvalidated-card {
+            position: relative;
 
-        .unvalidated-skill {
-            padding: 14px;
-            border-radius: 16px;
+            padding: 15px 17px;
+
+            border-radius: 17px;
+
             background:
                 linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #fff7ed
+                    135deg,
+                    #fff7ed,
+                    #fff1f2
                 );
+
             border: 1px solid #fed7aa;
+
             box-shadow:
-                0 6px 17px rgba(15,23,42,.05);
+                0 7px 20px
+                rgba(15,23,42,.045);
+
             transition:
                 transform .2s ease,
                 box-shadow .2s ease;
         }
 
-        .unvalidated-skill:hover {
-            transform:
-                translateY(-4px);
+        .unvalidated-card:hover {
+            transform: translateY(-4px);
+
             box-shadow:
-                0 12px 25px rgba(15,23,42,.09);
+                0 14px 28px
+                rgba(15,23,42,.08);
         }
 
-        .unvalidated-name-v5 {
-            color: #9a3412;
-            font-size: 12px;
-            font-weight: 850;
-        }
+        .unvalidated-name {
+            color: #7c2d12;
 
-        .unvalidated-note-v5 {
-            color: #78716c;
-            font-size: 9px;
-            line-height: 1.5;
-            margin-top: 5px;
-        }
-
-
-        /* ==================================================
-           PROJECT COVERAGE
-        ================================================== */
-
-        .project-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .project-card {
-            padding: 13px;
-            border-radius: 15px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow:
-                0 5px 15px rgba(15,23,42,.045);
-        }
-
-        .project-name {
-            color: #0f172a;
-            font-size: 11px;
-            font-weight: 850;
-        }
-
-        .project-count {
-            color: #0369a1;
-            font-size: 20px;
+            font-size: 13px;
             font-weight: 900;
+        }
+
+        .unvalidated-text {
+            color: #78716c;
+
+            font-size: 9px;
+
+            line-height: 1.5;
+
             margin-top: 3px;
         }
 
-        .project-label {
-            color: #64748b;
-            font-size: 9px;
-        }
 
+        /* =====================================================
+           RECOMMENDATION
+        ===================================================== */
 
-        /* ==================================================
-           EMPTY
-        ================================================== */
+        .recommendation-card {
+            margin-top: 20px;
 
-        .skill-empty {
-            padding: 25px;
-            text-align: center;
+            padding: 18px;
+
             border-radius: 20px;
+
             background:
                 linear-gradient(
                     135deg,
-                    #f8fafc,
-                    #eef6ff
+                    #07152f,
+                    #102a56
                 );
-            border: 1px solid #bae6fd;
+
+            box-shadow:
+                0 12px 30px
+                rgba(15,23,42,.12);
         }
 
-        .skill-empty-title {
-            color: #075985;
+        .recommendation-label {
+            color: #67e8f9;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            text-transform: uppercase;
+
+            letter-spacing: .10em;
+        }
+
+        .recommendation-title {
+            color: white;
+
             font-size: 16px;
             font-weight: 900;
+
+            margin-top: 4px;
         }
 
-        .skill-empty-text {
-            color: #64748b;
-            font-size: 11px;
-            margin-top: 5px;
+        .recommendation-text {
+            color: #cbd5e1;
+
+            font-size: 10px;
+
+            line-height: 1.65;
+
+            margin-top: 4px;
         }
 
 
-        /* ==================================================
+        /* =====================================================
            RESPONSIVE
-        ================================================== */
+        ===================================================== */
 
-        @media (max-width: 850px) {
+        @media (max-width: 800px) {
 
             .skill-dashboard {
                 grid-template-columns: 1fr;
             }
 
-            .unvalidated-grid-v5,
-            .project-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
+            .skill-grid {
+                grid-template-columns: 1fr;
             }
 
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 550px) {
 
-            .validated-grid-v5,
-            .unvalidated-grid-v5,
-            .project-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-grid {
+            .stat-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -674,10 +817,6 @@ def display_skill_validation(
 
     _apply_styles()
 
-    # --------------------------------------------------------
-    # BACKEND DATA
-    # --------------------------------------------------------
-
     details = (
         analysis.get(
             "skill_validation_details"
@@ -685,26 +824,26 @@ def display_skill_validation(
     )
 
     validated = (
-        details.get("validated") or []
+        details.get("validated")
+        or []
     )
 
     unvalidated = (
-        details.get("unvalidated") or []
+        details.get("unvalidated")
+        or []
     )
 
-    total = details.get(
-        "total",
-        len(validated) + len(unvalidated),
-    )
-
-    total = int(
-        _safe_number(total)
+    total = _safe_number(
+        details.get(
+            "total",
+            len(validated) + len(unvalidated),
+        )
     )
 
     pct = _safe_number(
         details.get(
             "validation_pct",
-            0.0,
+            0,
         )
     )
 
@@ -713,60 +852,80 @@ def display_skill_validation(
         min(100.0, pct),
     )
 
-    validated_count = len(validated)
-    unvalidated_count = len(unvalidated)
-
     # ========================================================
     # HEADER
     # ========================================================
 
-    st.markdown(
+    st.html(
         """
-        <div class="skill-v5-title">
+        <div class="skill-title">
             Skill Validation
         </div>
 
-        <div class="skill-v5-subtitle">
+        <div class="skill-subtitle">
             Measure how strongly your listed skills are
             supported by projects and experience evidence.
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
-    # EMPTY STATE
+    # SUMMARY TEXT
     # ========================================================
 
-    if total == 0:
+    validated_count = len(validated)
+    unvalidated_count = len(unvalidated)
 
-        st.markdown(
-            """
-            <div class="skill-empty">
+    if pct >= 80:
 
-                <div class="skill-empty-title">
-                    No Skills Detected
-                </div>
-
-                <div class="skill-empty-text">
-                    Add relevant technical and professional
-                    skills to your resume for validation.
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True,
+        summary_heading = (
+            "Strong Skill Evidence"
         )
 
-        return
+        summary_text = (
+            "Most of your listed skills are supported by "
+            "projects or experience evidence."
+        )
 
-    status = _get_validation_level(pct)
+    elif pct >= 60:
+
+        summary_heading = (
+            "Good Skill Coverage"
+        )
+
+        summary_text = (
+            "A solid portion of your skills have supporting "
+            "evidence, but some skills could be demonstrated "
+            "more clearly."
+        )
+
+    elif pct > 0:
+
+        summary_heading = (
+            "Evidence Coverage Needs Improvement"
+        )
+
+        summary_text = (
+            "Several listed skills need stronger connections "
+            "to projects or experience evidence."
+        )
+
+    else:
+
+        summary_heading = (
+            "Limited Skill Evidence"
+        )
+
+        summary_text = (
+            "The analysis found limited evidence connecting "
+            "your listed skills to projects or experience."
+        )
 
     # ========================================================
     # TOP DASHBOARD
     # ========================================================
 
-    st.markdown(
+    st.html(
         f"""
         <div class="skill-dashboard">
 
@@ -787,167 +946,148 @@ def display_skill_validation(
 
                 </div>
 
-                <div class="score-status">
-                    {status["label"]} Validation
-                </div>
-
-                <div class="score-caption">
-                    Skill evidence coverage
+                <div class="score-label">
+                    Skill Validation Score
                 </div>
 
             </div>
 
 
-            <div class="summary-panel">
+            <div class="validation-summary">
 
-                <div class="summary-heading">
-                    Validation Overview
+                <div class="summary-eyebrow">
+                    Evidence Analysis
                 </div>
 
-                <div class="summary-grid">
+                <div class="summary-heading">
+                    {summary_heading}
+                </div>
 
-                    <div class="summary-item">
+                <div class="summary-text">
+                    {summary_text}
+                </div>
 
-                        <div class="summary-label">
-                            Total Skills
+
+                <div class="stat-grid">
+
+                    <div class="stat-card">
+
+                        <div class="stat-value">
+                            {int(total)}
                         </div>
 
-                        <div class="summary-value">
-                            {total}
-                        </div>
-
-                        <div class="summary-small">
-                            Skills detected
+                        <div class="stat-label">
+                            TOTAL SKILLS
                         </div>
 
                     </div>
 
 
-                    <div class="summary-item">
+                    <div class="stat-card">
 
-                        <div class="summary-label">
-                            Validated
-                        </div>
-
-                        <div
-                            class="summary-value"
-                            style="color:#166534;"
-                        >
+                        <div class="stat-value">
                             {validated_count}
                         </div>
 
-                        <div class="summary-small">
-                            Evidence found
+                        <div class="stat-label">
+                            VALIDATED
                         </div>
 
                     </div>
 
 
-                    <div class="summary-item">
+                    <div class="stat-card">
 
-                        <div class="summary-label">
-                            Need Evidence
-                        </div>
-
-                        <div
-                            class="summary-value"
-                            style="color:#c2410c;"
-                        >
+                        <div class="stat-value">
                             {unvalidated_count}
                         </div>
 
-                        <div class="summary-small">
-                            Skills to strengthen
+                        <div class="stat-label">
+                            NEED EVIDENCE
                         </div>
 
                     </div>
 
+                </div>
 
-                    <div class="summary-item">
 
-                        <div class="summary-label">
-                            Validation Rate
-                        </div>
+                <div class="validation-bar-label">
 
-                        <div
-                            class="summary-value"
-                            style="color:{status["color"]};"
-                        >
-                            {pct:.0f}%
-                        </div>
+                    <span>
+                        Evidence Coverage
+                    </span>
 
-                        <div class="summary-small">
-                            Overall coverage
-                        </div>
+                    <span>
+                        {pct:.0f}%
+                    </span>
 
-                    </div>
+                </div>
+
+                <div class="validation-track">
+
+                    <div
+                        class="validation-fill"
+                        style="width:{pct:.0f}%"
+                    ></div>
 
                 </div>
 
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
     # INSIGHT
     # ========================================================
 
-    if unvalidated_count == 0:
+    if pct >= 80:
 
-        insight_title = (
-            "Strong Skill-to-Evidence Alignment"
+        insight = (
+            "Your skills are well supported by evidence. "
+            "Maintain this connection between skills and "
+            "real project or experience outcomes."
         )
 
-        insight_text = (
-            "All detected skills have supporting evidence "
-            "in the available resume data. This makes your "
-            "skill section more credible to recruiters."
+    elif pct >= 60:
+
+        insight = (
+            "Your evidence coverage is reasonably strong. "
+            "Adding proof for the remaining skills can "
+            "make your profile more credible."
         )
 
-    elif pct >= 70:
+    elif total > 0:
 
-        insight_title = (
-            "Good Validation with Room to Improve"
-        )
-
-        insight_text = (
-            f"{validated_count} of {total} detected skills "
-            "have supporting evidence. Strengthen the "
-            "remaining skills with relevant projects or "
-            "experience bullets where applicable."
+        insight = (
+            "Try connecting listed skills to specific "
+            "projects, experience bullets, or measurable "
+            "outcomes wherever the skill was actually used."
         )
 
     else:
 
-        insight_title = (
-            "Your Biggest Opportunity: Add Evidence"
+        insight = (
+            "No sufficient skill evidence was detected. "
+            "Review your resume's skills, projects, and "
+            "experience sections."
         )
 
-        insight_text = (
-            f"{unvalidated_count} of {total} skills lack "
-            "clear supporting evidence. Connect these skills "
-            "to projects, experience, achievements, or "
-            "measurable work where applicable."
-        )
-
-    st.markdown(
+    st.html(
         f"""
         <div class="validation-insight">
 
-            <div class="insight-title">
-                {insight_title}
+            <div class="validation-insight-title">
+                Validation Insight
             </div>
 
-            <div class="insight-text">
-                {insight_text}
+            <div class="validation-insight-text">
+                {insight}
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
@@ -956,22 +1096,22 @@ def display_skill_validation(
 
     if validated:
 
-        st.markdown(
+        st.html(
             """
-            <div class="skill-section-title">
+            <div class="section-title">
                 Validated Skills
             </div>
 
-            <div class="skill-section-subtitle">
-                Skills supported by project or experience evidence.
+            <div class="section-subtitle">
+                Skills supported by evidence found in your
+                projects or experience.
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
-        cards = '<div class="validated-grid-v5">'
-
-        project_skill_counts: Dict[str, int] = {}
+        cards_html = """
+        <div class="skill-grid">
+        """
 
         for entry in validated:
 
@@ -981,45 +1121,32 @@ def display_skill_validation(
             skill = _clean_text(
                 entry.get(
                     "skill",
-                    "Unknown Skill",
+                    "Unnamed Skill",
                 )
             )
 
-            if not skill:
-                skill = "Unknown Skill"
-
             projects = _clean_projects(
-                entry.get("projects")
+                entry.get(
+                    "projects",
+                    [],
+                )
             )
 
             similarity = _normalize_similarity(
-                entry.get("similarity")
+                entry.get(
+                    "similarity",
+                    0,
+                )
             )
 
             evidence_level = _get_evidence_level(
-                entry.get("similarity")
+                projects,
+                similarity,
             )
 
-            evidence_color = _get_evidence_color(
-                entry.get("similarity")
+            meta = _get_evidence_meta(
+                evidence_level
             )
-
-            # ----------------------------------------------
-            # Project coverage
-            # ----------------------------------------------
-
-            for project in projects:
-
-                project_skill_counts[project] = (
-                    project_skill_counts.get(
-                        project,
-                        0,
-                    ) + 1
-                )
-
-            # ----------------------------------------------
-            # Evidence text
-            # ----------------------------------------------
 
             if projects:
 
@@ -1028,33 +1155,32 @@ def display_skill_validation(
                 )
 
                 if len(projects) > 3:
-
                     project_text += (
-                        f" +{len(projects) - 3} more"
+                        f" + {len(projects) - 3} more"
                     )
 
             else:
 
                 project_text = (
-                    "Experience section"
+                    "Experience evidence detected"
                 )
 
-            cards += f"""
-            <div class="validated-skill">
+            cards_html += f"""
+            <div class="skill-card">
 
-                <div class="validated-top">
+                <div class="skill-top">
 
-                    <div class="validated-name">
+                    <div class="skill-name">
                         {skill}
                     </div>
 
                     <div
                         class="evidence-badge"
                         style="
-                            color:{evidence_color};
-                            background:#ffffff;
+                            color:{meta["color"]};
+                            background:{meta["background"]};
                             border:1px solid
-                                rgba(15,23,42,.08);
+                                {meta["border"]};
                         "
                     >
                         {evidence_level}
@@ -1063,10 +1189,16 @@ def display_skill_validation(
                 </div>
 
 
-                <div class="similarity-text">
-                    Evidence Match
-                    &nbsp;&nbsp;
-                    {similarity:.0f}%
+                <div class="similarity-row">
+
+                    <div class="similarity-number">
+                        {similarity:.0f}%
+                    </div>
+
+                    <div class="similarity-label">
+                        EVIDENCE MATCH
+                    </div>
+
                 </div>
 
 
@@ -1082,101 +1214,22 @@ def display_skill_validation(
                 </div>
 
 
-                <div class="evidence-row">
+                <div class="evidence-label">
+                    Demonstrated In
+                </div>
 
-                    <span class="evidence-label">
-                        Demonstrated in:
-                    </span>
-
+                <div class="project-list">
                     {project_text}
-
                 </div>
 
             </div>
             """
 
-        cards += "</div>"
+        cards_html += """
+        </div>
+        """
 
-        st.markdown(
-            cards,
-            unsafe_allow_html=True,
-        )
-
-        # ====================================================
-        # PROJECT COVERAGE
-        # ====================================================
-
-        # Rebuild project map safely
-        project_skill_counts = {}
-
-        for entry in validated:
-
-            if not isinstance(entry, dict):
-                continue
-
-            projects = _clean_projects(
-                entry.get("projects")
-            )
-
-            for project in projects:
-
-                project_skill_counts[project] = (
-                    project_skill_counts.get(
-                        project,
-                        0,
-                    ) + 1
-                )
-
-        if project_skill_counts:
-
-            st.markdown(
-                """
-                <div class="skill-section-title">
-                    Project Coverage
-                </div>
-
-                <div class="skill-section-subtitle">
-                    How many validated skills are demonstrated
-                    by each project.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
-            sorted_projects = sorted(
-                project_skill_counts.items(),
-                key=lambda x: x[1],
-                reverse=True,
-            )
-
-            project_html = '<div class="project-grid">'
-
-            for project, count in sorted_projects[:6]:
-
-                project_html += f"""
-                <div class="project-card">
-
-                    <div class="project-name">
-                        {project}
-                    </div>
-
-                    <div class="project-count">
-                        {count}
-                    </div>
-
-                    <div class="project-label">
-                        validated skills demonstrated
-                    </div>
-
-                </div>
-                """
-
-            project_html += "</div>"
-
-            st.markdown(
-                project_html,
-                unsafe_allow_html=True,
-            )
+        st.html(cards_html)
 
     # ========================================================
     # UNVALIDATED SKILLS
@@ -1184,51 +1237,83 @@ def display_skill_validation(
 
     if unvalidated:
 
-        st.markdown(
+        st.html(
             """
-            <div class="skill-section-title">
+            <div class="section-title">
                 Skills Needing Evidence
             </div>
 
-            <div class="skill-section-subtitle">
-                These skills are listed but are not clearly
-                connected to supporting resume evidence.
+            <div class="section-subtitle">
+                These skills are listed but were not clearly
+                connected to project or experience evidence.
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
-        cards = '<div class="unvalidated-grid-v5">'
+        cards_html = """
+        <div class="skill-grid">
+        """
 
         for skill in unvalidated:
 
-            skill_text = _clean_text(skill)
+            skill_text = _clean_text(
+                skill
+            )
 
             if not skill_text:
                 continue
 
-            cards += f"""
-            <div class="unvalidated-skill">
+            cards_html += f"""
+            <div class="unvalidated-card">
 
-                <div class="unvalidated-name-v5">
+                <div class="unvalidated-name">
                     {skill_text}
                 </div>
 
-                <div class="unvalidated-note-v5">
-                    Connect this skill to a relevant project,
-                    experience bullet, achievement, or
-                    measurable outcome where applicable.
+                <div class="unvalidated-text">
+                    Consider demonstrating this skill through
+                    a relevant project, experience bullet,
+                    achievement, or measurable result.
                 </div>
 
             </div>
             """
 
-        cards += "</div>"
+        cards_html += """
+        </div>
+        """
 
-        st.markdown(
-            cards,
-            unsafe_allow_html=True,
+        st.html(cards_html)
+
+    # ========================================================
+    # NO SKILLS
+    # ========================================================
+
+    if total == 0:
+
+        st.html(
+            """
+            <div class="recommendation-card">
+
+                <div class="recommendation-label">
+                    Skill Analysis
+                </div>
+
+                <div class="recommendation-title">
+                    No Skills Detected
+                </div>
+
+                <div class="recommendation-text">
+                    No skills were available for validation.
+                    Review the Skills, Projects, and Experience
+                    sections of your resume.
+                </div>
+
+            </div>
+            """
         )
+
+        return
 
     # ========================================================
     # FINAL RECOMMENDATION
@@ -1236,23 +1321,46 @@ def display_skill_validation(
 
     if unvalidated_count > 0:
 
-        st.markdown(
-            """
-            <div class="validation-insight">
-
-                <div class="insight-title">
-                    Recommended Next Step
-                </div>
-
-                <div class="insight-text">
-                    Review the skills needing evidence and
-                    strengthen the most relevant ones first.
-                    Evidence should come from genuine projects,
-                    experience, achievements, or work you can
-                    actually discuss in an interview.
-                </div>
-
-            </div>
-            """,
-            unsafe_allow_html=True,
+        recommendation_title = (
+            "Strengthen Your Skill Evidence"
         )
+
+        recommendation_text = (
+            f"{unvalidated_count} listed skill"
+            f"{'s' if unvalidated_count != 1 else ''} "
+            "could use stronger evidence. Connect them to "
+            "relevant projects or experience where the skill "
+            "was genuinely used."
+        )
+
+    else:
+
+        recommendation_title = (
+            "Excellent Skill Evidence Coverage"
+        )
+
+        recommendation_text = (
+            "Your listed skills have supporting evidence. "
+            "Keep the skill-to-project connection clear and "
+            "specific throughout your resume."
+        )
+
+    st.html(
+        f"""
+        <div class="recommendation-card">
+
+            <div class="recommendation-label">
+                Recommended Next Step
+            </div>
+
+            <div class="recommendation-title">
+                {recommendation_title}
+            </div>
+
+            <div class="recommendation-text">
+                {recommendation_text}
+            </div>
+
+        </div>
+        """
+    )
