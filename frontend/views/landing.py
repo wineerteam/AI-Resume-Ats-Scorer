@@ -4,10 +4,10 @@ import streamlit as st
 def render():
 
     # =========================================================
-    # LANDING PAGE STYLING
+    # PAGE CSS
     # =========================================================
 
-    st.html("""
+    st.markdown("""
     <style>
 
     /* =====================================================
@@ -26,7 +26,7 @@ def render():
 
 
     /* =====================================================
-       HERO
+       HERO SECTION
        ===================================================== */
 
     .main-header {
@@ -35,7 +35,7 @@ def render():
 
         text-align: center;
 
-        padding: 4.5rem 2rem;
+        padding: 4.2rem 2rem;
 
         margin-bottom: 1.5rem;
 
@@ -43,13 +43,13 @@ def render():
 
         background:
             radial-gradient(
-                circle at 90% 10%,
-                rgba(250,204,21,0.25),
+                circle at 88% 12%,
+                rgba(250, 204, 21, 0.22),
                 transparent 25%
             ),
             radial-gradient(
-                circle at 10% 90%,
-                rgba(236,72,153,0.18),
+                circle at 10% 88%,
+                rgba(236, 72, 153, 0.18),
                 transparent 28%
             ),
             linear-gradient(
@@ -66,11 +66,19 @@ def render():
             0 25px 65px rgba(15,23,42,0.35),
             inset 0 1px 0 rgba(255,255,255,0.12);
 
-        transform-style: preserve-3d;
-
         transition:
-            transform 0.18s ease-out,
-            box-shadow 0.25s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+
+    .main-header:hover {
+        transform:
+            translateY(-5px)
+            scale(1.005);
+
+        box-shadow:
+            0 35px 80px rgba(15,23,42,0.42);
     }
 
 
@@ -79,17 +87,17 @@ def render():
 
         position: absolute;
 
-        width: 250px;
-        height: 250px;
+        width: 260px;
+        height: 260px;
 
-        top: -150px;
+        top: -160px;
         right: -80px;
 
         border-radius: 50%;
 
-        background: rgba(250,204,21,0.10);
+        background: rgba(250,204,21,0.12);
 
-        filter: blur(15px);
+        filter: blur(18px);
 
         pointer-events: none;
     }
@@ -100,17 +108,17 @@ def render():
 
         position: absolute;
 
-        width: 220px;
-        height: 220px;
+        width: 230px;
+        height: 230px;
 
-        bottom: -140px;
-        left: -80px;
+        bottom: -150px;
+        left: -90px;
 
         border-radius: 50%;
 
-        background: rgba(236,72,153,0.10);
+        background: rgba(236,72,153,0.12);
 
-        filter: blur(15px);
+        filter: blur(18px);
 
         pointer-events: none;
     }
@@ -118,10 +126,7 @@ def render():
 
     .hero-content {
         position: relative;
-
         z-index: 2;
-
-        transform: translateZ(30px);
     }
 
 
@@ -136,7 +141,7 @@ def render():
 
         background: rgba(250,204,21,0.13);
 
-        border: 1px solid rgba(250,204,21,0.48);
+        border: 1px solid rgba(250,204,21,0.50);
 
         color: #fef3c7;
 
@@ -144,10 +149,10 @@ def render():
 
         font-weight: 800;
 
-        letter-spacing: 1px;
+        letter-spacing: 1.2px;
 
         box-shadow:
-            0 6px 20px rgba(250,204,21,0.10);
+            0 7px 22px rgba(250,204,21,0.10);
     }
 
 
@@ -165,7 +170,7 @@ def render():
         margin: 0 0 15px 0;
 
         text-shadow:
-            0 4px 20px rgba(0,0,0,0.22);
+            0 5px 22px rgba(0,0,0,0.25);
     }
 
 
@@ -371,18 +376,23 @@ def render():
             perspective(1000px)
             translateZ(0);
 
-        transform-style: preserve-3d;
-
         transition:
-            transform 0.18s ease-out,
-            box-shadow 0.25s ease,
-            border-color 0.25s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
 
     .feature-card:hover {
+        transform:
+            perspective(1000px)
+            translateY(-12px)
+            translateZ(25px)
+            scale(1.025)
+            rotateX(1deg);
+
         box-shadow:
-            0 30px 65px rgba(15,23,42,0.18);
+            0 30px 65px rgba(15,23,42,0.20);
 
         border-color: #93c5fd;
 
@@ -406,15 +416,15 @@ def render():
         opacity: 0.10;
 
         transition:
-            transform 0.35s ease,
-            opacity 0.35s ease;
+            transform 0.4s ease,
+            opacity 0.4s ease;
     }
 
 
     .feature-card:hover::after {
-        transform: scale(1.4);
+        transform: scale(1.5);
 
-        opacity: 0.17;
+        opacity: 0.18;
     }
 
 
@@ -454,20 +464,27 @@ def render():
 
     .card-icon {
         width: 56px;
-
         height: 56px;
 
         display: flex;
 
         align-items: center;
-
         justify-content: center;
 
         border-radius: 17px;
 
         margin-bottom: 19px;
 
-        transform: translateZ(22px);
+        transition:
+            transform 0.3s ease;
+    }
+
+
+    .feature-card:hover .card-icon {
+        transform:
+            translateY(-5px)
+            rotate(5deg)
+            scale(1.08);
     }
 
 
@@ -503,7 +520,6 @@ def render():
 
     .icon-shape {
         width: 22px;
-
         height: 22px;
 
         border-radius: 7px;
@@ -559,8 +575,6 @@ def render():
         position: relative;
 
         z-index: 2;
-
-        transform: translateZ(15px);
     }
 
 
@@ -646,22 +660,20 @@ def render():
         box-shadow:
             0 8px 22px rgba(15,23,42,0.06);
 
-        transform:
-            perspective(900px)
-            translateZ(0);
-
-        transform-style: preserve-3d;
-
         transition:
-            transform 0.18s ease-out,
-            box-shadow 0.25s ease,
-            border-color 0.25s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
 
     .score-card:hover {
+        transform:
+            translateY(-10px)
+            scale(1.05);
+
         box-shadow:
-            0 25px 48px rgba(15,23,42,0.15);
+            0 25px 48px rgba(15,23,42,0.17);
 
         border-color: #93c5fd;
 
@@ -675,7 +687,6 @@ def render():
         position: absolute;
 
         left: 25%;
-
         right: 25%;
 
         bottom: 0;
@@ -717,8 +728,6 @@ def render():
         font-weight: 850;
 
         margin-bottom: 6px;
-
-        transform: translateZ(15px);
     }
 
 
@@ -730,8 +739,6 @@ def render():
         font-weight: 650;
 
         line-height: 1.4;
-
-        transform: translateZ(10px);
     }
 
 
@@ -785,22 +792,20 @@ def render():
         box-shadow:
             0 9px 25px rgba(15,23,42,0.06);
 
-        transform:
-            perspective(1000px)
-            translateZ(0);
-
-        transform-style: preserve-3d;
-
         transition:
-            transform 0.18s ease-out,
-            box-shadow 0.25s ease,
-            border-color 0.25s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
 
     .step-card:hover {
+        transform:
+            translateY(-12px)
+            scale(1.025);
+
         box-shadow:
-            0 30px 58px rgba(15,23,42,0.16);
+            0 30px 58px rgba(15,23,42,0.18);
 
         border-color: #93c5fd;
 
@@ -810,13 +815,11 @@ def render():
 
     .step-number {
         width: 46px;
-
         height: 46px;
 
         display: flex;
 
         align-items: center;
-
         justify-content: center;
 
         border-radius: 14px;
@@ -829,10 +832,19 @@ def render():
 
         margin-bottom: 18px;
 
-        transform: translateZ(20px);
-
         box-shadow:
             0 8px 18px rgba(15,23,42,0.14);
+
+        transition:
+            transform 0.3s ease;
+    }
+
+
+    .step-card:hover .step-number {
+        transform:
+            translateY(-4px)
+            rotate(-4deg)
+            scale(1.08);
     }
 
 
@@ -876,8 +888,6 @@ def render():
         line-height: 1.35;
 
         margin: 0 0 9px 0;
-
-        transform: translateZ(13px);
     }
 
 
@@ -889,13 +899,11 @@ def render():
         line-height: 1.7;
 
         margin: 0;
-
-        transform: translateZ(8px);
     }
 
 
     /* =====================================================
-       PRIVACY
+       PRIVACY CARD
        ===================================================== */
 
     .privacy-card {
@@ -931,15 +939,17 @@ def render():
         box-shadow:
             0 20px 50px rgba(15,23,42,0.24);
 
-        transform-style: preserve-3d;
-
         transition:
-            transform 0.18s ease-out,
-            box-shadow 0.25s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
     }
 
 
     .privacy-card:hover {
+        transform:
+            translateY(-8px)
+            scale(1.01);
+
         box-shadow:
             0 32px 65px rgba(15,23,42,0.32);
     }
@@ -949,8 +959,6 @@ def render():
         position: relative;
 
         z-index: 2;
-
-        transform: translateZ(18px);
     }
 
 
@@ -1009,7 +1017,7 @@ def render():
 
     .developer-card:hover {
         transform:
-            translateY(-6px);
+            translateY(-7px);
 
         box-shadow:
             0 25px 55px rgba(15,23,42,0.28);
@@ -1093,7 +1101,6 @@ def render():
         .feature-card,
         .step-card {
             min-height: auto;
-
             margin-bottom: 20px;
         }
 
@@ -1112,97 +1119,6 @@ def render():
 
     </style>
     """, unsafe_allow_html=True)
-
-
-    # =========================================================
-    # CURSOR BASED 3D MOTION
-    # =========================================================
-
-    st.html("""
-    <script>
-
-    const cards = document.querySelectorAll(
-        '.feature-card, .score-card, .step-card, .privacy-card'
-    );
-
-    cards.forEach((card) => {
-
-        card.addEventListener('mousemove', (event) => {
-
-            const rect = card.getBoundingClientRect();
-
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const rotateX =
-                ((y - centerY) / centerY) * -5;
-
-            const rotateY =
-                ((x - centerX) / centerX) * 5;
-
-            card.style.transform =
-                `perspective(1000px)
-                 rotateX(${rotateX}deg)
-                 rotateY(${rotateY}deg)
-                 translateY(-10px)
-                 translateZ(25px)
-                 scale(1.02)`;
-
-        });
-
-
-        card.addEventListener('mouseleave', () => {
-
-            card.style.transform =
-                'perspective(1000px) translateZ(0)';
-
-        });
-
-    });
-
-
-    const hero = document.querySelector('.main-header');
-
-    if (hero) {
-
-        hero.addEventListener('mousemove', (event) => {
-
-            const rect = hero.getBoundingClientRect();
-
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const rotateX =
-                ((y - centerY) / centerY) * -1.5;
-
-            const rotateY =
-                ((x - centerX) / centerX) * 1.5;
-
-            hero.style.transform =
-                `perspective(1200px)
-                 rotateX(${rotateX}deg)
-                 rotateY(${rotateY}deg)
-                 translateY(-4px)`;
-        });
-
-
-        hero.addEventListener('mouseleave', () => {
-
-            hero.style.transform =
-                'perspective(1200px)';
-
-        });
-
-    }
-
-    </script>
-    """)
 
 
     # =========================================================
@@ -1247,7 +1163,7 @@ def render():
 
 
     # =========================================================
-    # CTA
+    # CTA BUTTON
     # =========================================================
 
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -1255,7 +1171,7 @@ def render():
     with col2:
 
         # =====================================================
-        # ORIGINAL LOGIC — DO NOT CHANGE
+        # ORIGINAL NAVIGATION LOGIC - UNCHANGED
         # =====================================================
 
         if st.button(
@@ -1263,7 +1179,9 @@ def render():
             use_container_width=True,
             type="primary"
         ):
+
             st.session_state.current_view = 'scorer'
+
             st.rerun()
 
 
@@ -1271,7 +1189,7 @@ def render():
 
 
     # =========================================================
-    # KEY FEATURES
+    # KEY FEATURES HEADING
     # =========================================================
 
     st.html("""
@@ -1293,6 +1211,10 @@ def render():
     </div>
     """)
 
+
+    # =========================================================
+    # FEATURE CARDS
+    # =========================================================
 
     col1, col2, col3 = st.columns(3)
 
@@ -1612,7 +1534,7 @@ def render():
 
 
     # =========================================================
-    # PRIVACY
+    # PRIVACY SECTION
     # =========================================================
 
     st.html("""
