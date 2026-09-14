@@ -9,9 +9,7 @@ def render():
     st.markdown("""
     <style>
 
-    /* ==========================================
-       GLOBAL PAGE
-       ========================================== */
+    /* ---------- PAGE ---------- */
 
     .block-container {
         max-width: 1200px;
@@ -19,26 +17,23 @@ def render():
         padding-bottom: 3rem;
     }
 
-    /* ==========================================
-       HERO SECTION
-       ========================================== */
+    /* ---------- HERO ---------- */
 
     .main-header {
         position: relative;
         overflow: hidden;
-
         text-align: center;
-        padding: 4.2rem 2.5rem;
+        padding: 4rem 2rem;
 
         background:
             radial-gradient(
-                circle at 88% 15%,
-                rgba(255, 193, 7, 0.28),
+                circle at 90% 10%,
+                rgba(250, 204, 21, 0.25),
                 transparent 30%
             ),
             radial-gradient(
-                circle at 12% 85%,
-                rgba(244, 63, 94, 0.18),
+                circle at 10% 90%,
+                rgba(236, 72, 153, 0.20),
                 transparent 32%
             ),
             linear-gradient(
@@ -50,22 +45,21 @@ def render():
             );
 
         color: white;
-        border-radius: 30px;
-
+        border-radius: 28px;
         margin-bottom: 2rem;
 
-        border: 1px solid rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.15);
 
         box-shadow:
             0 25px 60px rgba(15,23,42,0.35),
             inset 0 1px 0 rgba(255,255,255,0.12);
 
-        transform: perspective(1000px) rotateX(0deg);
-        transition: all 0.35s ease;
+        transition: all 0.3s ease;
     }
 
     .main-header:hover {
-        transform: perspective(1000px) translateY(-5px);
+        transform: translateY(-5px);
+
         box-shadow:
             0 35px 75px rgba(15,23,42,0.42),
             inset 0 1px 0 rgba(255,255,255,0.15);
@@ -75,33 +69,31 @@ def render():
         display: inline-block;
 
         padding: 8px 18px;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
 
         border-radius: 50px;
 
-        background: rgba(255,193,7,0.14);
-        border: 1px solid rgba(255,193,7,0.45);
+        background: rgba(250,204,21,0.15);
+        border: 1px solid rgba(250,204,21,0.45);
 
         color: #fef3c7;
 
         font-size: 13px;
         font-weight: 700;
-
-        letter-spacing: 0.4px;
+        letter-spacing: 0.5px;
     }
 
     .main-header h1 {
         font-size: 3.4rem;
-        font-weight: 850;
-
-        letter-spacing: -1.5px;
+        font-weight: 800;
+        letter-spacing: -1px;
 
         margin-bottom: 12px;
 
         color: #ffffff;
 
         text-shadow:
-            0 3px 15px rgba(0,0,0,0.20);
+            0 3px 15px rgba(0,0,0,0.2);
     }
 
     .main-header h3 {
@@ -123,9 +115,8 @@ def render():
         line-height: 1.7;
     }
 
-    /* ==========================================
-       TEXT HIGHLIGHT
-       ========================================== */
+
+    /* ---------- HIGHLIGHTS ---------- */
 
     .highlight-yellow {
         color: #facc15;
@@ -156,9 +147,8 @@ def render():
         text-underline-offset: 4px;
     }
 
-    /* ==========================================
-       BUTTON
-       ========================================== */
+
+    /* ---------- BUTTON ---------- */
 
     .stButton > button {
         min-height: 55px;
@@ -166,9 +156,7 @@ def render():
         border-radius: 15px;
 
         font-size: 16px;
-        font-weight: 750;
-
-        border: 1px solid rgba(255,255,255,0.2);
+        font-weight: 700;
 
         box-shadow:
             0 10px 25px rgba(37,99,235,0.22);
@@ -182,12 +170,11 @@ def render():
         transform: translateY(-3px) scale(1.01);
 
         box-shadow:
-            0 16px 35px rgba(37,99,235,0.32);
+            0 16px 35px rgba(37,99,235,0.35);
     }
 
-    /* ==========================================
-       SECTION HEADER
-       ========================================== */
+
+    /* ---------- SECTION ---------- */
 
     .section-title {
         text-align: center;
@@ -198,7 +185,6 @@ def render():
 
     .section-title h2 {
         font-size: 2rem;
-
         font-weight: 800;
 
         color: #0f172a;
@@ -210,7 +196,6 @@ def render():
         color: #64748b;
 
         font-size: 14px;
-
         line-height: 1.6;
     }
 
@@ -230,14 +215,13 @@ def render():
         );
     }
 
-    /* ==========================================
-       FEATURE CARDS
-       ========================================== */
+
+    /* ---------- FEATURE CARDS ---------- */
 
     .feature-card {
         position: relative;
 
-        min-height: 310px;
+        min-height: 320px;
 
         padding: 28px;
 
@@ -246,24 +230,19 @@ def render():
         background:
             linear-gradient(
                 145deg,
-                rgba(255,255,255,0.98),
-                rgba(248,250,252,0.98)
+                #ffffff,
+                #f8fafc
             );
 
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 10px 25px rgba(15,23,42,0.07),
-            0 2px 5px rgba(15,23,42,0.04);
+            0 10px 25px rgba(15,23,42,0.07);
 
         transition:
-            transform 0.30s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.30s ease,
-            border-color 0.30s ease;
-
-        transform:
-            perspective(1000px)
-            translateZ(0);
+            transform 0.3s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
     .feature-card:hover {
@@ -274,15 +253,17 @@ def render():
             scale(1.025);
 
         box-shadow:
-            0 30px 60px rgba(15,23,42,0.16),
-            0 10px 25px rgba(37,99,235,0.10);
+            0 30px 60px rgba(15,23,42,0.18),
+            0 10px 25px rgba(37,99,235,0.12);
 
         border-color: #93c5fd;
 
         z-index: 10;
     }
 
-    .feature-card::before {
+    .feature-blue::before,
+    .feature-yellow::before,
+    .feature-pink::before {
         content: "";
 
         position: absolute;
@@ -294,31 +275,34 @@ def render():
         height: 3px;
 
         border-radius: 0 0 10px 10px;
+    }
 
+    .feature-blue::before {
         background: linear-gradient(
             90deg,
             #2563eb,
             #06b6d4
         );
-
-        opacity: 0.85;
     }
 
-    .feature-card:nth-child(2)::before {
+    .feature-yellow::before {
         background: linear-gradient(
             90deg,
             #facc15,
-            #fb923c
+            #f97316
         );
     }
 
-    .feature-card:nth-child(3)::before {
+    .feature-pink::before {
         background: linear-gradient(
             90deg,
-            #f472b6,
+            #ec4899,
             #ef4444
         );
     }
+
+
+    /* ---------- ICONS ---------- */
 
     .card-icon {
         width: 55px;
@@ -331,47 +315,48 @@ def render():
         border-radius: 16px;
 
         margin-bottom: 18px;
-
-        background:
-            linear-gradient(
-                135deg,
-                #dbeafe,
-                #cffafe
-            );
-
-        color: #1e3a8a;
-
-        font-size: 0;
     }
 
-    .card-icon::after {
-        content: "";
+    .blue-icon {
+        background: linear-gradient(
+            135deg,
+            #dbeafe,
+            #cffafe
+        );
+    }
 
+    .yellow-icon {
+        background: linear-gradient(
+            135deg,
+            #fef3c7,
+            #ffedd5
+        );
+    }
+
+    .pink-icon {
+        background: linear-gradient(
+            135deg,
+            #fce7f3,
+            #fee2e2
+        );
+    }
+
+    .icon-dot {
         width: 21px;
         height: 21px;
 
         border-radius: 7px;
+    }
 
+    .blue-dot {
         background: linear-gradient(
             135deg,
             #2563eb,
             #06b6d4
         );
-
-        box-shadow:
-            8px 8px 0 rgba(37,99,235,0.15);
     }
 
-    .feature-card:nth-child(2) .card-icon {
-        background:
-            linear-gradient(
-                135deg,
-                #fef3c7,
-                #ffedd5
-            );
-    }
-
-    .feature-card:nth-child(2) .card-icon::after {
+    .yellow-dot {
         background: linear-gradient(
             135deg,
             #facc15,
@@ -379,22 +364,16 @@ def render():
         );
     }
 
-    .feature-card:nth-child(3) .card-icon {
-        background:
-            linear-gradient(
-                135deg,
-                #fce7f3,
-                #fee2e2
-            );
-    }
-
-    .feature-card:nth-child(3) .card-icon::after {
+    .pink-dot {
         background: linear-gradient(
             135deg,
-            #f472b6,
+            #ec4899,
             #ef4444
         );
     }
+
+
+    /* ---------- CARD TEXT ---------- */
 
     .feature-card h3 {
         color: #0f172a;
@@ -415,6 +394,7 @@ def render():
 
     .feature-card ul {
         padding-left: 20px;
+
         margin-top: 14px;
     }
 
@@ -430,13 +410,10 @@ def render():
         color: #2563eb;
     }
 
-    /* ==========================================
-       SCORE CARDS
-       ========================================== */
+
+    /* ---------- SCORE CARDS ---------- */
 
     .score-card {
-        position: relative;
-
         padding: 23px 10px;
 
         text-align: center;
@@ -469,60 +446,49 @@ def render():
             scale(1.04);
 
         box-shadow:
-            0 22px 40px rgba(15,23,42,0.13);
+            0 22px 40px rgba(15,23,42,0.14);
 
         border-color: #93c5fd;
-
-        z-index: 10;
     }
 
     .score-number {
         font-size: 27px;
-
-        font-weight: 850;
-
-        color: #2563eb;
+        font-weight: 800;
     }
 
     .score-label {
         margin-top: 6px;
 
         font-size: 12px;
-
         font-weight: 650;
 
         color: #475569;
     }
 
-    /* Different accent colors */
-
-    .score-card:nth-child(1) .score-number {
+    .score-blue .score-number {
         color: #2563eb;
     }
 
-    .score-card:nth-child(2) .score-number {
+    .score-yellow .score-number {
         color: #f59e0b;
     }
 
-    .score-card:nth-child(3) .score-number {
+    .score-orange .score-number {
         color: #f97316;
     }
 
-    .score-card:nth-child(4) .score-number {
+    .score-pink .score-number {
         color: #ec4899;
     }
 
-    .score-card:nth-child(5) .score-number {
+    .score-red .score-number {
         color: #ef4444;
     }
 
-    /* ==========================================
-       HOW IT WORKS
-       ========================================== */
+
+    /* ---------- HOW IT WORKS ---------- */
 
     .step-card {
-        position: relative;
-
         min-height: 195px;
 
         padding: 27px;
@@ -542,9 +508,9 @@ def render():
             0 8px 25px rgba(15,23,42,0.06);
 
         transition:
-            transform 0.30s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.30s ease,
-            border-color 0.30s ease;
+            transform 0.3s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
     .step-card:hover {
@@ -555,11 +521,9 @@ def render():
             scale(1.025);
 
         box-shadow:
-            0 28px 55px rgba(15,23,42,0.15);
+            0 28px 55px rgba(15,23,42,0.16);
 
         border-color: #bfdbfe;
-
-        z-index: 10;
     }
 
     .step-number {
@@ -572,46 +536,36 @@ def render():
 
         border-radius: 14px;
 
-        background:
-            linear-gradient(
-                135deg,
-                #2563eb,
-                #06b6d4
-            );
-
         color: white;
 
         font-size: 14px;
         font-weight: 800;
 
         margin-bottom: 17px;
-
-        box-shadow:
-            0 8px 18px rgba(37,99,235,0.22);
     }
 
-    .step-card:nth-child(2) .step-number {
-        background:
-            linear-gradient(
-                135deg,
-                #facc15,
-                #f97316
-            );
-
-        box-shadow:
-            0 8px 18px rgba(249,115,22,0.20);
+    .step-blue {
+        background: linear-gradient(
+            135deg,
+            #2563eb,
+            #06b6d4
+        );
     }
 
-    .step-card:nth-child(3) .step-number {
-        background:
-            linear-gradient(
-                135deg,
-                #ec4899,
-                #ef4444
-            );
+    .step-yellow {
+        background: linear-gradient(
+            135deg,
+            #facc15,
+            #f97316
+        );
+    }
 
-        box-shadow:
-            0 8px 18px rgba(236,72,153,0.20);
+    .step-pink {
+        background: linear-gradient(
+            135deg,
+            #ec4899,
+            #ef4444
+        );
     }
 
     .step-card h3 {
@@ -631,13 +585,11 @@ def render():
         line-height: 1.7;
     }
 
-    /* ==========================================
-       PRIVACY CARD
-       ========================================== */
+
+    /* ---------- PRIVACY ---------- */
 
     .privacy-card {
         position: relative;
-
         overflow: hidden;
 
         margin-top: 30px;
@@ -665,24 +617,23 @@ def render():
 
         color: white;
 
-        border: 1px solid rgba(255,255,255,0.10);
+        border: 1px solid rgba(255,255,255,0.1);
 
         box-shadow:
             0 18px 45px rgba(15,23,42,0.22);
 
         transition:
-            transform 0.30s ease,
-            box-shadow 0.30s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
     }
 
     .privacy-card:hover {
         transform:
-            perspective(1000px)
             translateY(-7px)
-            translateZ(20px);
+            scale(1.01);
 
         box-shadow:
-            0 28px 60px rgba(15,23,42,0.30);
+            0 28px 60px rgba(15,23,42,0.3);
     }
 
     .privacy-card h3 {
@@ -700,13 +651,10 @@ def render():
         font-size: 14px;
 
         line-height: 1.75;
-
-        margin-bottom: 0;
     }
 
-    /* ==========================================
-       FOOTER
-       ========================================== */
+
+    /* ---------- FOOTER ---------- */
 
     .developer-card {
         text-align: center;
@@ -729,14 +677,13 @@ def render():
         border: 1px solid rgba(255,255,255,0.08);
 
         box-shadow:
-            0 15px 40px rgba(15,23,42,0.20);
+            0 15px 40px rgba(15,23,42,0.2);
     }
 
     .developer-card h3 {
-        color: #ffffff;
+        color: white;
 
         font-size: 19px;
-
         font-weight: 800;
 
         margin-bottom: 8px;
@@ -754,20 +701,14 @@ def render():
         color: #fef3c7;
 
         text-decoration: underline;
-
         text-decoration-color: #facc15;
-
-        text-decoration-thickness: 1px;
 
         text-underline-offset: 4px;
 
         margin: 0 12px;
 
         font-size: 14px;
-
         font-weight: 650;
-
-        transition: color 0.2s ease;
     }
 
     .developer-card a:hover {
@@ -782,9 +723,8 @@ def render():
         color: #94a3b8;
     }
 
-    /* ==========================================
-       MOBILE
-       ========================================== */
+
+    /* ---------- MOBILE ---------- */
 
     @media (max-width: 768px) {
 
@@ -800,19 +740,15 @@ def render():
             font-size: 1.05rem;
         }
 
-        .feature-card {
-            min-height: auto;
+        .feature-card,
+        .step-card {
             margin-bottom: 20px;
+            min-height: auto;
         }
 
         .score-card {
             margin-bottom: 15px;
         }
-
-        .step-card {
-            margin-bottom: 20px;
-        }
-
     }
 
     </style>
@@ -820,7 +756,7 @@ def render():
 
 
     # ==========================================
-    # HERO SECTION
+    # HERO
     # ==========================================
 
     st.markdown("""
@@ -857,18 +793,20 @@ def render():
 
 
     # ==========================================
-    # CALL TO ACTION
+    # CTA BUTTON
     # ==========================================
 
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
+
         if st.button(
             "Start Analyzing Your Resume",
             use_container_width=True,
             type="primary"
         ):
-            st.session_state.current_view = 'scorer'
+
+            st.session_state.current_view = "scorer"
             st.rerun()
 
 
@@ -876,21 +814,17 @@ def render():
 
 
     # ==========================================
-    # FEATURES
+    # KEY FEATURES
     # ==========================================
 
     st.markdown("""
     <div class="section-title">
 
-        <h2>
-            Key Features
-        </h2>
+        <h2>Key Features</h2>
 
         <p>
             Powerful tools to make your resume
-            <span class="underline-blue">
-                ATS-ready
-            </span>
+            <span class="underline-blue">ATS-ready</span>
         </p>
 
         <div class="section-line"></div>
@@ -903,10 +837,13 @@ def render():
 
 
     with col1:
-        st.markdown("""
-        <div class="feature-card">
 
-            <div class="card-icon"></div>
+        st.markdown("""
+        <div class="feature-card feature-blue">
+
+            <div class="card-icon blue-icon">
+                <div class="icon-dot blue-dot"></div>
+            </div>
 
             <h3>
                 Comprehensive Scoring
@@ -933,10 +870,13 @@ def render():
 
 
     with col2:
-        st.markdown("""
-        <div class="feature-card">
 
-            <div class="card-icon"></div>
+        st.markdown("""
+        <div class="feature-card feature-yellow">
+
+            <div class="card-icon yellow-icon">
+                <div class="icon-dot yellow-dot"></div>
+            </div>
 
             <h3>
                 AI Skill Validation
@@ -962,10 +902,13 @@ def render():
 
 
     with col3:
-        st.markdown("""
-        <div class="feature-card">
 
-            <div class="card-icon"></div>
+        st.markdown("""
+        <div class="feature-card feature-pink">
+
+            <div class="card-icon pink-icon">
+                <div class="icon-dot pink-dot"></div>
+            </div>
 
             <h3>
                 Privacy First
@@ -991,15 +934,13 @@ def render():
 
 
     # ==========================================
-    # SCORING DIMENSIONS
+    # WHAT WE ANALYZE
     # ==========================================
 
     st.markdown("""
     <div class="section-title">
 
-        <h2>
-            What We Analyze
-        </h2>
+        <h2>What We Analyze</h2>
 
         <p>
             Your resume is evaluated across
@@ -1018,12 +959,11 @@ def render():
 
 
     with c1:
-        st.markdown("""
-        <div class="score-card">
 
-            <div class="score-number">
-                20%
-            </div>
+        st.markdown("""
+        <div class="score-card score-blue">
+
+            <div class="score-number">20%</div>
 
             <div class="score-label">
                 Formatting
@@ -1034,12 +974,11 @@ def render():
 
 
     with c2:
-        st.markdown("""
-        <div class="score-card">
 
-            <div class="score-number">
-                25%
-            </div>
+        st.markdown("""
+        <div class="score-card score-yellow">
+
+            <div class="score-number">25%</div>
 
             <div class="score-label">
                 Keywords & Skills
@@ -1050,12 +989,11 @@ def render():
 
 
     with c3:
-        st.markdown("""
-        <div class="score-card">
 
-            <div class="score-number">
-                25%
-            </div>
+        st.markdown("""
+        <div class="score-card score-orange">
+
+            <div class="score-number">25%</div>
 
             <div class="score-label">
                 Content Quality
@@ -1066,12 +1004,11 @@ def render():
 
 
     with c4:
-        st.markdown("""
-        <div class="score-card">
 
-            <div class="score-number">
-                15%
-            </div>
+        st.markdown("""
+        <div class="score-card score-pink">
+
+            <div class="score-number">15%</div>
 
             <div class="score-label">
                 Skill Validation
@@ -1082,12 +1019,11 @@ def render():
 
 
     with c5:
-        st.markdown("""
-        <div class="score-card">
 
-            <div class="score-number">
-                15%
-            </div>
+        st.markdown("""
+        <div class="score-card score-red">
+
+            <div class="score-number">15%</div>
 
             <div class="score-label">
                 ATS Compatibility
@@ -1104,9 +1040,7 @@ def render():
     st.markdown("""
     <div class="section-title">
 
-        <h2>
-            How It Works
-        </h2>
+        <h2>How It Works</h2>
 
         <p>
             Analyze and improve your resume in
@@ -1125,10 +1059,11 @@ def render():
 
 
     with col1:
+
         st.markdown("""
         <div class="step-card">
 
-            <div class="step-number">
+            <div class="step-number step-blue">
                 01
             </div>
 
@@ -1147,10 +1082,11 @@ def render():
 
 
     with col2:
+
         st.markdown("""
         <div class="step-card">
 
-            <div class="step-number">
+            <div class="step-number step-yellow">
                 02
             </div>
 
@@ -1168,10 +1104,11 @@ def render():
 
 
     with col3:
+
         st.markdown("""
         <div class="step-card">
 
-            <div class="step-number">
+            <div class="step-number step-pink">
                 03
             </div>
 
@@ -1190,7 +1127,7 @@ def render():
 
 
     # ==========================================
-    # PRIVACY SECTION
+    # PRIVACY
     # ==========================================
 
     st.markdown("""
@@ -1231,13 +1168,17 @@ def render():
 
         <div>
 
-            <a href="https://github.com/wineerteam"
-               target="_blank">
+            <a
+                href="https://github.com/wineerteam"
+                target="_blank"
+            >
                 GitHub
             </a>
 
-            <a href="https://www.linkedin.com/in/sunil-kumar-yadav-abb468303/"
-               target="_blank">
+            <a
+                href="https://www.linkedin.com/in/sunil-kumar-yadav-abb468303/"
+                target="_blank"
+            >
                 LinkedIn
             </a>
 
