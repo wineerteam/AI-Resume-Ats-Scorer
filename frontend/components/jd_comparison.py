@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+from html import escape
 
 import streamlit as st
 
@@ -14,15 +15,15 @@ def _safe_number(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _clamp(value: float, minimum: float = 0.0, maximum: float = 100.0) -> float:
+def _clamp(
+    value: float,
+    minimum: float = 0.0,
+    maximum: float = 100.0,
+) -> float:
     return max(minimum, min(value, maximum))
 
 
 def _similarity_to_percent(value: Any) -> float:
-    """
-    Backend semantic_similarity is normally 0-1.
-    Also safely handles 0-100 values.
-    """
     value = _safe_number(value)
 
     if value <= 1:
@@ -36,7 +37,7 @@ def _clean_list(values: Any) -> list:
         return []
 
     if not isinstance(values, (list, tuple)):
-        return [str(values)]
+        values = [values]
 
     result = []
 
@@ -76,202 +77,164 @@ def _similarity_status(score: float) -> str:
 
 
 # ============================================================
-# PREMIUM STYLES
+# CSS
 # ============================================================
 
 def _apply_styles() -> None:
-
     st.markdown(
         """
 <style>
 
-/* ============================================================
-   MAIN SECTION
-   ============================================================ */
+/* =========================================================
+   JD MAIN SECTION
+   ========================================================= */
 
 .jd-section {
-
     margin-top: 28px;
-    margin-bottom: 24px;
-}
-
-
-/* ============================================================
-   HEADER
-   ============================================================ */
-
-.jd-header {
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 18px;
-
     margin-bottom: 20px;
 }
 
 
-.jd-title-wrap {
+/* =========================================================
+   HEADER
+   ========================================================= */
 
+.jd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.jd-title-wrap {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-
 .jd-title {
-
     margin: 0;
-
-    font-size: 25px;
-
-    font-weight: 900;
-
-    letter-spacing: -0.6px;
-
+    padding: 0;
     color: #0b1735;
+    font-size: 26px;
+    line-height: 1.2;
+    font-weight: 900;
+    letter-spacing: -0.7px;
 }
-
 
 .jd-subtitle {
-
     margin: 0;
-
-    font-size: 12px;
-
     color: #64748b;
-
-    font-weight: 550;
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: 600;
 }
 
-
 .jd-badge {
-
-    padding: 7px 13px;
-
+    padding: 8px 14px;
     border-radius: 999px;
 
     background:
         linear-gradient(
             135deg,
-            #fff4b8,
-            #facc15
+            #fff3a6 0%,
+            #facc15 45%,
+            #f59e0b 100%
         );
 
-    color: #493700;
+    color: #4a3500;
 
-    border:
-        1px solid
-        rgba(234,179,8,0.45);
+    border: 1px solid rgba(234, 179, 8, 0.45);
 
     font-size: 10px;
-
     font-weight: 900;
-
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
 
     white-space: nowrap;
 
     box-shadow:
-        0 4px 12px
-        rgba(234,179,8,0.15);
+        0 6px 15px rgba(234, 179, 8, 0.16);
 }
 
 
-/* ============================================================
-   TOP SCORE GRID
-   ============================================================ */
+/* =========================================================
+   SCORE GRID
+   ========================================================= */
 
 .jd-score-grid {
-
     display: grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
+    grid-template-columns: 1fr 1fr;
     gap: 18px;
-
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 
-/* ============================================================
+/* =========================================================
    SCORE CARD
-   ============================================================ */
+   ========================================================= */
 
 .jd-score-card {
-
     position: relative;
-
     overflow: hidden;
 
     min-height: 205px;
 
-    padding: 22px;
+    padding: 23px;
 
-    border-radius: 20px;
-
-    border:
-        1px solid
-        rgba(148,163,184,0.20);
+    border-radius: 21px;
 
     background:
         linear-gradient(
             145deg,
             #ffffff 0%,
             #fffdf5 55%,
-            #fff8d9 100%
+            #fff8d8 100%
         );
 
-    box-shadow:
-        0 10px 24px
-        rgba(15,23,42,0.08),
+    border:
+        1px solid rgba(148, 163, 184, 0.20);
 
-        0 4px 0
-        rgba(180,140,0,0.10);
+    box-shadow:
+        0 12px 28px rgba(15, 23, 42, 0.08),
+        0 4px 0 rgba(217, 160, 0, 0.10);
 
     transition:
-        transform 0.25s cubic-bezier(.2,.8,.2,1),
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
+        transform 0.28s cubic-bezier(.2,.8,.2,1),
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
 }
 
+
+/* 3D hover */
 
 .jd-score-card:hover {
-
     transform:
-        translateY(-6px)
-        scale(1.015);
+        translateY(-7px)
+        scale(1.018);
 
     border-color:
-        rgba(236,72,153,0.35);
+        rgba(236, 72, 153, 0.42);
 
     box-shadow:
-        0 16px 34px
-        rgba(15,23,42,0.13),
-
-        0 0 28px
-        rgba(236,72,153,0.08);
+        0 20px 40px rgba(15, 23, 42, 0.14),
+        0 0 28px rgba(236, 72, 153, 0.10);
 }
 
 
-/* ============================================================
-   SCORE CARD TOP ACCENT
-   ============================================================ */
+/* =========================================================
+   MULTICOLOR TOP BORDER
+   ========================================================= */
 
 .jd-score-card::before {
-
     content: "";
 
     position: absolute;
 
     top: 0;
-
     left: 0;
 
     width: 100%;
-
     height: 5px;
 
     background:
@@ -285,108 +248,99 @@ def _apply_styles() -> None:
 }
 
 
-/* ============================================================
+/* =========================================================
    SCORE LABEL
-   ============================================================ */
+   ========================================================= */
 
 .jd-score-label {
+    margin-bottom: 9px;
+
+    color: #64748b;
 
     font-size: 11px;
-
-    font-weight: 850;
+    font-weight: 900;
 
     text-transform: uppercase;
-
     letter-spacing: 1px;
-
-    color: #6b7280;
-
-    margin-bottom: 9px;
 }
 
 
-/* ============================================================
+/* =========================================================
    SCORE VALUE
-   ============================================================ */
+   ========================================================= */
 
 .jd-score-value {
+    margin-bottom: 9px;
 
-    font-size: 48px;
+    color: #0b1735;
 
+    font-size: 50px;
     line-height: 1;
 
     font-weight: 950;
 
-    letter-spacing: -2px;
-
-    color: #0b1735;
-
-    margin-bottom: 8px;
+    letter-spacing: -2.5px;
 }
 
-
 .jd-score-value span {
-
-    font-size: 21px;
-
     color: #94a3b8;
 
-    font-weight: 750;
+    font-size: 21px;
+    font-weight: 800;
 
     letter-spacing: 0;
 }
 
 
-/* ============================================================
-   SCORE STATUS
-   ============================================================ */
+/* =========================================================
+   STATUS
+   ========================================================= */
 
 .jd-score-status {
-
     display: inline-block;
 
-    padding: 5px 10px;
+    margin-bottom: 16px;
+
+    padding: 5px 11px;
 
     border-radius: 999px;
 
     background:
-        rgba(250,204,21,0.18);
+        linear-gradient(
+            135deg,
+            #fff8cf,
+            #fef3c7
+        );
 
     color: #a16207;
 
+    border:
+        1px solid rgba(234, 179, 8, 0.20);
+
     font-size: 10px;
-
-    font-weight: 850;
-
-    margin-bottom: 16px;
+    font-weight: 900;
 }
 
 
-/* ============================================================
-   PROGRESS TRACK
-   ============================================================ */
+/* =========================================================
+   PROGRESS
+   ========================================================= */
 
 .jd-progress-track {
-
     width: 100%;
-
     height: 10px;
-
-    border-radius: 999px;
 
     overflow: hidden;
 
-    background:
-        #eee9dc;
+    border-radius: 999px;
+
+    background: #eee9dc;
 
     box-shadow:
-        inset 0 1px 3px
-        rgba(15,23,42,0.08);
+        inset 0 1px 3px rgba(15, 23, 42, 0.09);
 }
 
-
 .jd-progress-fill {
-
     height: 100%;
 
     border-radius: 999px;
@@ -394,44 +348,42 @@ def _apply_styles() -> None:
     background:
         linear-gradient(
             90deg,
-            #facc15,
-            #f59e0b,
-            #ec4899,
-            #ef4444
+            #facc15 0%,
+            #f59e0b 35%,
+            #ec4899 70%,
+            #ef4444 100%
         );
 
     box-shadow:
-        0 0 10px
-        rgba(236,72,153,0.20);
+        0 0 12px rgba(236, 72, 153, 0.24);
 
     transition:
-        width 0.6s ease;
+        width 0.7s ease;
 }
 
 
-/* ============================================================
-   SCORE DESCRIPTION
-   ============================================================ */
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
 
 .jd-score-description {
-
     margin-top: 11px;
 
     color: #64748b;
 
     font-size: 10px;
-
-    line-height: 1.5;
+    line-height: 1.55;
 }
 
 
-/* ============================================================
-   KEYWORD AREA
-   ============================================================ */
+/* =========================================================
+   KEYWORD CARDS
+   ========================================================= */
 
 .jd-keyword-card {
-
     position: relative;
+
+    overflow: hidden;
 
     padding: 22px;
 
@@ -445,74 +397,85 @@ def _apply_styles() -> None:
         );
 
     border:
-        1px solid
-        rgba(148,163,184,0.20);
+        1px solid rgba(148, 163, 184, 0.20);
 
     box-shadow:
-        0 9px 22px
-        rgba(15,23,42,0.07);
+        0 10px 24px rgba(15, 23, 42, 0.07);
 
     transition:
-        transform 0.24s ease,
-        box-shadow 0.24s ease;
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
 }
 
+.jd-keyword-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #facc15,
+            #ec4899,
+            #ef4444
+        );
+}
 
 .jd-keyword-card:hover {
-
     transform:
-        translateY(-4px);
+        translateY(-5px)
+        scale(1.01);
+
+    border-color:
+        rgba(236, 72, 153, 0.30);
 
     box-shadow:
-        0 15px 30px
-        rgba(15,23,42,0.10);
+        0 17px 32px rgba(15, 23, 42, 0.10);
 }
 
 
-/* ============================================================
-   CARD HEADING
-   ============================================================ */
+/* =========================================================
+   CARD TEXT
+   ========================================================= */
 
 .jd-card-heading {
-
-    font-size: 14px;
-
-    font-weight: 900;
+    margin-bottom: 5px;
 
     color: #0b1735;
 
-    margin-bottom: 5px;
+    font-size: 15px;
+    font-weight: 900;
 }
 
-
 .jd-card-description {
-
-    font-size: 10px;
+    margin-bottom: 15px;
 
     color: #64748b;
 
-    margin-bottom: 15px;
+    font-size: 10px;
+    line-height: 1.5;
 }
 
 
-/* ============================================================
-   KEYWORD CHIPS
-   ============================================================ */
+/* =========================================================
+   CHIPS
+   ========================================================= */
 
 .jd-chip-wrap {
-
     display: flex;
-
     flex-wrap: wrap;
-
     gap: 8px;
 }
 
-
 .jd-chip {
-
     display: inline-flex;
-
     align-items: center;
 
     padding: 7px 10px;
@@ -520,25 +483,23 @@ def _apply_styles() -> None:
     border-radius: 9px;
 
     font-size: 10px;
-
-    font-weight: 750;
+    font-weight: 800;
 
     transition:
         transform 0.18s ease,
         box-shadow 0.18s ease;
 }
 
-
 .jd-chip:hover {
-
     transform:
-        translateY(-2px)
-        scale(1.03);
+        translateY(-3px)
+        scale(1.04);
 }
 
 
-.jd-chip-matched {
+/* Matched */
 
+.jd-chip-matched {
     background:
         linear-gradient(
             135deg,
@@ -549,17 +510,16 @@ def _apply_styles() -> None:
     color: #047857;
 
     border:
-        1px solid
-        rgba(16,185,129,0.22);
+        1px solid rgba(16, 185, 129, 0.22);
 
     box-shadow:
-        0 4px 10px
-        rgba(16,185,129,0.08);
+        0 4px 10px rgba(16, 185, 129, 0.08);
 }
 
 
-.jd-chip-missing {
+/* Missing */
 
+.jd-chip-missing {
     background:
         linear-gradient(
             135deg,
@@ -570,76 +530,87 @@ def _apply_styles() -> None:
     color: #be123c;
 
     border:
-        1px solid
-        rgba(244,63,94,0.22);
+        1px solid rgba(244, 63, 94, 0.22);
 
     box-shadow:
-        0 4px 10px
-        rgba(244,63,94,0.08);
+        0 4px 10px rgba(244, 63, 94, 0.08);
 }
 
 
-/* ============================================================
-   LOWER GRID
-   ============================================================ */
+/* =========================================================
+   BOTTOM GRID
+   ========================================================= */
 
 .jd-bottom-grid {
-
     display: grid;
 
-    grid-template-columns:
-        1fr 1fr;
+    grid-template-columns: 1fr 1fr;
 
     gap: 18px;
 }
 
 
-/* ============================================================
+/* =========================================================
    GAP CARD
-   ============================================================ */
+   ========================================================= */
 
 .jd-gap-card {
+    position: relative;
 
-    padding: 20px;
+    overflow: hidden;
 
-    border-radius: 18px;
+    padding: 21px;
+
+    border-radius: 19px;
+
+    background: #ffffff;
 
     border:
-        1px solid
-        rgba(148,163,184,0.18);
-
-    background:
-        #ffffff;
+        1px solid rgba(148, 163, 184, 0.18);
 
     box-shadow:
-        0 8px 20px
-        rgba(15,23,42,0.06);
+        0 9px 22px rgba(15, 23, 42, 0.06);
 
     transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
+        transform 0.24s ease,
+        box-shadow 0.24s ease;
 }
 
+.jd-gap-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            180deg,
+            #facc15,
+            #f97316,
+            #ef4444
+        );
+}
 
 .jd-gap-card:hover {
-
     transform:
-        translateY(-4px);
+        translateY(-5px);
 
     box-shadow:
-        0 14px 28px
-        rgba(15,23,42,0.10);
+        0 16px 31px rgba(15, 23, 42, 0.10);
 }
 
 
-/* ============================================================
-   GAP ITEM
-   ============================================================ */
+/* =========================================================
+   GAP ITEMS
+   ========================================================= */
 
 .jd-gap-item {
-
     display: flex;
-
     align-items: center;
 
     gap: 10px;
@@ -650,17 +621,14 @@ def _apply_styles() -> None:
 
     border-radius: 10px;
 
-    background:
-        #faf8f2;
+    background: #faf8f2;
 
     border:
-        1px solid
-        rgba(148,163,184,0.12);
+        1px solid rgba(148, 163, 184, 0.12);
 
     color: #334155;
 
     font-size: 11px;
-
     font-weight: 650;
 
     transition:
@@ -668,21 +636,16 @@ def _apply_styles() -> None:
         background 0.18s ease;
 }
 
-
 .jd-gap-item:hover {
-
     transform:
-        translateX(4px);
+        translateX(5px);
 
     background:
         #fff7d6;
 }
 
-
 .jd-gap-marker {
-
     width: 8px;
-
     height: 8px;
 
     flex-shrink: 0;
@@ -697,27 +660,24 @@ def _apply_styles() -> None:
         );
 
     box-shadow:
-        0 0 8px
-        rgba(239,68,68,0.22);
+        0 0 8px rgba(239, 68, 68, 0.25);
 }
 
 
-/* ============================================================
+/* =========================================================
    EMPTY STATE
-   ============================================================ */
+   ========================================================= */
 
 .jd-empty {
+    padding: 18px;
 
-    padding: 20px;
-
-    border-radius: 12px;
+    border-radius: 11px;
 
     background:
         #f8fafc;
 
     border:
-        1px dashed
-        #cbd5e1;
+        1px dashed #cbd5e1;
 
     color: #64748b;
 
@@ -727,23 +687,24 @@ def _apply_styles() -> None:
 }
 
 
-/* ============================================================
+/* =========================================================
    RESPONSIVE
-   ============================================================ */
+   ========================================================= */
 
 @media (max-width: 900px) {
 
     .jd-score-grid,
     .jd-bottom-grid {
-
         grid-template-columns: 1fr;
     }
 
     .jd-header {
-
         align-items: flex-start;
-
         flex-direction: column;
+    }
+
+    .jd-badge {
+        align-self: flex-start;
     }
 }
 
@@ -753,17 +714,14 @@ def _apply_styles() -> None:
     .jd-score-card,
     .jd-keyword-card,
     .jd-gap-card {
-
         padding: 17px;
     }
 
     .jd-score-value {
-
         font-size: 40px;
     }
 
     .jd-title {
-
         font-size: 21px;
     }
 }
@@ -775,25 +733,22 @@ def _apply_styles() -> None:
 
 
 # ============================================================
-# MAIN COMPONENT
+# MAIN FUNCTION
 # ============================================================
 
 def display_jd_comparison(
     jd_comparison: Optional[Dict[str, Any]]
 ) -> None:
 
-    # Keep existing behavior:
-    # caller decides whether section should render.
-
+    # Keep original functionality.
     if not jd_comparison:
         return
-
 
     _apply_styles()
 
 
     # ========================================================
-    # READ BACKEND DATA
+    # BACKEND DATA
     # ========================================================
 
     match_pct = _clamp(
@@ -805,14 +760,12 @@ def display_jd_comparison(
         )
     )
 
-
     semantic = _similarity_to_percent(
         jd_comparison.get(
             "semantic_similarity",
             0
         )
     )
-
 
     matched = _clean_list(
         jd_comparison.get(
@@ -821,14 +774,12 @@ def display_jd_comparison(
         )
     )
 
-
     missing = _clean_list(
         jd_comparison.get(
             "missing_keywords",
             []
         )
     )
-
 
     gap = _clean_list(
         jd_comparison.get(
@@ -840,9 +791,11 @@ def display_jd_comparison(
 
     # ========================================================
     # HEADER
+    # IMPORTANT:
+    # HTML is rendered using st.html(), NOT st.markdown().
     # ========================================================
 
-    st.markdown(
+    st.html(
         """
 <div class="jd-section">
 
@@ -867,27 +820,21 @@ def display_jd_comparison(
     </div>
 
 </div>
-        """,
-        unsafe_allow_html=True,
+"""
     )
 
 
     # ========================================================
-    # TOP SCORE CARDS
+    # SCORE CARDS
     # ========================================================
 
     match_status = _match_status(match_pct)
-
-    similarity_status = _similarity_status(
-        semantic
-    )
+    similarity_status = _similarity_status(semantic)
 
 
-    st.markdown(
+    st.html(
         f"""
 <div class="jd-score-grid">
-
-    <!-- MATCH PERCENTAGE -->
 
     <div class="jd-score-card">
 
@@ -900,7 +847,7 @@ def display_jd_comparison(
         </div>
 
         <div class="jd-score-status">
-            {match_status}
+            {escape(match_status)}
         </div>
 
         <div class="jd-progress-track">
@@ -920,8 +867,6 @@ def display_jd_comparison(
     </div>
 
 
-    <!-- SEMANTIC SIMILARITY -->
-
     <div class="jd-score-card">
 
         <div class="jd-score-label">
@@ -933,7 +878,7 @@ def display_jd_comparison(
         </div>
 
         <div class="jd-score-status">
-            {similarity_status}
+            {escape(similarity_status)}
         </div>
 
         <div class="jd-progress-track">
@@ -953,8 +898,7 @@ def display_jd_comparison(
     </div>
 
 </div>
-        """,
-        unsafe_allow_html=True,
+"""
     )
 
 
@@ -962,59 +906,55 @@ def display_jd_comparison(
     # MATCHED KEYWORDS
     # ========================================================
 
-    matched_chips = ""
-
-
     if matched:
 
-        for keyword in matched[:15]:
-
-            matched_chips += (
-                f'<span class="jd-chip jd-chip-matched">'
-                f'{keyword}'
-                f'</span>'
-            )
+        matched_chips = "".join(
+            f"""
+<span class="jd-chip jd-chip-matched">
+    {escape(keyword)}
+</span>
+"""
+            for keyword in matched[:15]
+        )
 
     else:
 
-        matched_chips = (
-            '<div class="jd-empty">'
-            'No matched keywords detected yet.'
-            '</div>'
-        )
+        matched_chips = """
+<div class="jd-empty">
+    No matched keywords detected yet.
+</div>
+"""
 
 
     # ========================================================
     # MISSING KEYWORDS
     # ========================================================
 
-    missing_chips = ""
-
-
     if missing:
 
-        for keyword in missing[:15]:
-
-            missing_chips += (
-                f'<span class="jd-chip jd-chip-missing">'
-                f'{keyword}'
-                f'</span>'
-            )
+        missing_chips = "".join(
+            f"""
+<span class="jd-chip jd-chip-missing">
+    {escape(keyword)}
+</span>
+"""
+            for keyword in missing[:15]
+        )
 
     else:
 
-        missing_chips = (
-            '<div class="jd-empty">'
-            'All key terms are currently covered.'
-            '</div>'
-        )
+        missing_chips = """
+<div class="jd-empty">
+    All key terms are currently covered.
+</div>
+"""
 
 
     # ========================================================
-    # KEYWORD GRID
+    # KEYWORD CARDS
     # ========================================================
 
-    st.markdown(
+    st.html(
         f"""
 <div class="jd-score-grid">
 
@@ -1054,8 +994,7 @@ def display_jd_comparison(
     </div>
 
 </div>
-        """,
-        unsafe_allow_html=True,
+"""
     )
 
 
@@ -1065,20 +1004,18 @@ def display_jd_comparison(
 
     if gap:
 
-        gap_items = ""
-
-        for skill in gap[:12]:
-
-            gap_items += f"""
+        gap_items = "".join(
+            f"""
 <div class="jd-gap-item">
 
     <span class="jd-gap-marker"></span>
 
-    <span>{skill}</span>
+    <span>{escape(skill)}</span>
 
 </div>
 """
-
+            for skill in gap[:12]
+        )
 
     else:
 
@@ -1090,10 +1027,64 @@ def display_jd_comparison(
 
 
     # ========================================================
-    # FINAL SKILLS GAP CARD
+    # ALIGNMENT SUMMARY
     # ========================================================
 
-    st.markdown(
+    summary_items = f"""
+<div class="jd-gap-item">
+
+    <span class="jd-gap-marker"></span>
+
+    <span>
+        Job match:
+        <strong>{match_pct:.0f}%</strong>
+    </span>
+
+</div>
+
+
+<div class="jd-gap-item">
+
+    <span class="jd-gap-marker"></span>
+
+    <span>
+        Semantic similarity:
+        <strong>{semantic:.0f}%</strong>
+    </span>
+
+</div>
+
+
+<div class="jd-gap-item">
+
+    <span class="jd-gap-marker"></span>
+
+    <span>
+        Matched keywords:
+        <strong>{len(matched)}</strong>
+    </span>
+
+</div>
+
+
+<div class="jd-gap-item">
+
+    <span class="jd-gap-marker"></span>
+
+    <span>
+        Missing keywords:
+        <strong>{len(missing)}</strong>
+    </span>
+
+</div>
+"""
+
+
+    # ========================================================
+    # FINAL CARDS
+    # ========================================================
+
+    st.html(
         f"""
 <div class="jd-bottom-grid">
 
@@ -1120,59 +1111,13 @@ def display_jd_comparison(
         </div>
 
         <div class="jd-card-description">
-            Quick interpretation of your job-description alignment.
+            Quick overview of your job-description alignment.
         </div>
 
-        <div class="jd-gap-item">
-
-            <span class="jd-gap-marker"></span>
-
-            <span>
-                Job match:
-                <strong>{match_pct:.0f}%</strong>
-            </span>
-
-        </div>
-
-
-        <div class="jd-gap-item">
-
-            <span class="jd-gap-marker"></span>
-
-            <span>
-                Semantic similarity:
-                <strong>{semantic:.0f}%</strong>
-            </span>
-
-        </div>
-
-
-        <div class="jd-gap-item">
-
-            <span class="jd-gap-marker"></span>
-
-            <span>
-                Matched keywords:
-                <strong>{len(matched)}</strong>
-            </span>
-
-        </div>
-
-
-        <div class="jd-gap-item">
-
-            <span class="jd-gap-marker"></span>
-
-            <span>
-                Missing keywords:
-                <strong>{len(missing)}</strong>
-            </span>
-
-        </div>
+        {summary_items}
 
     </div>
 
 </div>
-        """,
-        unsafe_allow_html=True,
+"""
     )
