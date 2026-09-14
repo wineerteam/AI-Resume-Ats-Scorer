@@ -1,12 +1,11 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict
 
 import streamlit as st
 
-from frontend.components._helpers import get_score_color
-
 
 # ============================================================
-# BACKEND COMPONENT SCALE
+# SCORE COMPONENTS
+# Backend scores are on their original individual scales.
 # ============================================================
 
 COMPONENTS = [
@@ -22,142 +21,147 @@ COMPONENTS = [
 # HELPERS
 # ============================================================
 
-def _safe_score(value: Any) -> float:
+def _safe_number(value: Any) -> float:
     try:
         return float(value)
     except (TypeError, ValueError):
         return 0.0
 
 
-def _clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
-    return max(low, min(high, value))
+def _clamp(
+    value: float,
+    minimum: float,
+    maximum: float
+) -> float:
+    return max(minimum, min(value, maximum))
 
 
-def _component_status(percent: float) -> Tuple[str, str, str]:
-    """
-    Returns:
-        status, text_color, background_color
-    """
+def _get_score_style(score: float):
+    if score >= 90:
+        return (
+            "Excellent ATS Match",
+            "#22c55e",
+            "#052e16"
+        )
 
+    if score >= 80:
+        return (
+            "Strong ATS Match",
+            "#06b6d4",
+            "#083344"
+        )
+
+    if score >= 70:
+        return (
+            "Good ATS Match",
+            "#38bdf8",
+            "#082f49"
+        )
+
+    if score >= 60:
+        return (
+            "Moderate ATS Match",
+            "#facc15",
+            "#422006"
+        )
+
+    return (
+        "Needs Improvement",
+        "#fb7185",
+        "#450a0a"
+    )
+
+
+def _get_component_style(percent: float):
     if percent >= 85:
         return (
             "Excellent",
             "#15803d",
-            "#dcfce7",
+            "#dcfce7"
         )
 
     if percent >= 70:
         return (
             "Strong",
             "#0369a1",
-            "#e0f2fe",
+            "#e0f2fe"
         )
 
     if percent >= 60:
         return (
             "Moderate",
             "#a16207",
-            "#fef3c7",
+            "#fef3c7"
         )
 
     return (
         "Needs Work",
         "#c2410c",
-        "#ffedd5",
+        "#ffedd5"
     )
 
 
-def _get_score_status(score: float) -> Tuple[str, str]:
-    if score >= 90:
-        return "Excellent ATS Match", "#15803d"
+# ============================================================
+# STYLES
+# ============================================================
 
-    if score >= 80:
-        return "Strong ATS Match", "#0369a1"
-
-    if score >= 70:
-        return "Good ATS Match", "#0891b2"
-
-    if score >= 60:
-        return "Moderate ATS Match", "#a16207"
-
-    return "Needs Improvement", "#c2410c"
-
-
-def _get_component_insight(
-    label: str,
-    percent: float,
-) -> str:
-
-    if percent >= 85:
-        return f"{label} is one of the strongest parts of your resume."
-
-    if percent >= 70:
-        return f"{label} is performing well with room for refinement."
-
-    if percent >= 60:
-        return f"{label} has a reasonable foundation but can be improved."
-
-    return f"{label} should be prioritized for improvement."
-
-
-def _apply_styles() -> None:
+def _apply_styles():
 
     st.markdown(
         """
         <style>
 
-        /* ====================================================
-           MAIN HEADER
-        ==================================================== */
+        /* ==================================================
+           TITLE
+        ================================================== */
 
-        .score-section-title {
+        .ats-title {
+            font-size: 30px;
+            font-weight: 900;
             color: #07152f;
-            font-size: 29px;
-            font-weight: 950;
-            letter-spacing: -0.035em;
-            margin-top: 20px;
+            letter-spacing: -1px;
+            margin-top: 15px;
             margin-bottom: 4px;
         }
 
-        .score-section-subtitle {
+        .ats-subtitle {
             color: #64748b;
             font-size: 12px;
-            line-height: 1.6;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
 
-        /* ====================================================
+        /* ==================================================
            HERO
-        ==================================================== */
+        ================================================== */
 
         .ats-hero {
             position: relative;
             overflow: hidden;
 
-            min-height: 300px;
-
-            border-radius: 28px;
-
-            padding: 30px;
-
             background:
                 linear-gradient(
                     135deg,
                     #07152f 0%,
-                    #0b2550 52%,
-                    #123a6b 100%
+                    #0b2550 55%,
+                    #123b6b 100%
                 );
 
+            border-radius: 28px;
+
+            padding: 32px;
+
+            min-height: 285px;
+
             box-shadow:
-                0 24px 55px
+                0 22px 50px
                 rgba(7, 21, 47, 0.20);
 
             border:
                 1px solid
-                rgba(255,255,255,0.08);
+                rgba(255,255,255,.08);
 
-            margin-bottom: 25px;
+            margin-bottom: 28px;
         }
 
 
@@ -166,23 +170,24 @@ def _apply_styles() -> None:
 
             position: absolute;
 
-            width: 270px;
-            height: 270px;
+            width: 320px;
+            height: 320px;
 
             border-radius: 50%;
 
-            right: -100px;
-            top: -150px;
+            right: -150px;
+            top: -180px;
 
             border:
                 1px solid
-                rgba(34,211,238,0.18);
+                rgba(34,211,238,.16);
 
             box-shadow:
                 0 0 0 45px
-                rgba(34,211,238,0.025),
+                rgba(34,211,238,.025),
+
                 0 0 0 90px
-                rgba(236,72,153,0.018);
+                rgba(236,72,153,.02);
         }
 
 
@@ -191,19 +196,19 @@ def _apply_styles() -> None:
 
             position: absolute;
 
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
 
             border-radius: 50%;
 
-            left: -100px;
-            bottom: -110px;
+            left: -130px;
+            bottom: -130px;
 
             background:
                 radial-gradient(
                     circle,
-                    rgba(236,72,153,0.13),
-                    transparent 68%
+                    rgba(236,72,153,.13),
+                    transparent 70%
                 );
         }
 
@@ -216,26 +221,22 @@ def _apply_styles() -> None:
             display: grid;
 
             grid-template-columns:
-                270px
-                minmax(0, 1fr);
-
-            gap: 42px;
+                260px
+                1fr;
 
             align-items: center;
 
-            height: 100%;
+            gap: 40px;
         }
 
 
-        /* ====================================================
+        /* ==================================================
            SCORE RING
-           ==================================================== */
+        ================================================== */
 
-        .ats-score-ring {
-            position: relative;
-
-            width: 220px;
-            height: 220px;
+        .ats-ring {
+            width: 205px;
+            height: 205px;
 
             border-radius: 50%;
 
@@ -248,97 +249,88 @@ def _apply_styles() -> None:
 
             background:
                 conic-gradient(
-                    var(--score-color)
-                    var(--score-percent),
-                    rgba(255,255,255,0.09)
-                    var(--score-percent)
+                    #06b6d4 0deg,
+                    #2563eb 140deg,
+                    #ec4899 270deg,
+                    rgba(255,255,255,.09) 270deg
                 );
 
             box-shadow:
-                0 0 0 1px
-                rgba(255,255,255,0.08),
-                0 18px 45px
-                rgba(0,0,0,.20);
+                0 18px 40px
+                rgba(0,0,0,.28);
         }
 
 
-        .ats-score-ring::before {
-            content: "";
-
-            position: absolute;
-
-            inset: 10px;
+        .ats-ring-inner {
+            width: 178px;
+            height: 178px;
 
             border-radius: 50%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
 
             background:
                 linear-gradient(
                     145deg,
-                    #0a1d3d,
+                    #0a2042,
                     #06142d
                 );
 
             box-shadow:
-                inset 0 0 30px
-                rgba(0,0,0,.20);
+                inset 0 0 25px
+                rgba(0,0,0,.25);
         }
 
 
-        .ats-score-content {
-            position: relative;
-
-            z-index: 2;
-
-            text-align: center;
-        }
-
-
-        .ats-score-value {
-            color: white;
+        .ats-score-number {
+            color: #ffffff;
 
             font-size: 58px;
 
-            line-height: .95;
-
             font-weight: 950;
 
-            letter-spacing: -0.06em;
+            line-height: 1;
+
+            letter-spacing: -4px;
         }
 
 
-        .ats-score-outof {
+        .ats-score-label {
             color: #94a3b8;
 
             font-size: 9px;
 
-            font-weight: 800;
+            font-weight: 850;
 
-            letter-spacing: .15em;
+            letter-spacing: 2px;
 
-            margin-top: 7px;
+            margin-top: 8px;
         }
 
 
-        /* ====================================================
+        /* ==================================================
            HERO CONTENT
-           ==================================================== */
+        ================================================== */
 
-        .hero-eyebrow {
+        .ats-eyebrow {
             color: #67e8f9;
 
             font-size: 9px;
 
-            font-weight: 950;
+            font-weight: 900;
 
-            letter-spacing: .14em;
+            letter-spacing: 2px;
 
             text-transform: uppercase;
-
-            margin-bottom: 8px;
         }
 
 
-        .hero-heading {
+        .ats-status {
             color: white;
 
             font-size: 31px;
@@ -347,93 +339,73 @@ def _apply_styles() -> None:
 
             line-height: 1.1;
 
-            letter-spacing: -.035em;
+            margin-top: 7px;
         }
 
 
-        .hero-heading span {
-            color: #67e8f9;
-        }
-
-
-        .hero-description {
+        .ats-description {
             color: #cbd5e1;
 
             font-size: 11px;
 
-            line-height: 1.75;
+            line-height: 1.7;
 
-            max-width: 560px;
+            max-width: 580px;
 
             margin-top: 10px;
         }
 
 
-        .hero-badge {
+        .ats-pill {
             display: inline-block;
 
-            margin-top: 15px;
+            margin-top: 16px;
 
-            padding:
-                7px 12px;
+            padding: 7px 13px;
 
             border-radius: 999px;
 
             font-size: 8px;
 
-            font-weight: 950;
-
-            letter-spacing: .05em;
-
-            border: 1px solid
-                rgba(255,255,255,.10);
+            font-weight: 900;
         }
 
 
-        /* ====================================================
-           BREAKDOWN HEADER
-           ==================================================== */
+        /* ==================================================
+           BREAKDOWN
+        ================================================== */
 
-        .breakdown-heading {
+        .breakdown-title {
             color: #07152f;
 
-            font-size: 22px;
+            font-size: 23px;
 
-            font-weight: 950;
-
-            letter-spacing: -.025em;
-
-            margin-top: 8px;
+            font-weight: 900;
 
             margin-bottom: 3px;
         }
 
 
-        .breakdown-subheading {
+        .breakdown-subtitle {
             color: #64748b;
 
             font-size: 10px;
 
-            margin-bottom: 15px;
+            margin-bottom: 17px;
         }
 
 
-        /* ====================================================
-           COMPONENT GRID
-           ==================================================== */
+        /* ==================================================
+           COMPONENT CARDS
+        ================================================== */
 
         .component-grid {
             display: grid;
 
             grid-template-columns:
-                repeat(
-                    2,
-                    minmax(0, 1fr)
-                );
+                repeat(2, minmax(0, 1fr));
 
-            gap: 15px;
-
-            margin-bottom: 20px;
+            gap: 16px;
         }
 
 
@@ -442,18 +414,15 @@ def _apply_styles() -> None:
 
             overflow: hidden;
 
-            padding: 19px;
+            background: #ffffff;
 
-            border-radius: 20px;
+            border:
+                1px solid
+                #e2e8f0;
 
-            background:
-                linear-gradient(
-                    145deg,
-                    #ffffff,
-                    #f8fafc
-                );
+            border-radius: 21px;
 
-            border: 1px solid #e2e8f0;
+            padding: 20px;
 
             box-shadow:
                 0 8px 25px
@@ -468,11 +437,10 @@ def _apply_styles() -> None:
 
         .component-card:hover {
             transform:
-                translateY(-7px)
-                scale(1.012);
+                translateY(-7px);
 
             box-shadow:
-                0 20px 42px
+                0 20px 40px
                 rgba(15,23,42,.11);
 
             border-color:
@@ -485,8 +453,8 @@ def _apply_styles() -> None:
 
             position: absolute;
 
-            left: 0;
             top: 0;
+            left: 0;
 
             width: 100%;
             height: 3px;
@@ -495,22 +463,19 @@ def _apply_styles() -> None:
                 linear-gradient(
                     90deg,
                     #06b6d4,
-                    #3b82f6,
+                    #2563eb,
                     #ec4899
                 );
         }
 
 
-        .component-top {
+        .component-header {
             display: flex;
+
+            align-items: center;
 
             justify-content:
                 space-between;
-
-            align-items:
-                center;
-
-            gap: 10px;
         }
 
 
@@ -528,23 +493,24 @@ def _apply_styles() -> None:
 
             font-size: 8px;
 
-            font-weight: 800;
+            font-weight: 850;
+
+            letter-spacing: .5px;
         }
 
 
-        .component-status {
+        .component-badge {
             display: inline-block;
 
-            padding:
-                4px 8px;
+            margin-top: 10px;
+
+            padding: 4px 8px;
 
             border-radius: 999px;
 
             font-size: 7px;
 
-            font-weight: 950;
-
-            margin-top: 12px;
+            font-weight: 900;
         }
 
 
@@ -553,8 +519,6 @@ def _apply_styles() -> None:
 
             align-items: baseline;
 
-            gap: 5px;
-
             margin-top: 12px;
         }
 
@@ -562,11 +526,11 @@ def _apply_styles() -> None:
         .component-score {
             color: #07152f;
 
-            font-size: 26px;
+            font-size: 28px;
 
             font-weight: 950;
 
-            letter-spacing: -.04em;
+            letter-spacing: -1px;
         }
 
 
@@ -575,26 +539,26 @@ def _apply_styles() -> None:
 
             font-size: 10px;
 
-            font-weight: 750;
+            margin-left: 4px;
         }
 
 
         .component-percent {
-            margin-left: auto;
+            color: #2563eb;
 
-            color: #475569;
-
-            font-size: 11px;
+            font-size: 12px;
 
             font-weight: 900;
+
+            margin-left: auto;
         }
 
 
-        /* ====================================================
-           PROGRESS
-           ==================================================== */
+        /* ==================================================
+           PROGRESS BAR
+        ================================================== */
 
-        .component-track {
+        .progress-track {
             width: 100%;
 
             height: 8px;
@@ -609,7 +573,7 @@ def _apply_styles() -> None:
         }
 
 
-        .component-fill {
+        .progress-value {
             height: 100%;
 
             border-radius: 999px;
@@ -618,16 +582,17 @@ def _apply_styles() -> None:
                 linear-gradient(
                     90deg,
                     #06b6d4,
-                    #2563eb
+                    #2563eb,
+                    #6366f1
                 );
 
             box-shadow:
                 0 2px 8px
-                rgba(37,99,235,.22);
+                rgba(37,99,235,.25);
         }
 
 
-        .component-insight {
+        .component-description {
             color: #64748b;
 
             font-size: 9px;
@@ -638,47 +603,40 @@ def _apply_styles() -> None:
         }
 
 
-        /* ====================================================
+        /* ==================================================
            HIGHLIGHTS
-           ==================================================== */
+        ================================================== */
 
         .highlight-grid {
             display: grid;
 
             grid-template-columns:
-                repeat(
-                    2,
-                    minmax(0,1fr)
-                );
+                repeat(2, minmax(0, 1fr));
 
-            gap: 15px;
+            gap: 16px;
 
-            margin-top: 5px;
-
-            margin-bottom: 20px;
+            margin-top: 16px;
         }
 
 
         .highlight-card {
-            position: relative;
+            background: #ffffff;
 
-            overflow: hidden;
-
-            padding: 18px;
+            border:
+                1px solid
+                #e2e8f0;
 
             border-radius: 20px;
 
-            background: white;
-
-            border: 1px solid #e2e8f0;
+            padding: 19px;
 
             box-shadow:
-                0 8px 24px
+                0 8px 23px
                 rgba(15,23,42,.05);
 
             transition:
-                transform .22s ease,
-                box-shadow .22s ease;
+                transform .2s ease,
+                box-shadow .2s ease;
         }
 
 
@@ -692,13 +650,13 @@ def _apply_styles() -> None:
         }
 
 
-        .highlight-card.strong {
+        .highlight-strong {
             border-left:
                 4px solid #06b6d4;
         }
 
 
-        .highlight-card.priority {
+        .highlight-priority {
             border-left:
                 4px solid #f97316;
         }
@@ -709,11 +667,11 @@ def _apply_styles() -> None:
 
             font-size: 8px;
 
-            font-weight: 950;
+            font-weight: 900;
 
             text-transform: uppercase;
 
-            letter-spacing: .10em;
+            letter-spacing: 1px;
         }
 
 
@@ -729,7 +687,7 @@ def _apply_styles() -> None:
 
 
         .highlight-value {
-            color: #0369a1;
+            color: #2563eb;
 
             font-size: 10px;
 
@@ -739,24 +697,14 @@ def _apply_styles() -> None:
         }
 
 
-        /* ====================================================
+        /* ==================================================
            RESPONSIVE
-           ==================================================== */
+        ================================================== */
 
-        @media (max-width: 850px) {
+        @media (max-width: 800px) {
 
             .ats-hero-grid {
                 grid-template-columns: 1fr;
-                gap: 22px;
-            }
-
-            .ats-score-ring {
-                width: 185px;
-                height: 185px;
-            }
-
-            .ats-score-value {
-                font-size: 48px;
             }
 
             .component-grid {
@@ -780,86 +728,64 @@ def _apply_styles() -> None:
 # ============================================================
 
 def display_overall_score(
-    analysis: Dict[str, Any],
+    analysis: Dict[str, Any]
 ) -> None:
 
     _apply_styles()
 
-    score = _safe_score(
+    score = _safe_number(
         analysis.get(
             "ATS_score",
             analysis.get(
                 "ats_score",
-                0,
-            ),
+                0
+            )
         )
     )
 
-    score = _clamp(score)
+    score = _clamp(
+        score,
+        0,
+        100
+    )
+
+    status, status_color, status_bg = (
+        _get_score_style(score)
+    )
 
     interpretation = str(
         analysis.get(
             "interpretation",
-            "",
+            ""
         )
         or ""
     ).strip()
 
-    status, status_color = _get_score_status(
-        score
-    )
-
-    _, score_bg = get_score_color(
-        score
-    )
-
     if not interpretation:
 
-        if score >= 90:
-            interpretation = (
-                "Your resume shows excellent ATS alignment "
-                "and strong recruiter-ready signals."
-            )
+        interpretation = (
+            "Your resume has been evaluated across "
+            "multiple ATS performance categories. "
+            "Review the breakdown below to identify "
+            "your strongest and weakest areas."
+        )
 
-        elif score >= 80:
-            interpretation = (
-                "Your resume has a strong ATS foundation "
-                "with a few areas worth refining."
-            )
-
-        elif score >= 70:
-            interpretation = (
-                "Your resume has a good foundation, "
-                "but targeted improvements can increase "
-                "its ATS performance."
-            )
-
-        elif score >= 60:
-            interpretation = (
-                "Your resume is partially aligned with ATS "
-                "requirements and needs focused improvement."
-            )
-
-        else:
-            interpretation = (
-                "Several important areas need attention "
-                "before the resume is fully ATS-ready."
-            )
-
-    st.html(
+    st.markdown(
         """
-        <div class="score-section-title">
+        <div class="ats-title">
             Analysis Results
         </div>
 
-        <div class="score-section-subtitle">
+        <div class="ats-subtitle">
             A complete view of your resume's ATS performance,
             scoring components, and improvement priorities.
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
-    st.html(
+
+    st.markdown(
         f"""
         <div class="ats-hero">
 
@@ -867,21 +793,15 @@ def display_overall_score(
 
                 <div>
 
-                    <div
-                        class="ats-score-ring"
-                        style="
-                            --score-percent:{score:.1f}%;
-                            --score-color:{status_color};
-                        "
-                    >
+                    <div class="ats-ring">
 
-                        <div class="ats-score-content">
+                        <div class="ats-ring-inner">
 
-                            <div class="ats-score-value">
+                            <div class="ats-score-number">
                                 {score:.0f}
                             </div>
 
-                            <div class="ats-score-outof">
+                            <div class="ats-score-label">
                                 OUT OF 100
                             </div>
 
@@ -894,26 +814,26 @@ def display_overall_score(
 
                 <div>
 
-                    <div class="hero-eyebrow">
-                        Overall Resume Performance
+                    <div class="ats-eyebrow">
+                        Overall ATS Performance
                     </div>
 
-                    <div class="hero-heading">
-                        <span>{status}</span>
+                    <div class="ats-status">
+                        {status}
                     </div>
 
-                    <div class="hero-description">
+                    <div class="ats-description">
                         {interpretation}
                     </div>
 
                     <div
-                        class="hero-badge"
+                        class="ats-pill"
                         style="
                             color:{status_color};
-                            background:{score_bg};
+                            background:{status_bg};
                         "
                     >
-                        ATS SCORE: {score:.0f}/100
+                        ATS SCORE {score:.0f}/100
                     </div>
 
                 </div>
@@ -921,7 +841,8 @@ def display_overall_score(
             </div>
 
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
 
@@ -930,7 +851,7 @@ def display_overall_score(
 # ============================================================
 
 def display_score_breakdown(
-    analysis: Dict[str, Any],
+    analysis: Dict[str, Any]
 ) -> None:
 
     component_scores = (
@@ -940,34 +861,41 @@ def display_score_breakdown(
         or {}
     )
 
-    st.html(
+    st.markdown(
         """
-        <div class="breakdown-heading">
+        <div class="breakdown-title">
             Score Breakdown
         </div>
 
-        <div class="breakdown-subheading">
-            See how each ATS scoring category contributes
-            to your overall resume performance.
+        <div class="breakdown-subtitle">
+            See how each scoring category contributes
+            to your resume's ATS performance.
         </div>
-        """
+        """,
+        unsafe_allow_html=True,
     )
 
-    components_data: List[Dict[str, Any]] = []
+
+    component_data = []
+
+
+    # --------------------------------------------------------
+    # PREPARE DATA
+    # --------------------------------------------------------
 
     for label, key, max_score in COMPONENTS:
 
-        raw_value = _safe_score(
+        value = _safe_number(
             component_scores.get(
                 key,
-                0,
+                0
             )
         )
 
         value = _clamp(
-            raw_value,
+            value,
             0,
-            float(max_score),
+            float(max_score)
         )
 
         percentage = (
@@ -977,19 +905,20 @@ def display_score_breakdown(
         )
 
         percentage = _clamp(
-            percentage
+            percentage,
+            0,
+            100
         )
 
         status, color, background = (
-            _component_status(
+            _get_component_style(
                 percentage
             )
         )
 
-        components_data.append(
+        component_data.append(
             {
                 "label": label,
-                "key": key,
                 "value": value,
                 "max": max_score,
                 "percentage": percentage,
@@ -999,20 +928,51 @@ def display_score_breakdown(
             }
         )
 
+
     # --------------------------------------------------------
-    # COMPONENT CARDS
+    # CARDS
     # --------------------------------------------------------
 
-    cards_html = """
+    cards = """
     <div class="component-grid">
     """
 
-    for item in components_data:
 
-        cards_html += f"""
+    for item in component_data:
+
+        if item["percentage"] >= 85:
+
+            description = (
+                "Excellent performance. "
+                "Keep this area consistent."
+            )
+
+        elif item["percentage"] >= 70:
+
+            description = (
+                "Strong foundation with "
+                "some room for refinement."
+            )
+
+        elif item["percentage"] >= 60:
+
+            description = (
+                "Reasonable foundation. "
+                "Targeted improvements can help."
+            )
+
+        else:
+
+            description = (
+                "This is a priority area "
+                "for improving ATS performance."
+            )
+
+
+        cards += f"""
         <div class="component-card">
 
-            <div class="component-top">
+            <div class="component-header">
 
                 <div class="component-name">
                     {item["label"]}
@@ -1026,7 +986,7 @@ def display_score_breakdown(
 
 
             <div
-                class="component-status"
+                class="component-badge"
                 style="
                     color:{item["color"]};
                     background:{item["background"]};
@@ -1053,10 +1013,10 @@ def display_score_breakdown(
             </div>
 
 
-            <div class="component-track">
+            <div class="progress-track">
 
                 <div
-                    class="component-fill"
+                    class="progress-value"
                     style="
                         width:{item["percentage"]:.1f}%;
                     "
@@ -1065,45 +1025,52 @@ def display_score_breakdown(
             </div>
 
 
-            <div class="component-insight">
-                {_get_component_insight(
-                    item["label"],
-                    item["percentage"]
-                )}
+            <div class="component-description">
+                {description}
             </div>
 
         </div>
         """
 
-    cards_html += """
+
+    cards += """
     </div>
     """
 
-    st.html(
-        cards_html
+
+    st.markdown(
+        cards,
+        unsafe_allow_html=True
     )
+
 
     # --------------------------------------------------------
     # STRONGEST / PRIORITY
     # --------------------------------------------------------
 
-    if components_data:
+    if component_data:
 
         strongest = max(
-            components_data,
-            key=lambda x: x["percentage"],
+            component_data,
+            key=lambda item: item["percentage"]
         )
 
         weakest = min(
-            components_data,
-            key=lambda x: x["percentage"],
+            component_data,
+            key=lambda item: item["percentage"]
         )
 
-        st.html(
+
+        st.markdown(
             f"""
             <div class="highlight-grid">
 
-                <div class="highlight-card strong">
+                <div
+                    class="
+                        highlight-card
+                        highlight-strong
+                    "
+                >
 
                     <div class="highlight-label">
                         Strongest Area
@@ -1121,7 +1088,12 @@ def display_score_breakdown(
                 </div>
 
 
-                <div class="highlight-card priority">
+                <div
+                    class="
+                        highlight-card
+                        highlight-priority
+                    "
+                >
 
                     <div class="highlight-label">
                         Priority To Improve
@@ -1139,5 +1111,6 @@ def display_score_breakdown(
                 </div>
 
             </div>
-            """
+            """,
+            unsafe_allow_html=True
         )
