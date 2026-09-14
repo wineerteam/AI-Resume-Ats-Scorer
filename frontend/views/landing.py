@@ -6,11 +6,12 @@ def render():
     # =========================================================
     # LANDING PAGE CSS
     # =========================================================
-    st.markdown("""
+
+    st.html("""
     <style>
 
     /* =====================================================
-       PAGE
+       MAIN PAGE
        ===================================================== */
 
     .block-container {
@@ -21,7 +22,7 @@ def render():
 
 
     /* =====================================================
-       HERO
+       HERO SECTION
        ===================================================== */
 
     .main-header {
@@ -32,11 +33,9 @@ def render():
 
         padding: 4rem 2rem;
 
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
 
         border-radius: 28px;
-
-        color: white;
 
         background:
             radial-gradient(
@@ -57,10 +56,12 @@ def render():
                 #06b6d4 100%
             );
 
-        border: 1px solid rgba(255,255,255,0.14);
+        color: white;
+
+        border: 1px solid rgba(255,255,255,0.15);
 
         box-shadow:
-            0 20px 50px rgba(15,23,42,0.32);
+            0 22px 55px rgba(15,23,42,0.35);
 
         transition:
             transform 0.3s ease,
@@ -69,23 +70,23 @@ def render():
 
 
     .main-header:hover {
-        transform: translateY(-6px);
+        transform: translateY(-5px);
 
         box-shadow:
-            0 30px 70px rgba(15,23,42,0.40);
+            0 32px 70px rgba(15,23,42,0.42);
     }
 
 
     .hero-badge {
         display: inline-block;
 
-        padding: 7px 17px;
+        padding: 8px 18px;
 
         margin-bottom: 18px;
 
         border-radius: 50px;
 
-        background: rgba(250,204,21,0.14);
+        background: rgba(250,204,21,0.15);
 
         border: 1px solid rgba(250,204,21,0.45);
 
@@ -93,22 +94,22 @@ def render():
 
         font-size: 12px;
 
-        font-weight: 700;
+        font-weight: 800;
 
-        letter-spacing: 0.8px;
+        letter-spacing: 1px;
     }
 
 
     .main-header h1 {
         color: #ffffff;
 
-        font-size: 3.3rem;
+        font-size: 3.4rem;
 
         font-weight: 800;
 
         letter-spacing: -1px;
 
-        margin-bottom: 12px;
+        margin: 0 0 12px 0;
     }
 
 
@@ -119,7 +120,7 @@ def render():
 
         font-weight: 500;
 
-        margin-bottom: 15px;
+        margin: 0 0 15px 0;
     }
 
 
@@ -148,21 +149,14 @@ def render():
 
 
     .orange-text {
-        color: #f97316;
+        color: #fb923c;
 
         font-weight: 800;
     }
 
 
     .pink-text {
-        color: #ec4899;
-
-        font-weight: 800;
-    }
-
-
-    .blue-text {
-        color: #38bdf8;
+        color: #f9a8d4;
 
         font-weight: 800;
     }
@@ -191,37 +185,7 @@ def render():
 
 
     /* =====================================================
-       CTA BUTTON
-       ===================================================== */
-
-    .stButton > button {
-        min-height: 55px;
-
-        border-radius: 15px;
-
-        font-size: 16px;
-
-        font-weight: 700;
-
-        box-shadow:
-            0 10px 25px rgba(37,99,235,0.22);
-
-        transition:
-            transform 0.25s ease,
-            box-shadow 0.25s ease;
-    }
-
-
-    .stButton > button:hover {
-        transform: translateY(-3px) scale(1.01);
-
-        box-shadow:
-            0 18px 38px rgba(37,99,235,0.35);
-    }
-
-
-    /* =====================================================
-       SECTION TITLE
+       SECTION TITLES
        ===================================================== */
 
     .section-heading {
@@ -229,7 +193,7 @@ def render():
 
         margin-top: 3rem;
 
-        margin-bottom: 1.8rem;
+        margin-bottom: 1.7rem;
     }
 
 
@@ -240,7 +204,7 @@ def render():
 
         font-weight: 800;
 
-        margin-bottom: 7px;
+        margin: 0 0 7px 0;
     }
 
 
@@ -250,6 +214,8 @@ def render():
         font-size: 14px;
 
         line-height: 1.6;
+
+        margin: 0;
     }
 
 
@@ -272,6 +238,36 @@ def render():
 
 
     /* =====================================================
+       STREAMLIT BUTTON
+       ===================================================== */
+
+    .stButton > button {
+        min-height: 55px;
+
+        border-radius: 15px;
+
+        font-size: 16px;
+
+        font-weight: 750;
+
+        box-shadow:
+            0 10px 25px rgba(37,99,235,0.22);
+
+        transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+
+    .stButton > button:hover {
+        transform: translateY(-3px) scale(1.01);
+
+        box-shadow:
+            0 18px 40px rgba(37,99,235,0.35);
+    }
+
+
+    /* =====================================================
        FEATURE CARDS
        ===================================================== */
 
@@ -284,7 +280,7 @@ def render():
 
         padding: 28px;
 
-        border-radius: 23px;
+        border-radius: 24px;
 
         background:
             linear-gradient(
@@ -296,12 +292,12 @@ def render():
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 9px 25px rgba(15,23,42,0.07);
+            0 10px 28px rgba(15,23,42,0.07);
 
         transition:
-            transform 0.3s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.3s ease,
-            border-color 0.3s ease;
+            transform 0.32s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.32s ease,
+            border-color 0.32s ease;
     }
 
 
@@ -313,11 +309,9 @@ def render():
             scale(1.025);
 
         box-shadow:
-            0 30px 60px rgba(15,23,42,0.17);
+            0 30px 65px rgba(15,23,42,0.17);
 
         border-color: #93c5fd;
-
-        z-index: 5;
     }
 
 
@@ -337,13 +331,13 @@ def render():
 
 
     /* =====================================================
-       CARD ICONS
+       FEATURE CARD ICON
        ===================================================== */
 
     .card-icon {
-        width: 54px;
+        width: 55px;
 
-        height: 54px;
+        height: 55px;
 
         display: flex;
 
@@ -403,6 +397,9 @@ def render():
                 #2563eb,
                 #06b6d4
             );
+
+        box-shadow:
+            7px 7px 0 rgba(37,99,235,0.15);
     }
 
 
@@ -413,6 +410,9 @@ def render():
                 #facc15,
                 #f97316
             );
+
+        box-shadow:
+            7px 7px 0 rgba(249,115,22,0.15);
     }
 
 
@@ -423,11 +423,14 @@ def render():
                 #ec4899,
                 #ef4444
             );
+
+        box-shadow:
+            7px 7px 0 rgba(236,72,153,0.15);
     }
 
 
     /* =====================================================
-       FEATURE TEXT
+       FEATURE CARD TEXT
        ===================================================== */
 
     .feature-card h3 {
@@ -437,7 +440,7 @@ def render():
 
         font-weight: 800;
 
-        margin-bottom: 10px;
+        margin: 0 0 10px 0;
     }
 
 
@@ -447,13 +450,15 @@ def render():
         font-size: 14px;
 
         line-height: 1.7;
+
+        margin-bottom: 10px;
     }
 
 
     .feature-card ul {
         padding-left: 20px;
 
-        margin-top: 14px;
+        margin-top: 12px;
     }
 
 
@@ -478,9 +483,9 @@ def render():
     .score-card {
         text-align: center;
 
-        padding: 23px 8px;
+        padding: 24px 8px;
 
-        border-radius: 19px;
+        border-radius: 20px;
 
         background: #ffffff;
 
@@ -490,9 +495,9 @@ def render():
             0 8px 22px rgba(15,23,42,0.06);
 
         transition:
-            transform 0.28s ease,
-            box-shadow 0.28s ease,
-            border-color 0.28s ease;
+            transform 0.3s ease,
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
     }
 
 
@@ -501,10 +506,10 @@ def render():
             perspective(900px)
             translateY(-9px)
             translateZ(18px)
-            scale(1.04);
+            scale(1.05);
 
         box-shadow:
-            0 23px 42px rgba(15,23,42,0.14);
+            0 23px 45px rgba(15,23,42,0.14);
 
         border-color: #93c5fd;
     }
@@ -513,7 +518,7 @@ def render():
     .score-number {
         font-size: 28px;
 
-        font-weight: 800;
+        font-weight: 850;
 
         margin-bottom: 5px;
     }
@@ -556,7 +561,7 @@ def render():
 
 
     /* =====================================================
-       HOW IT WORKS
+       HOW IT WORKS CARDS
        ===================================================== */
 
     .step-card {
@@ -564,19 +569,19 @@ def render():
 
         padding: 27px;
 
-        border-radius: 22px;
+        border-radius: 23px;
 
         background: #ffffff;
 
         border: 1px solid #e2e8f0;
 
         box-shadow:
-            0 8px 24px rgba(15,23,42,0.06);
+            0 8px 25px rgba(15,23,42,0.06);
 
         transition:
-            transform 0.3s cubic-bezier(.2,.8,.2,1),
-            box-shadow 0.3s ease,
-            border-color 0.3s ease;
+            transform 0.32s cubic-bezier(.2,.8,.2,1),
+            box-shadow 0.32s ease,
+            border-color 0.32s ease;
     }
 
 
@@ -588,7 +593,7 @@ def render():
             scale(1.025);
 
         box-shadow:
-            0 28px 55px rgba(15,23,42,0.16);
+            0 28px 58px rgba(15,23,42,0.16);
 
         border-color: #93c5fd;
     }
@@ -654,7 +659,7 @@ def render():
 
         font-weight: 800;
 
-        margin-bottom: 8px;
+        margin: 0 0 8px 0;
     }
 
 
@@ -680,7 +685,7 @@ def render():
 
         padding: 32px;
 
-        border-radius: 24px;
+        border-radius: 25px;
 
         background:
             radial-gradient(
@@ -702,7 +707,7 @@ def render():
         border: 1px solid rgba(255,255,255,0.10);
 
         box-shadow:
-            0 18px 45px rgba(15,23,42,0.23);
+            0 20px 48px rgba(15,23,42,0.25);
 
         transition:
             transform 0.3s ease,
@@ -717,7 +722,7 @@ def render():
             translateZ(18px);
 
         box-shadow:
-            0 28px 60px rgba(15,23,42,0.30);
+            0 30px 65px rgba(15,23,42,0.32);
     }
 
 
@@ -728,7 +733,7 @@ def render():
 
         font-weight: 800;
 
-        margin-bottom: 10px;
+        margin: 0 0 10px 0;
     }
 
 
@@ -754,7 +759,7 @@ def render():
 
         margin-top: 38px;
 
-        border-radius: 24px;
+        border-radius: 25px;
 
         background:
             linear-gradient(
@@ -763,10 +768,10 @@ def render():
                 #1e293b
             );
 
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.10);
 
         box-shadow:
-            0 15px 40px rgba(15,23,42,0.20);
+            0 15px 40px rgba(15,23,42,0.22);
     }
 
 
@@ -777,7 +782,7 @@ def render():
 
         font-weight: 800;
 
-        margin-bottom: 8px;
+        margin: 0 0 8px 0;
     }
 
 
@@ -796,6 +801,8 @@ def render():
         text-decoration: underline;
 
         text-decoration-color: #facc15;
+
+        text-decoration-thickness: 1px;
 
         text-underline-offset: 4px;
 
@@ -854,14 +861,14 @@ def render():
     }
 
     </style>
-    """, unsafe_allow_html=True)
+    """)
 
 
     # =========================================================
     # HERO SECTION
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="main-header">
 
         <div class="hero-badge">
@@ -891,7 +898,7 @@ def render():
         </p>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
     # =========================================================
@@ -901,6 +908,9 @@ def render():
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
+
+        # IMPORTANT:
+        # Existing navigation logic is preserved.
 
         if st.button(
             "Start Analyzing Your Resume",
@@ -918,7 +928,7 @@ def render():
     # KEY FEATURES
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="section-heading">
 
         <h2>
@@ -935,7 +945,7 @@ def render():
         <div class="section-line"></div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
     col1, col2, col3 = st.columns(3)
@@ -943,7 +953,7 @@ def render():
 
     with col1:
 
-        st.markdown("""
+        st.html("""
         <div class="feature-card blue-card">
 
             <div class="card-icon blue-icon">
@@ -964,19 +974,19 @@ def render():
 
             <ul>
                 <li>Formatting — <b>20%</b></li>
-                <li>Keywords & Skills — <b>25%</b></li>
+                <li>Keywords &amp; Skills — <b>25%</b></li>
                 <li>Content Quality — <b>25%</b></li>
                 <li>Skill Validation — <b>15%</b></li>
                 <li>ATS Compatibility — <b>15%</b></li>
             </ul>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with col2:
 
-        st.markdown("""
+        st.html("""
         <div class="feature-card yellow-card">
 
             <div class="card-icon yellow-icon">
@@ -998,18 +1008,18 @@ def render():
 
             <ul>
                 <li>Semantic skill analysis</li>
-                <li>Project & experience validation</li>
+                <li>Project &amp; experience validation</li>
                 <li>Unsupported skill detection</li>
                 <li>Evidence-based feedback</li>
             </ul>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with col3:
 
-        st.markdown("""
+        st.html("""
         <div class="feature-card pink-card">
 
             <div class="card-icon pink-icon">
@@ -1036,14 +1046,14 @@ def render():
             </ul>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     # =========================================================
     # WHAT WE ANALYZE
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="section-heading">
 
         <h2>
@@ -1060,7 +1070,7 @@ def render():
         <div class="section-line"></div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -1068,7 +1078,7 @@ def render():
 
     with c1:
 
-        st.markdown("""
+        st.html("""
         <div class="score-card">
 
             <div class="score-number score-blue">
@@ -1080,12 +1090,12 @@ def render():
             </div>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with c2:
 
-        st.markdown("""
+        st.html("""
         <div class="score-card">
 
             <div class="score-number score-yellow">
@@ -1093,16 +1103,16 @@ def render():
             </div>
 
             <div class="score-label">
-                Keywords & Skills
+                Keywords &amp; Skills
             </div>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with c3:
 
-        st.markdown("""
+        st.html("""
         <div class="score-card">
 
             <div class="score-number score-orange">
@@ -1114,12 +1124,12 @@ def render():
             </div>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with c4:
 
-        st.markdown("""
+        st.html("""
         <div class="score-card">
 
             <div class="score-number score-pink">
@@ -1131,12 +1141,12 @@ def render():
             </div>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with c5:
 
-        st.markdown("""
+        st.html("""
         <div class="score-card">
 
             <div class="score-number score-red">
@@ -1148,14 +1158,14 @@ def render():
             </div>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     # =========================================================
     # HOW IT WORKS
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="section-heading">
 
         <h2>
@@ -1172,7 +1182,7 @@ def render():
         <div class="section-line"></div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
     col1, col2, col3 = st.columns(3)
@@ -1180,7 +1190,7 @@ def render():
 
     with col1:
 
-        st.markdown("""
+        st.html("""
         <div class="step-card">
 
             <div class="step-number step-blue">
@@ -1197,12 +1207,12 @@ def render():
             </p>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with col2:
 
-        st.markdown("""
+        st.html("""
         <div class="step-card">
 
             <div class="step-number step-yellow">
@@ -1219,12 +1229,12 @@ def render():
             </p>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     with col3:
 
-        st.markdown("""
+        st.html("""
         <div class="step-card">
 
             <div class="step-number step-pink">
@@ -1241,14 +1251,14 @@ def render():
             </p>
 
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
     # =========================================================
     # PRIVACY
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="privacy-card">
 
         <h3>
@@ -1266,14 +1276,14 @@ def render():
         </p>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
     # =========================================================
     # FOOTER
     # =========================================================
 
-    st.markdown("""
+    st.html("""
     <div class="developer-card">
 
         <h4>
@@ -1281,7 +1291,7 @@ def render():
         </h4>
 
         <div class="developer-role">
-            AI & Full Stack Developer
+            AI &amp; Full Stack Developer
         </div>
 
         <div>
@@ -1307,4 +1317,4 @@ def render():
         </div>
 
     </div>
-    """, unsafe_allow_html=True)
+    """)
