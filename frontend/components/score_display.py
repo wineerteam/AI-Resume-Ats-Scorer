@@ -29,11 +29,16 @@ def _safe_float(value: Any, default: float = 0.0) -> float:
         return default
 
 
-def _clamp(value: float, low: float = 0.0, high: float = 100.0) -> float:
+def _clamp(
+    value: float,
+    low: float = 0.0,
+    high: float = 100.0,
+) -> float:
     return max(low, min(high, value))
 
 
 def _score_status(score: float) -> Dict[str, str]:
+
     if score >= 90:
         return {
             "label": "Excellent",
@@ -75,6 +80,7 @@ def _score_status(score: float) -> Dict[str, str]:
 
 
 def _priority_level(score: float) -> Dict[str, str]:
+
     if score < 60:
         return {
             "label": "HIGH PRIORITY",
@@ -122,6 +128,10 @@ def _component_tip(
     )
 
 
+# ============================================================
+# STYLES
+# ============================================================
+
 def _apply_styles() -> None:
 
     st.markdown(
@@ -129,7 +139,7 @@ def _apply_styles() -> None:
         <style>
 
         /* =====================================================
-           GLOBAL
+           MAIN TITLES
         ===================================================== */
 
         .ats-v6-title {
@@ -138,13 +148,14 @@ def _apply_styles() -> None:
             font-weight: 950;
             letter-spacing: -0.03em;
             margin-top: 18px;
+            margin-bottom: 0;
         }
 
         .ats-v6-subtitle {
             color: #64748b;
             font-size: 13px;
             line-height: 1.6;
-            margin-top: 4px;
+            margin-top: 5px;
             margin-bottom: 20px;
         }
 
@@ -176,8 +187,7 @@ def _apply_styles() -> None:
             width: 260px;
             height: 260px;
             border-radius: 50%;
-            border: 1px solid
-                rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.08);
             right: -105px;
             top: -125px;
         }
@@ -188,8 +198,7 @@ def _apply_styles() -> None:
             width: 190px;
             height: 190px;
             border-radius: 50%;
-            border: 1px solid
-                rgba(34,211,238,.10);
+            border: 1px solid rgba(34,211,238,.10);
             left: -100px;
             bottom: -120px;
         }
@@ -198,8 +207,7 @@ def _apply_styles() -> None:
             position: relative;
             z-index: 2;
             display: grid;
-            grid-template-columns:
-                205px 1fr;
+            grid-template-columns: 205px 1fr;
             gap: 28px;
             align-items: center;
         }
@@ -226,8 +234,7 @@ def _apply_styles() -> None:
                 );
 
             box-shadow:
-                0 0 45px
-                rgba(34,211,238,.18);
+                0 0 45px rgba(34,211,238,.18);
         }
 
         .ats-score-ring::before {
@@ -292,10 +299,8 @@ def _apply_styles() -> None:
             margin-top: 14px;
             border-radius: 999px;
             color: #e0f2fe;
-            background:
-                rgba(255,255,255,.09);
-            border: 1px solid
-                rgba(255,255,255,.13);
+            background: rgba(255,255,255,.09);
+            border: 1px solid rgba(255,255,255,.13);
             font-size: 9px;
             font-weight: 900;
         }
@@ -330,8 +335,7 @@ def _apply_styles() -> None:
 
         .health-scale {
             display: grid;
-            grid-template-columns:
-                repeat(5, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 7px;
         }
 
@@ -383,8 +387,7 @@ def _apply_styles() -> None:
 
         .component-grid-v6 {
             display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
         }
 
@@ -528,7 +531,7 @@ def _apply_styles() -> None:
 
 
         /* =====================================================
-           PRIORITY SECTION
+           PRIORITY
         ===================================================== */
 
         .priority-title {
@@ -547,8 +550,7 @@ def _apply_styles() -> None:
 
         .priority-grid {
             display: grid;
-            grid-template-columns:
-                repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 13px;
         }
 
@@ -624,7 +626,7 @@ def _apply_styles() -> None:
 
 
         /* =====================================================
-           RECRUITER READINESS
+           READINESS
         ===================================================== */
 
         .readiness-card {
@@ -682,10 +684,8 @@ def _apply_styles() -> None:
             }
 
             .health-scale {
-                grid-template-columns:
-                    repeat(3, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
-
         }
 
         @media (max-width: 650px) {
@@ -696,10 +696,8 @@ def _apply_styles() -> None:
             }
 
             .health-scale {
-                grid-template-columns:
-                    repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
-
         }
 
         </style>
@@ -740,10 +738,6 @@ def display_overall_score(
 
     status = _score_status(score)
 
-    # --------------------------------------------------------
-    # Fallback interpretation
-    # --------------------------------------------------------
-
     if not interpretation:
 
         if score >= 90:
@@ -780,7 +774,7 @@ def display_overall_score(
     # HEADER
     # ========================================================
 
-    st.markdown(
+    st.html(
         """
         <div class="ats-v6-title">
             Analysis Results
@@ -790,15 +784,14 @@ def display_overall_score(
             A complete view of your resume's ATS performance,
             scoring components, and improvement priorities.
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
     # HERO
     # ========================================================
 
-    st.markdown(
+    st.html(
         f"""
         <div class="ats-hero">
 
@@ -847,8 +840,7 @@ def display_overall_score(
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
@@ -905,10 +897,7 @@ def display_overall_score(
     </div>
     """
 
-    st.markdown(
-        health_html,
-        unsafe_allow_html=True,
-    )
+    st.html(health_html)
 
 
 # ============================================================
@@ -979,7 +968,7 @@ def display_score_breakdown(
     # HEADER
     # ========================================================
 
-    st.markdown(
+    st.html(
         """
         <div class="breakdown-title">
             Score Breakdown
@@ -990,8 +979,7 @@ def display_score_breakdown(
             scoring scale while the percentage shows relative
             performance within that category.
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
 
     # ========================================================
@@ -1057,9 +1045,7 @@ def display_score_breakdown(
 
                 <div
                     class="component-fill-v6"
-                    style="
-                        width:{item["percentage"]:.0f}%;
-                    "
+                    style="width:{item["percentage"]:.0f}%"
                 ></div>
 
             </div>
@@ -1086,10 +1072,7 @@ def display_score_breakdown(
 
     cards += "</div>"
 
-    st.markdown(
-        cards,
-        unsafe_allow_html=True,
-    )
+    st.html(cards)
 
     # ========================================================
     # IMPROVEMENT PRIORITIES
@@ -1108,7 +1091,7 @@ def display_score_breakdown(
 
     if priority_items:
 
-        st.markdown(
+        st.html(
             """
             <div class="priority-title">
                 Improvement Priorities
@@ -1116,13 +1099,14 @@ def display_score_breakdown(
 
             <div class="priority-subtitle">
                 Focus on the lowest-performing scoring
-                categories first for the most targeted review.
+                categories first for a targeted review.
             </div>
-            """,
-            unsafe_allow_html=True,
+            """
         )
 
-        priority_html = '<div class="priority-grid">'
+        priority_html = (
+            '<div class="priority-grid">'
+        )
 
         for index, item in enumerate(
             priority_items,
@@ -1182,13 +1166,10 @@ def display_score_breakdown(
 
         priority_html += "</div>"
 
-        st.markdown(
-            priority_html,
-            unsafe_allow_html=True,
-        )
+        st.html(priority_html)
 
     # ========================================================
-    # STRONGEST + PRIORITY AREA
+    # STRONGEST / WEAKEST
     # ========================================================
 
     strongest = max(
@@ -1233,15 +1214,15 @@ def display_score_breakdown(
 
         readiness_text = (
             f"{weakest['label']} currently has the largest "
-            "improvement opportunity. Addressing the lowest "
-            "scoring areas can make your resume more balanced."
+            "improvement opportunity. Address the lowest "
+            "scoring areas to make your resume more balanced."
         )
 
     # ========================================================
     # RECRUITER READINESS
     # ========================================================
 
-    st.markdown(
+    st.html(
         f"""
         <div class="readiness-card">
 
@@ -1258,6 +1239,5 @@ def display_score_breakdown(
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True,
+        """
     )
