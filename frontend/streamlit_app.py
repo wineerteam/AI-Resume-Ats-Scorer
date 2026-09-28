@@ -19,7 +19,7 @@ sys.path.insert(
 
 st.set_page_config(
     page_title="ATS Resume Scorer",
-    page_icon="🎯",
+    page_icon="ATS",
     layout="wide",
     initial_sidebar_state="expanded"
 )
